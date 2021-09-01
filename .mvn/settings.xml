@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					xmlns="http://maven.apache.org/POM/4.0.0"
+					xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+	<localRepository>${env.EVOTING_HOME}/.m2/repository</localRepository>
+
+	<mirrors>
+		<mirror>
+			<mirrorOf>*</mirrorOf>
+			<name>maven-evoting-virtual</name>
+			<url>https://artifactory.tools.post.ch/artifactory/maven-evoting-virtual</url>
+			<id>maven-evoting-virtual</id>
+		</mirror>
+	</mirrors>
+
+	<profiles>
+		<profile>
+			<repositories>
+				<repository>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+					<id>central</id>
+					<name>libs-release-evoting</name>
+					<url>https://artifactory.tools.post.ch/artifactory/libs-release-evoting</url>
+				</repository>
+				<repository>
+					<snapshots/>
+					<id>snapshots</id>
+					<name>libs-snapshot-evoting</name>
+					<url>https://artifactory.tools.post.ch/artifactory/libs-snapshot-evoting</url>
+				</repository>
+			</repositories>
+			<pluginRepositories>
+				<pluginRepository>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+					<id>central</id>
+					<name>plugins-release</name>
+					<url>https://artifactory.tools.post.ch/artifactory/plugins-release</url>
+				</pluginRepository>
+				<pluginRepository>
+					<snapshots/>
+					<id>snapshots</id>
+					<name>plugins-snapshot</name>
+					<url>https://artifactory.tools.post.ch/artifactory/plugins-snapshot</url>
+				</pluginRepository>
+			</pluginRepositories>
+			<id>artifactory</id>
+		</profile>
+	</profiles>
+	<activeProfiles>
+		<activeProfile>artifactory</activeProfile>
+	</activeProfiles>
+	<pluginGroups>
+		<pluginGroup>ch.post.it.common.maven.plugins</pluginGroup>
+		<pluginGroup>org.codehaus.mojo</pluginGroup>
+		<pluginGroup>org.codehaus.cargo</pluginGroup>
+		<pluginGroup>org.apache.maven.plugins</pluginGroup>
+	</pluginGroups>
+</settings>
