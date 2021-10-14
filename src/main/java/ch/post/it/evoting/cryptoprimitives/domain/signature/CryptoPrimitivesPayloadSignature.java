@@ -36,7 +36,7 @@ public class CryptoPrimitivesPayloadSignature {
 	private final X509Certificate[] certificateChain;
 
 	/**
-	 * Creates the representation of a Cryptolib-based signature.
+	 * Creates the representation of a crypto-primitives signature.
 	 *
 	 * @param signatureContents the byte stream containing the signature
 	 * @param certificateChain  the certificate chain to be used when validating the signature

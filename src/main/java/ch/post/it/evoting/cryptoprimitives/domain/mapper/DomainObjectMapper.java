@@ -81,7 +81,6 @@ public class DomainObjectMapper {
 				.addMixIn(MultiExponentiationArgument.Builder.class, MultiExponentiationArgumentMixIn.MultiExponentiationArgumentBuilderMixIn.class)
 				.addMixIn(SingleValueProductArgument.Builder.class, SingleValueProductArgumentMixIn.SingleValueProductArgumentBuilderMixIn.class)
 				.addMixIn(ZeroArgument.Builder.class, ZeroArgumentMixIn.ZeroArgumentBuilderMixIn.class)
-				.enable(MapperFeature.USE_ANNOTATIONS)
 				.disable(MapperFeature.USE_GETTERS_AS_SETTERS).registerModule(new JavaTimeModule());
 	}
 

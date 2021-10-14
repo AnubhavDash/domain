@@ -11,7 +11,7 @@ import java.math.BigInteger;
 /**
  * Conversion methods used during the serialization/deserialization of Mixnet payloads.
  */
-class ConversionUtils {
+public class ConversionUtils {
 
 	private static final String HEX_PREFIX = "0x";
 
@@ -25,7 +25,7 @@ class ConversionUtils {
 	 * @param value the BigInteger to convert. Not null.
 	 * @return the hexadecimal string representation of {@code value}, prefixed with "0x".
 	 */
-	static String bigIntegerToHex(final BigInteger value) {
+	public static String bigIntegerToHex(final BigInteger value) {
 		checkNotNull(value);
 
 		return HEX_PREFIX + value.toString(16).toUpperCase();
@@ -37,7 +37,7 @@ class ConversionUtils {
 	 * @param hexString the string to convert. Not null.
 	 * @return a BigInteger.
 	 */
-	static BigInteger hexToBigInteger(final String hexString) {
+	public static BigInteger hexToBigInteger(final String hexString) {
 		checkNotNull(hexString);
 		checkArgument(HEX_PREFIX.equals(hexString.substring(0, 2)), String.format("The provided string must be prefixed with %s.", HEX_PREFIX));
 

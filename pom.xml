@@ -5,14 +5,15 @@
 
 	<groupId>ch.post.it.evoting.cryptoprimitives.domain</groupId>
 	<artifactId>crypto-primitives-domain</artifactId>
-	<version>0.11.2.0-SNAPSHOT</version>
+	<version>0.11.4.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Crypto Primitives Domain</name>
 
 	<properties>
 		<bouncycastle.version>1.69</bouncycastle.version>
-		<crypto-primitives.version>0.11.2.0</crypto-primitives.version>
+		<crypto-primitives.version>0.11.4.0</crypto-primitives.version>
 		<jackson.version>2.12.4</jackson.version>
+		<jacoco.version>0.8.7</jacoco.version>
 		<java.version>1.8</java.version>
 		<junit-jupiter.version>5.7.2</junit-jupiter.version>
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
@@ -20,6 +21,15 @@
 		<maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
 		<maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
 		<mockito.version>3.11.2</mockito.version>
+
+		<!--  Sonar  -->
+		<sonar.scm.disabled>true</sonar.scm.disabled>
+		<sonar.host.url>https://sonar.tools.pnet.ch</sonar.host.url>
+		<sonar.skipDesign>true</sonar.skipDesign>
+		<sonar.junit.reportPaths>${project.basedir}/target/surefire-reports/</sonar.junit.reportPaths>
+		<sonar.coverage.exclusions>**/test/**/*</sonar.coverage.exclusions>
+		<sonar.java.source>${java.version}</sonar.java.source>
+		<sonar.java.target>${java.version}</sonar.java.target>
 	</properties>
 
 	<dependencyManagement>
@@ -163,6 +173,26 @@
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

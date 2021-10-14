@@ -3,6 +3,7 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -31,6 +32,9 @@ public abstract class ShuffleArgumentMixIn {
 
 	@JsonProperty
 	MultiExponentiationArgument multiExponentiationArgument;
+
+	@JsonIgnore
+	GqGroup group;
 
 	@JsonPOJOBuilder(withPrefix = "with_")
 	public interface ShuffleArgumentBuilderMixin {
