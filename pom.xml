@@ -22,14 +22,17 @@
 		<maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
 		<mockito.version>3.11.2</mockito.version>
 
-		<!--  Sonar  -->
+		<!-- Sonar -->
 		<sonar.scm.disabled>true</sonar.scm.disabled>
 		<sonar.host.url>https://sonar.tools.pnet.ch</sonar.host.url>
+		<sonar.projectKey>ch.post.it.evoting.cryptoprimitives.domain:crypto-primitives-domain</sonar.projectKey>
 		<sonar.skipDesign>true</sonar.skipDesign>
 		<sonar.junit.reportPaths>${project.basedir}/target/surefire-reports/</sonar.junit.reportPaths>
-		<sonar.coverage.exclusions>**/test/**/*</sonar.coverage.exclusions>
+		<sonar.coverage.exclusions>**/test/**/*,**/tests/**/*</sonar.coverage.exclusions>
 		<sonar.java.source>${java.version}</sonar.java.source>
 		<sonar.java.target>${java.version}</sonar.java.target>
+		<sonar-maven-plugin.version>3.9.0.2155</sonar-maven-plugin.version>
+
 	</properties>
 
 	<dependencyManagement>
