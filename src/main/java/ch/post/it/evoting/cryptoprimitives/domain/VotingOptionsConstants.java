@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
+package ch.post.it.evoting.cryptoprimitives.domain;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+public class VotingOptionsConstants {
 
-@JsonSerialize(using = GroupElementSerializer.class)
-@JsonDeserialize(using = ZqElementDeserializer.class)
-public interface ZqElementMixIn {
+	public static final int MAXIMUM_NUMBER_OF_VOTING_OPTIONS = 1200;
+	public static final int MAXIMUM_NUMBER_OF_SELECTABLE_VOTING_OPTIONS = 120;
+	public static final int MAXIMUM_NUMBER_OF_WRITE_IN_OPTIONS = 15;
+
+	private VotingOptionsConstants() {
+		// This class should not be instantiated
+	}
 }
