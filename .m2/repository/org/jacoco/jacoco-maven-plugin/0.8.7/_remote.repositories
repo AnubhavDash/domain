@@ -1,0 +1,4 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Thu Oct 21 10:26:16 CEST 2021
+jacoco-maven-plugin-0.8.7.jar>maven-evoting-virtual=
+jacoco-maven-plugin-0.8.7.pom>maven-evoting-virtual=

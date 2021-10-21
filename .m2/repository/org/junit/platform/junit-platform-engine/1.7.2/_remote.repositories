@@ -1,0 +1,4 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Thu Oct 21 10:26:44 CEST 2021
+junit-platform-engine-1.7.2.pom>maven-evoting-virtual=
+junit-platform-engine-1.7.2.jar>maven-evoting-virtual=
