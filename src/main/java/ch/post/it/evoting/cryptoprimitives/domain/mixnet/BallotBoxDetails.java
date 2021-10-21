@@ -15,7 +15,7 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
-import static ch.post.it.evoting.cryptoprimitives.domain.Validations.validateUUID;
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.UUIDValidations.validateUUID;
 
 import java.util.Objects;
 

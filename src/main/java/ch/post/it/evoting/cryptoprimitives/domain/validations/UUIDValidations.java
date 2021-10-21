@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.post.it.evoting.cryptoprimitives.domain;
+package ch.post.it.evoting.cryptoprimitives.domain.validations;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -23,7 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.exceptions.FailedValidationException;
 
-public final class Validations {
+public final class UUIDValidations {
 
 	@VisibleForTesting
 	static final int UUID_LENGTH = 32;
@@ -34,7 +34,7 @@ public final class Validations {
 	private static final String UUID_REGEX = String.format("^[%s]{%d}$", UUID_ALPHABET, UUID_LENGTH);
 	private static final Pattern UUID_PATTERN = Pattern.compile(UUID_REGEX);
 
-	private Validations() {
+	private UUIDValidations() {
 		// Intentionally left blank.
 	}
 
