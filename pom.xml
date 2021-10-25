@@ -5,13 +5,13 @@
 
 	<groupId>ch.post.it.evoting.cryptoprimitives.domain</groupId>
 	<artifactId>crypto-primitives-domain</artifactId>
-	<version>0.11.4.2</version>
+	<version>0.11.4.3</version>
 	<packaging>jar</packaging>
 	<name>Crypto Primitives Domain</name>
 
 	<properties>
 		<bouncycastle.version>1.69</bouncycastle.version>
-		<crypto-primitives.version>0.11.4.0</crypto-primitives.version>
+		<crypto-primitives.version>0.11.4.2</crypto-primitives.version>
 		<jackson.version>2.12.4</jackson.version>
 		<jacoco.version>0.8.7</jacoco.version>
 		<java.version>1.8</java.version>
