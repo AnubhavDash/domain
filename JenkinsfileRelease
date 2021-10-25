@@ -9,7 +9,7 @@
 def BUILD_INFO = Artifactory.newBuildInfo()
 def PROJECT_NAME = 'crypto-primitives-domain'
 def SCM_URL = "https://gitit.post.ch/scm/evotingecosystem/crypto-primitives-domain.git"
-def SCM_URL_ANON = "https://gitit.post.ch/scm/evoting-anonymized/crypto-primitives-domain.git"
+def SCM_URL_ANON = "https://gitit.post.ch/scm/evotinganonymized/crypto-primitives-domain.git"
 
 ARTIFACTORY_SERVER = Artifactory.server 'artifactory'
 RTMAVEN = Artifactory.newMavenBuild()
