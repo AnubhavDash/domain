@@ -30,7 +30,7 @@ import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 /**
  * Deserializes a json into a {@link GroupVector} of {@link GqElement}s.
  */
-class GqGroupVectorDeserializer extends JsonDeserializer<GroupVector<GqElement, GqGroup>> {
+public class GqGroupVectorDeserializer extends JsonDeserializer<GroupVector<GqElement, GqGroup>> {
 
 	/**
 	 * The {@code context} must provide the {@link GqGroup} that will be used to reconstruct the various {@link GqElement}s.
