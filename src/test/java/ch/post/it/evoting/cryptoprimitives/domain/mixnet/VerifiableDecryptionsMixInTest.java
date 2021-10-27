@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ch.post.it.evoting.cryptoprimitives.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
+import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.math.ZqGroup;
@@ -47,19 +48,19 @@ class VerifiableDecryptionsMixInTest extends MapperSetUp {
 
 	@BeforeAll
 	static void setUpAll() {
-		gqGroup = SerializationUtils.getGqGroup();
+		gqGroup = SerializationTestData.getGqGroup();
 
-		final List<ElGamalMultiRecipientCiphertext> ciphertexts = SerializationUtils.getCiphertexts(NBR_CIPHERTEXT);
+		final List<ElGamalMultiRecipientCiphertext> ciphertexts = SerializationTestData.getCiphertexts(NBR_CIPHERTEXT);
 
-		final GroupVector<DecryptionProof, ZqGroup> decryptionProofs = SerializationUtils.getDecryptionProofs(ciphertexts.size());
+		final GroupVector<DecryptionProof, ZqGroup> decryptionProofs = SerializationTestData.getDecryptionProofs(ciphertexts.size());
 		verifiableDecryptions = new VerifiableDecryptions(GroupVector.from(ciphertexts), decryptionProofs);
 
 		// Create expected json.
 		rootNode = mapper.createObjectNode();
-		final ArrayNode ciphertextsNode = SerializationUtils.createCiphertextsNode(ciphertexts);
+		final ArrayNode ciphertextsNode = SerializationTestData.createCiphertextsNode(ciphertexts);
 		rootNode.set("ciphertexts", ciphertextsNode);
 
-		final ArrayNode decryptionProofsNode = SerializationUtils.createDecryptionProofsNode(decryptionProofs);
+		final ArrayNode decryptionProofsNode = SerializationTestData.createDecryptionProofsNode(decryptionProofs);
 		rootNode.set("decryptionProofs", decryptionProofsNode);
 	}
 

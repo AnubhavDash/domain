@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
+import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
@@ -49,17 +50,17 @@ class MixnetInitialPayloadTest extends MapperSetUp {
 
 	@BeforeAll
 	static void setUpAll() throws IOException {
-		final GqGroup gqGroup = SerializationUtils.getGqGroup();
+		final GqGroup gqGroup = SerializationTestData.getGqGroup();
 
-		final List<ElGamalMultiRecipientCiphertext> ciphertexts = SerializationUtils.getCiphertexts(NBR_CIPHERTEXT);
-		final ElGamalMultiRecipientPublicKey electionPublicKey = SerializationUtils.getPublicKey();
+		final List<ElGamalMultiRecipientCiphertext> ciphertexts = SerializationTestData.getCiphertexts(NBR_CIPHERTEXT);
+		final ElGamalMultiRecipientPublicKey electionPublicKey = SerializationTestData.getPublicKey();
 
 		// Generate random bytes for signature content and create payload signature.
 		secureRandom.nextBytes(randomBytes);
-		final X509Certificate certificate = SerializationUtils.generateTestCertificate();
+		final X509Certificate certificate = SerializationTestData.generateTestCertificate();
 		final CryptoPrimitivesPayloadSignature signature = new CryptoPrimitivesPayloadSignature(randomBytes, new X509Certificate[] { certificate });
 
-		initialPayload = new MixnetInitialPayload(gqGroup, ciphertexts, electionPublicKey, signature);
+		initialPayload = new MixnetInitialPayload(gqGroup, ciphertexts, electionPublicKey).setSignature(signature);
 
 		// Create expected Json.
 		rootNode = mapper.createObjectNode();
@@ -67,13 +68,13 @@ class MixnetInitialPayloadTest extends MapperSetUp {
 		final JsonNode encryptionGroupNode = mapper.readTree(mapper.writeValueAsString(gqGroup));
 		rootNode.set("encryptionGroup", encryptionGroupNode);
 
-		final ArrayNode ciphertextsNode = SerializationUtils.createCiphertextsNode(ciphertexts);
+		final ArrayNode ciphertextsNode = SerializationTestData.createCiphertextsNode(ciphertexts);
 		rootNode.set("ciphertexts", ciphertextsNode);
 
-		final ArrayNode electionPublicKeyNode = SerializationUtils.createPublicKeyNode(electionPublicKey);
+		final ArrayNode electionPublicKeyNode = SerializationTestData.createPublicKeyNode(electionPublicKey);
 		rootNode.set("electionPublicKey", electionPublicKeyNode);
 
-		final JsonNode signatureNode = SerializationUtils.createSignatureNode(signature);
+		final JsonNode signatureNode = SerializationTestData.createSignatureNode(signature);
 		rootNode.set("signature", signatureNode);
 	}
 

@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ch.post.it.evoting.cryptoprimitives.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
+import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientMessage;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.math.ZqGroup;
@@ -45,19 +46,19 @@ class VerifiablePlaintextDecryptionTest extends MapperSetUp {
 	@BeforeAll
 	static void setUpAll() {
 		final int nbrMessage = 2;
-		gqGroup = SerializationUtils.getGqGroup();
+		gqGroup = SerializationTestData.getGqGroup();
 
-		final GroupVector<ElGamalMultiRecipientMessage, GqGroup> messages = SerializationUtils.getMessages(nbrMessage);
-		final GroupVector<DecryptionProof, ZqGroup> decryptionProofs = SerializationUtils.getDecryptionProofs(nbrMessage);
+		final GroupVector<ElGamalMultiRecipientMessage, GqGroup> messages = SerializationTestData.getMessages(nbrMessage);
+		final GroupVector<DecryptionProof, ZqGroup> decryptionProofs = SerializationTestData.getDecryptionProofs(nbrMessage);
 		verifiablePlaintextDecryption = new VerifiablePlaintextDecryption(messages, decryptionProofs);
 
 		// Create expected json.
 		rootNode = mapper.createObjectNode();
 
-		final ArrayNode messagesNode = SerializationUtils.createMessagesNode(messages);
+		final ArrayNode messagesNode = SerializationTestData.createMessagesNode(messages);
 		rootNode.set("decryptedVotes", messagesNode);
 
-		final ArrayNode decryptionProofsNode = SerializationUtils.createDecryptionProofsNode(decryptionProofs);
+		final ArrayNode decryptionProofsNode = SerializationTestData.createDecryptionProofsNode(decryptionProofs);
 		rootNode.set("decryptionProofs", decryptionProofsNode);
 	}
 

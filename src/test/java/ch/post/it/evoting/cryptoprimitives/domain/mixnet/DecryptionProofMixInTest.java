@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ch.post.it.evoting.cryptoprimitives.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
+import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.math.ZqElement;
 import ch.post.it.evoting.cryptoprimitives.math.ZqGroup;
@@ -43,7 +44,7 @@ class DecryptionProofMixInTest extends MapperSetUp {
 
 	@BeforeAll
 	static void setUpAll() throws JsonProcessingException {
-		gqGroup = SerializationUtils.getGqGroup();
+		gqGroup = SerializationTestData.getGqGroup();
 		final ZqGroup zqGroup = ZqGroup.sameOrderAs(gqGroup);
 
 		final ZqElement e = ZqElement.create(2, zqGroup);

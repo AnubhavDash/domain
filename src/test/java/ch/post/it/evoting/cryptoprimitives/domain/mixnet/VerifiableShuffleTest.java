@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ch.post.it.evoting.cryptoprimitives.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
+import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.ShuffleArgument;
@@ -45,15 +46,15 @@ class VerifiableShuffleTest extends MapperSetUp {
 
 	@BeforeAll
 	static void setUpAll() throws JsonProcessingException {
-		gqGroup = SerializationUtils.getGqGroup();
+		gqGroup = SerializationTestData.getGqGroup();
 
-		final List<ElGamalMultiRecipientCiphertext> ciphertexts = SerializationUtils.getCiphertexts(NBR_CIPHERTEXT);
-		final ShuffleArgument shuffleArgument = SerializationUtils.createShuffleArgument();
+		final List<ElGamalMultiRecipientCiphertext> ciphertexts = SerializationTestData.getCiphertexts(NBR_CIPHERTEXT);
+		final ShuffleArgument shuffleArgument = SerializationTestData.createShuffleArgument();
 
 		verifiableShuffle = new VerifiableShuffle(GroupVector.from(ciphertexts), shuffleArgument);
 
 		// Create expected json.
-		rootNode = SerializationUtils.createVerifiableShuffleNode(verifiableShuffle);
+		rootNode = SerializationTestData.createVerifiableShuffleNode(verifiableShuffle);
 	}
 
 	@Test
