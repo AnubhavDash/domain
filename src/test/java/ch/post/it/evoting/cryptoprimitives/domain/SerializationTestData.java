@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
+package ch.post.it.evoting.cryptoprimitives.domain;
+
+import static ch.post.it.evoting.cryptoprimitives.domain.mixnet.ConversionUtils.bigIntegerToHex;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
@@ -47,7 +49,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import ch.post.it.evoting.cryptoprimitives.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.SecurityLevel;
 import ch.post.it.evoting.cryptoprimitives.SecurityLevelConfig;
-import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
+import ch.post.it.evoting.cryptoprimitives.domain.election.Ballot;
+import ch.post.it.evoting.cryptoprimitives.domain.election.CombinedCorrectnessInformation;
+import ch.post.it.evoting.cryptoprimitives.domain.mixnet.VerifiablePlaintextDecryption;
+import ch.post.it.evoting.cryptoprimitives.domain.returncodes.ReturnCodeGenerationInput;
+import ch.post.it.evoting.cryptoprimitives.domain.returncodes.ReturnCodeGenerationOutput;
+import ch.post.it.evoting.cryptoprimitives.domain.returncodes.ReturnCodeGenerationRequestPayload;
+import ch.post.it.evoting.cryptoprimitives.domain.returncodes.ReturnCodeGenerationResponsePayload;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientMessage;
@@ -67,7 +75,7 @@ import ch.post.it.evoting.cryptoprimitives.mixnet.ZeroArgument;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.DecryptionProof;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.ExponentiationProof;
 
-public class SerializationUtils extends MapperSetUp {
+public class SerializationTestData extends MapperSetUp {
 
 	private static final GqGroup gqGroup = getGqGroup();
 	private static final ZqGroup zqGroup = ZqGroup.sameOrderAs(gqGroup);
@@ -92,7 +100,7 @@ public class SerializationUtils extends MapperSetUp {
 	private static final ZqElement zThree = ZqElement.create(THREE, zqGroup);
 	private static final ZqElement zFour = ZqElement.create(FOUR, zqGroup);
 
-	private SerializationUtils() {
+	private SerializationTestData() {
 		// Intentionally left blank.
 	}
 
@@ -107,14 +115,14 @@ public class SerializationUtils extends MapperSetUp {
 	// Basic objects to serialize creation.
 	// ===============================================================================================================================================
 
-	static ElGamalMultiRecipientMessage getMessage() {
+	public static ElGamalMultiRecipientMessage getMessage() {
 		final List<GqElement> messageElements = Arrays
 				.asList(GqElement.create(BigInteger.valueOf(4), gqGroup), GqElement.create(BigInteger.valueOf(5), gqGroup));
 
 		return new ElGamalMultiRecipientMessage(messageElements);
 	}
 
-	static GroupVector<ElGamalMultiRecipientMessage, GqGroup> getMessages(final int nbr) {
+	public static GroupVector<ElGamalMultiRecipientMessage, GqGroup> getMessages(final int nbr) {
 		return Collections.nCopies(nbr, getMessage()).stream().collect(GroupVector.toGroupVector());
 	}
 
@@ -191,16 +199,16 @@ public class SerializationUtils extends MapperSetUp {
 		return encryptionGroupNode;
 	}
 
-	static ObjectNode createMessageNode(final ElGamalMultiRecipientMessage elGamalMultiRecipientMessage) {
+	public static ObjectNode createMessageNode(final ElGamalMultiRecipientMessage elGamalMultiRecipientMessage) {
 		final ObjectNode rootNode = mapper.createObjectNode();
 
 		final ArrayNode messageArrayNode = rootNode.putArray("message");
-		elGamalMultiRecipientMessage.stream().forEach(element -> messageArrayNode.add(ConversionUtils.bigIntegerToHex(element.getValue())));
+		elGamalMultiRecipientMessage.stream().forEach(element -> messageArrayNode.add(bigIntegerToHex(element.getValue())));
 
 		return rootNode;
 	}
 
-	static ArrayNode createMessagesNode(final List<ElGamalMultiRecipientMessage> messages) {
+	public static ArrayNode createMessagesNode(final List<ElGamalMultiRecipientMessage> messages) {
 		final ArrayNode messageArrayNode = mapper.createArrayNode();
 		messages.forEach(m -> messageArrayNode.add(createMessageNode(m)));
 
@@ -210,10 +218,10 @@ public class SerializationUtils extends MapperSetUp {
 	public static ObjectNode createCiphertextNode(final ElGamalMultiRecipientCiphertext ciphertext) {
 		final GqElement gamma = ciphertext.getGamma();
 		final List<GqElement> phis = ciphertext.stream().skip(1).collect(Collectors.toList());
-		final ObjectNode ciphertextNode = mapper.createObjectNode().put("gamma", ConversionUtils.bigIntegerToHex(gamma.getValue()));
+		final ObjectNode ciphertextNode = mapper.createObjectNode().put("gamma", bigIntegerToHex(gamma.getValue()));
 		final ArrayNode phisArrayNode = ciphertextNode.putArray("phis");
 		for (GqElement phi : phis) {
-			phisArrayNode.add(ConversionUtils.bigIntegerToHex(phi.getValue()));
+			phisArrayNode.add(bigIntegerToHex(phi.getValue()));
 		}
 
 		return ciphertextNode;
@@ -228,7 +236,7 @@ public class SerializationUtils extends MapperSetUp {
 		return ciphertextsArrayNode;
 	}
 
-	static ArrayNode createDecryptionProofsNode(final GroupVector<DecryptionProof, ZqGroup> decryptionProofs) {
+	public static ArrayNode createDecryptionProofsNode(final GroupVector<DecryptionProof, ZqGroup> decryptionProofs) {
 		final ArrayNode decryptionProofsArrayNode = mapper.createArrayNode();
 
 		final List<JsonNode> proofsNodes = decryptionProofs.stream().map(proof -> {
@@ -249,25 +257,25 @@ public class SerializationUtils extends MapperSetUp {
 	public static ArrayNode createPublicKeyNode(final ElGamalMultiRecipientPublicKey publicKey) {
 		final ArrayNode keyArrayNode = mapper.createArrayNode();
 		for (int i = 0; i < publicKey.size(); i++) {
-			keyArrayNode.add(ConversionUtils.bigIntegerToHex(publicKey.get(i).getValue()));
+			keyArrayNode.add(bigIntegerToHex(publicKey.get(i).getValue()));
 		}
 
 		return keyArrayNode;
 	}
 
-	static ArrayNode createPrivateKeyNode(final ElGamalMultiRecipientPrivateKey privateKey) {
+	public static ArrayNode createPrivateKeyNode(final ElGamalMultiRecipientPrivateKey privateKey) {
 		final ArrayNode keyArrayNode = mapper.createArrayNode();
 		for (int i = 0; i < privateKey.size(); i++) {
-			keyArrayNode.add(ConversionUtils.bigIntegerToHex(privateKey.get(i).getValue()));
+			keyArrayNode.add(bigIntegerToHex(privateKey.get(i).getValue()));
 		}
 
 		return keyArrayNode;
 	}
 
-	static ObjectNode createVerifiableShuffleNode(final VerifiableShuffle verifiableShuffle) {
+	public static ObjectNode createVerifiableShuffleNode(final VerifiableShuffle verifiableShuffle) {
 		final ObjectNode rootNode = mapper.createObjectNode();
 
-		final ArrayNode shuffledCiphertextsNode = SerializationUtils.createCiphertextsNode(verifiableShuffle.getShuffledCiphertexts());
+		final ArrayNode shuffledCiphertextsNode = SerializationTestData.createCiphertextsNode(verifiableShuffle.getShuffledCiphertexts());
 		rootNode.set("shuffledCiphertexts", shuffledCiphertextsNode);
 
 		final JsonNode shuffleArgumentNode = createShuffleArgumentNode();
@@ -276,7 +284,7 @@ public class SerializationUtils extends MapperSetUp {
 		return rootNode;
 	}
 
-	static ObjectNode createVerifiablePlaintextDecryptionNode(final VerifiablePlaintextDecryption verifiablePlaintextDecryption) {
+	public static ObjectNode createVerifiablePlaintextDecryptionNode(final VerifiablePlaintextDecryption verifiablePlaintextDecryption) {
 		final ObjectNode rootNode = mapper.createObjectNode();
 
 		final ArrayNode messagesNode = createMessagesNode(verifiablePlaintextDecryption.getDecryptedVotes());
@@ -327,7 +335,7 @@ public class SerializationUtils extends MapperSetUp {
 				.with_productArgument(productArgument).with_multiExponentiationArgument(multiExponentiationArgument).build();
 	}
 
-	static ShuffleArgument createSimplestShuffleArgument() {
+	public static ShuffleArgument createSimplestShuffleArgument() {
 		// This is an example for m=1,n=2,l=1.
 
 		// SingleValueProductArgument.
@@ -361,7 +369,7 @@ public class SerializationUtils extends MapperSetUp {
 		return jsonNode;
 	}
 
-	static String getShuffleArgumentJson() {
+	public static String getShuffleArgumentJson() {
 		// Return corresponding json to createShuffleArgument.
 		return "{\"c_A\":[\"0x9\",\"0x5\"],\"c_B\":[\"0x9\",\"0x5\"],\"productArgument\":{\"c_b\":\"0x4\",\"hadamardArgument\":{\"c_b\":[\"0x9\",\"0x5\"],\"zeroArgument\":{\"c_A_0\":\"0x9\",\"c_B_m\":\"0x5\",\"c_d\":[\"0x5\",\"0x9\",\"0x4\",\"0x1\",\"0x4\"],\"a_prime\":[\"0x3\",\"0x2\"],\"b_prime\":[\"0x4\",\"0x3\"],\"r_prime\":\"0x1\",\"s_prime\":\"0x3\",\"t_prime\":\"0x1\"}},\"singleValueProductArgument\":{\"c_d\":\"0x4\",\"c_delta\":\"0x4\",\"c_Delta\":\"0x5\",\"a_tilde\":[\"0x2\",\"0x1\"],\"b_tilde\":[\"0x2\",\"0x3\"],\"r_tilde\":\"0x1\",\"s_tilde\":\"0x0\"}},\"multiExponentiationArgument\":{\"c_A_0\":\"0x3\",\"c_B\":[\"0x1\",\"0x9\",\"0x1\",\"0x1\"],\"E\":[{\"gamma\":\"0x5\",\"phis\":[\"0x5\",\"0x1\"]},{\"gamma\":\"0x4\",\"phis\":[\"0x1\",\"0x5\"]},{\"gamma\":\"0x5\",\"phis\":[\"0x5\",\"0x5\"]},{\"gamma\":\"0x5\",\"phis\":[\"0x3\",\"0x9\"]}],\"a\":[\"0x4\",\"0x4\"],\"r\":\"0x0\",\"b\":\"0x4\",\"s\":\"0x4\",\"tau\":\"0x0\"}}";
 	}
@@ -399,4 +407,112 @@ public class SerializationUtils extends MapperSetUp {
 		}
 	}
 
+	public static ReturnCodeGenerationResponsePayload getResponsePayload(final String tenantId, final String electionEventId,
+																		 final String verificationCardSetId, final int chunkId) {
+
+		final List<ReturnCodeGenerationOutput> returnCodeGenerationOutputs = Arrays
+				.asList(getReturnCodeGenerationOutput("1"), getReturnCodeGenerationOutput("2"));
+
+		final ReturnCodeGenerationResponsePayload responsePayload = new ReturnCodeGenerationResponsePayload(tenantId, electionEventId,
+				verificationCardSetId, chunkId, gqGroup, returnCodeGenerationOutputs, 1);
+
+		// Generate random bytes for signature content and create payload signature.
+		final byte[] randomBytes = new byte[10];
+		new SecureRandom().nextBytes(randomBytes);
+		final X509Certificate certificate = generateTestCertificate();
+		final CryptoPrimitivesPayloadSignature signature = new CryptoPrimitivesPayloadSignature(randomBytes, new X509Certificate[] { certificate });
+		responsePayload.setSignature(signature);
+
+		return responsePayload;
+	}
+
+	public static ObjectNode createResponsePayloadNode(final ReturnCodeGenerationResponsePayload responsePayload) throws JsonProcessingException {
+		final ObjectNode rootNode = mapper.createObjectNode();
+		rootNode.put("tenantId", responsePayload.getTenantId());
+		rootNode.put("electionEventId", responsePayload.getElectionEventId());
+		rootNode.put("verificationCardSetId", responsePayload.getVerificationCardSetId());
+		rootNode.put("chunkId", responsePayload.getChunkId());
+
+		final JsonNode encryptionGroupNode = SerializationTestData.createEncryptionGroupNode(gqGroup);
+		rootNode.set("encryptionGroup", encryptionGroupNode);
+
+		final JsonNode returnCodeGenerationOutputsNode = mapper.readTree(mapper.writeValueAsString(responsePayload.getReturnCodeGenerationOutputs()));
+		rootNode.set("returnCodeGenerationOutputs", returnCodeGenerationOutputsNode);
+
+		rootNode.put("nodeId", 1);
+
+		final JsonNode signatureNode = SerializationTestData.createSignatureNode(responsePayload.getSignature());
+		rootNode.set("signature", signatureNode);
+
+		return rootNode;
+	}
+
+	public static ReturnCodeGenerationOutput getReturnCodeGenerationOutput(final String verificationCardId) {
+		final ElGamalMultiRecipientPublicKey voterChoiceReturnCodeGenerationPublicKey = SerializationTestData.getPublicKey();
+		final ElGamalMultiRecipientPublicKey voterVoteCastReturnCodeGenerationPublicKey = SerializationTestData.getPublicKey();
+		final ElGamalMultiRecipientCiphertext exponentiatedEncryptedPartialChoiceReturnCodes = SerializationTestData.getCiphertexts(1).get(0);
+		final ExponentiationProof encryptedPartialChoiceReturnCodeExponentiationProof = SerializationTestData.createExponentiationProof();
+		final ElGamalMultiRecipientCiphertext exponentiatedEncryptedConfirmationKey = SerializationTestData.getSinglePhiCiphertext();
+		final ExponentiationProof encryptedConfirmationKeyExponentiationProof = SerializationTestData.createExponentiationProof();
+
+		return new ReturnCodeGenerationOutput(verificationCardId, voterChoiceReturnCodeGenerationPublicKey,
+				voterVoteCastReturnCodeGenerationPublicKey, exponentiatedEncryptedPartialChoiceReturnCodes,
+				encryptedPartialChoiceReturnCodeExponentiationProof, exponentiatedEncryptedConfirmationKey,
+				encryptedConfirmationKeyExponentiationProof);
+	}
+
+	public static ReturnCodeGenerationRequestPayload getRequestPayload(final Ballot ballot, final String tenantId, final String electionEventId,
+																	   final String verificationCardSetId, final int chunkId) {
+
+		final List<ElGamalMultiRecipientCiphertext> ciphertexts = getCiphertexts(2);
+		final ElGamalMultiRecipientPublicKey verificationCardPublicKey = getPublicKey();
+		final List<ReturnCodeGenerationInput> returnCodeGenerationInputs = Arrays
+				.asList(new ReturnCodeGenerationInput("1", ciphertexts.get(0), ciphertexts.get(1), verificationCardPublicKey),
+						new ReturnCodeGenerationInput("2", ciphertexts.get(0), ciphertexts.get(1), verificationCardPublicKey));
+
+		final CombinedCorrectnessInformation combinedCorrectnessInformation = new CombinedCorrectnessInformation(ballot);
+
+		final ReturnCodeGenerationRequestPayload requestPayload = new ReturnCodeGenerationRequestPayload(tenantId, electionEventId,
+				verificationCardSetId, chunkId, gqGroup, returnCodeGenerationInputs, combinedCorrectnessInformation);
+
+		// Generate random bytes for signature content and create payload signature.
+		final byte[] randomBytes = new byte[10];
+		new SecureRandom().nextBytes(randomBytes);
+		final X509Certificate certificate = generateTestCertificate();
+		final CryptoPrimitivesPayloadSignature signature = new CryptoPrimitivesPayloadSignature(randomBytes, new X509Certificate[] { certificate });
+		requestPayload.setSignature(signature);
+
+		return requestPayload;
+	}
+
+	public static ObjectNode createRequestPayloadNode(final ReturnCodeGenerationRequestPayload requestPayload) throws JsonProcessingException {
+		final ObjectNode rootNode = mapper.createObjectNode();
+		rootNode.put("tenantId", requestPayload.getTenantId());
+		rootNode.put("electionEventId", requestPayload.getElectionEventId());
+		rootNode.put("verificationCardSetId", requestPayload.getVerificationCardSetId());
+		rootNode.put("chunkId", requestPayload.getChunkId());
+
+		final JsonNode encryptionGroupNode = SerializationTestData.createEncryptionGroupNode(gqGroup);
+		rootNode.set("encryptionGroup", encryptionGroupNode);
+
+		final JsonNode returnCodeGenerationInputsNode = mapper.readTree(mapper.writeValueAsString(requestPayload.getReturnCodeGenerationInputs()));
+		rootNode.set("returnCodeGenerationInputs", returnCodeGenerationInputsNode);
+
+		final JsonNode combinedCorrectnessInformationNode = mapper
+				.readTree(mapper.writeValueAsString(requestPayload.getCombinedCorrectnessInformation()));
+		rootNode.set("combinedCorrectnessInformation", combinedCorrectnessInformationNode);
+
+		final JsonNode signatureNode = SerializationTestData.createSignatureNode(requestPayload.getSignature());
+		rootNode.set("signature", signatureNode);
+
+		return rootNode;
+	}
+
+	public static ObjectNode createExponentiationProofNode(final ExponentiationProof exponentiationProof) {
+		final ObjectNode rootNode = mapper.createObjectNode();
+		rootNode.put("e", bigIntegerToHex(exponentiationProof.get_e().getValue()));
+		rootNode.put("z", bigIntegerToHex(exponentiationProof.get_z().getValue()));
+
+		return rootNode;
+	}
 }
