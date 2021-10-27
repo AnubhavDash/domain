@@ -20,16 +20,16 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Random;
 
-import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
+import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.MixnetShufflePayload;
+import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffleGenerator;
 import ch.post.it.evoting.cryptoprimitives.test.tools.generator.ElGamalGenerator;
-import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecryptions;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecryptionGenerator;
-import ch.post.it.evoting.cryptoprimitives.domain.mixnet.SerializationUtils;
+import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecryptions;
 
 public class MixnetShufflePayloadGenerator {
 
@@ -53,7 +53,7 @@ public class MixnetShufflePayloadGenerator {
 		// Generate random bytes for signature content and create payload signature.
 		final byte[] randomBytes = new byte[10];
 		secureRandom.nextBytes(randomBytes);
-		final X509Certificate certificate = SerializationUtils.generateTestCertificate();
+		final X509Certificate certificate = SerializationTestData.generateTestCertificate();
 		final CryptoPrimitivesPayloadSignature signature = new CryptoPrimitivesPayloadSignature(randomBytes, new X509Certificate[] { certificate });
 
 		// VerifiableDecryptions.

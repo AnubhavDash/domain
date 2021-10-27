@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
+import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.ShuffleArgument;
 
@@ -36,8 +37,8 @@ class ShuffleArgumentMixInTest extends MapperSetUp {
 
 	@BeforeAll
 	static void setUpAll() {
-		gqGroup = SerializationUtils.getGqGroup();
-		shuffleArgument = SerializationUtils.createShuffleArgument();
+		gqGroup = SerializationTestData.getGqGroup();
+		shuffleArgument = SerializationTestData.createShuffleArgument();
 	}
 
 	@Test
@@ -58,7 +59,7 @@ class ShuffleArgumentMixInTest extends MapperSetUp {
 		@Test
 		@DisplayName("serialized then deserialized gives original ShuffleArgument")
 		void cycle() throws IOException {
-			final ShuffleArgument simpleShuffleArgument = SerializationUtils.createSimplestShuffleArgument();
+			final ShuffleArgument simpleShuffleArgument = SerializationTestData.createSimplestShuffleArgument();
 
 			final String serializedShuffleArgument = mapper.writeValueAsString(simpleShuffleArgument);
 

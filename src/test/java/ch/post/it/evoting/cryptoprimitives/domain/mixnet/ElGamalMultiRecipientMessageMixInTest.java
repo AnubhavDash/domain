@@ -27,6 +27,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
+import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientMessage;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
@@ -40,11 +41,11 @@ class ElGamalMultiRecipientMessageMixInTest extends MapperSetUp {
 
 	@BeforeAll
 	static void setUpAll() {
-		gqGroup = SerializationUtils.getGqGroup();
-		elGamalMultiRecipientMessage = SerializationUtils.getMessage();
+		gqGroup = SerializationTestData.getGqGroup();
+		elGamalMultiRecipientMessage = SerializationTestData.getMessage();
 
 		// Create expected json.
-		rootNode = SerializationUtils.createMessageNode(elGamalMultiRecipientMessage);
+		rootNode = SerializationTestData.createMessageNode(elGamalMultiRecipientMessage);
 	}
 
 	@Test

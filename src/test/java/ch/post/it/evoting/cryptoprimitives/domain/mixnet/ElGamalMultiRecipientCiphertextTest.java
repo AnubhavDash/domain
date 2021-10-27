@@ -29,6 +29,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
+import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
@@ -42,9 +43,9 @@ class ElGamalMultiRecipientCiphertextTest extends MapperSetUp {
 
 	@BeforeAll
 	static void setUpAll() {
-		ciphertexts = SerializationUtils.getCiphertexts(2);
-		gqGroup = SerializationUtils.getGqGroup();
-		rootNode = SerializationUtils.createCiphertextsNode(ciphertexts);
+		ciphertexts = SerializationTestData.getCiphertexts(2);
+		gqGroup = SerializationTestData.getGqGroup();
+		rootNode = SerializationTestData.createCiphertextsNode(ciphertexts);
 	}
 
 	@Test

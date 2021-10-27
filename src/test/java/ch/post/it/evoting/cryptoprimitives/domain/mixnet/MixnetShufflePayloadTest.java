@@ -35,6 +35,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ch.post.it.evoting.cryptoprimitives.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
+import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
@@ -61,20 +62,20 @@ class MixnetShufflePayloadTest extends MapperSetUp {
 
 	@BeforeAll
 	static void setUpAll() throws JsonProcessingException {
-		gqGroup = SerializationUtils.getGqGroup();
+		gqGroup = SerializationTestData.getGqGroup();
 
-		ciphertexts = SerializationUtils.getCiphertexts(NBR_CIPHERTEXT);
+		ciphertexts = SerializationTestData.getCiphertexts(NBR_CIPHERTEXT);
 
-		final GroupVector<DecryptionProof, ZqGroup> decryptionProofs = SerializationUtils.getDecryptionProofs(ciphertexts.size());
+		final GroupVector<DecryptionProof, ZqGroup> decryptionProofs = SerializationTestData.getDecryptionProofs(ciphertexts.size());
 		verifiableDecryptions = new VerifiableDecryptions(GroupVector.from(ciphertexts), decryptionProofs);
 
-		remainingElectionPublicKey = SerializationUtils.getPublicKey();
-		previousRemainingElectionPublicKey = SerializationUtils.getPublicKey();
-		nodeElectionPublicKey = SerializationUtils.getPublicKey();
+		remainingElectionPublicKey = SerializationTestData.getPublicKey();
+		previousRemainingElectionPublicKey = SerializationTestData.getPublicKey();
+		nodeElectionPublicKey = SerializationTestData.getPublicKey();
 
 		// Generate random bytes for signature content and create payload signature.
 		secureRandom.nextBytes(randomBytes);
-		final X509Certificate certificate = SerializationUtils.generateTestCertificate();
+		final X509Certificate certificate = SerializationTestData.generateTestCertificate();
 		signature = new CryptoPrimitivesPayloadSignature(randomBytes, new X509Certificate[] { certificate });
 
 		// Create expected json.
@@ -87,22 +88,22 @@ class MixnetShufflePayloadTest extends MapperSetUp {
 		rootNode.set("verifiableDecryptions", verifiableDecryptionNode);
 
 		final ObjectNode verifiableShuffleNode = mapper.createObjectNode();
-		final ArrayNode shuffledCiphertextsNode = SerializationUtils.createCiphertextsNode(ciphertexts);
+		final ArrayNode shuffledCiphertextsNode = SerializationTestData.createCiphertextsNode(ciphertexts);
 		verifiableShuffleNode.set("shuffledCiphertexts", shuffledCiphertextsNode);
-		final JsonNode jsonNode = mapper.readTree(SerializationUtils.getShuffleArgumentJson());
+		final JsonNode jsonNode = mapper.readTree(SerializationTestData.getShuffleArgumentJson());
 		verifiableShuffleNode.set("shuffleArgument", jsonNode);
 		rootNode.set("verifiableShuffle", verifiableShuffleNode);
 
-		final ArrayNode remainingElectionPublicKeyNode = SerializationUtils.createPublicKeyNode(remainingElectionPublicKey);
+		final ArrayNode remainingElectionPublicKeyNode = SerializationTestData.createPublicKeyNode(remainingElectionPublicKey);
 		rootNode.set("remainingElectionPublicKey", remainingElectionPublicKeyNode);
-		final ArrayNode previousRemainingElectionPublicKeyNode = SerializationUtils.createPublicKeyNode(previousRemainingElectionPublicKey);
+		final ArrayNode previousRemainingElectionPublicKeyNode = SerializationTestData.createPublicKeyNode(previousRemainingElectionPublicKey);
 		rootNode.set("previousRemainingElectionPublicKey", previousRemainingElectionPublicKeyNode);
-		final ArrayNode nodeElectionPublicKeyNode = SerializationUtils.createPublicKeyNode(nodeElectionPublicKey);
+		final ArrayNode nodeElectionPublicKeyNode = SerializationTestData.createPublicKeyNode(nodeElectionPublicKey);
 		rootNode.set("nodeElectionPublicKey", nodeElectionPublicKeyNode);
 
 		rootNode.put("nodeId", 0);
 
-		final JsonNode signatureNode = SerializationUtils.createSignatureNode(signature);
+		final JsonNode signatureNode = SerializationTestData.createSignatureNode(signature);
 		rootNode.set("signature", signatureNode);
 	}
 
@@ -116,7 +117,7 @@ class MixnetShufflePayloadTest extends MapperSetUp {
 		@BeforeAll
 		void setUp() {
 			final VerifiableShuffle verifiableShuffle = new VerifiableShuffle(GroupVector.from(ciphertexts),
-					SerializationUtils.createShuffleArgument());
+					SerializationTestData.createShuffleArgument());
 
 			mixnetShufflePayload = new MixnetShufflePayload(gqGroup, verifiableDecryptions, verifiableShuffle, remainingElectionPublicKey,
 					previousRemainingElectionPublicKey, nodeElectionPublicKey, 0, signature);
