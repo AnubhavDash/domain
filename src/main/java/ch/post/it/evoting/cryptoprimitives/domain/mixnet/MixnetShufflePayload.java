@@ -17,6 +17,7 @@ package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,10 +27,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.common.collect.ImmutableList;
 
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
+import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
+import ch.post.it.evoting.cryptoprimitives.hashing.HashableBigInteger;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecryptions;
@@ -161,8 +165,10 @@ public class MixnetShufflePayload implements MixnetPayload {
 	}
 
 	@Override
-	public void setSignature(final CryptoPrimitivesPayloadSignature signature) {
+	public MixnetShufflePayload setSignature(final CryptoPrimitivesPayloadSignature signature) {
+		checkNotNull(signature);
 		this.signature = signature;
+		return this;
 	}
 
 	@Override
@@ -185,5 +191,17 @@ public class MixnetShufflePayload implements MixnetPayload {
 	public int hashCode() {
 		return Objects.hash(encryptionGroup, verifiableDecryptions, verifiableShuffle, remainingElectionPublicKey, previousRemainingElectionPublicKey,
 				nodeElectionPublicKey, nodeId, signature);
+	}
+
+	@Override
+	public ImmutableList<? extends Hashable> toHashableForm() {
+		final int numberOfVotes = this.getEncryptedVotes().size();
+		if (numberOfVotes > 1) {
+			return ImmutableList.of(this.encryptionGroup, this.verifiableDecryptions, this.verifiableShuffle, this.remainingElectionPublicKey,
+					this.previousRemainingElectionPublicKey, this.nodeElectionPublicKey, HashableBigInteger.from(BigInteger.valueOf(this.nodeId)));
+		} else {
+			return ImmutableList.of(this.encryptionGroup, this.verifiableDecryptions, this.remainingElectionPublicKey,
+					this.previousRemainingElectionPublicKey, this.nodeElectionPublicKey, HashableBigInteger.from(BigInteger.valueOf(this.nodeId)));
+		}
 	}
 }

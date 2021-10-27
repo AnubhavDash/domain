@@ -92,7 +92,7 @@ class MixnetStateTest extends MapperSetUp {
 			final CryptoPrimitivesPayloadSignature signature = new CryptoPrimitivesPayloadSignature(randomBytes, new X509Certificate[] { certificate });
 
 			final BallotBoxDetails ballotBoxDetails = new BallotBoxDetails(BALLOT_BOX_ID, ELECTION_EVENT_ID);
-			final MixnetInitialPayload initialPayload = new MixnetInitialPayload(gqGroup, ciphertexts, electionPublicKey, signature);
+			final MixnetInitialPayload initialPayload = new MixnetInitialPayload(gqGroup, ciphertexts, electionPublicKey).setSignature(signature);
 			mixnetState = new MixnetState(ballotBoxDetails, initialPayload);
 
 			// Expected MixnetInitialPayload.
