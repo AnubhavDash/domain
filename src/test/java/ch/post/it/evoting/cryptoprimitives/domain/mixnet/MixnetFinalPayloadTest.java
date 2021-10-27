@@ -31,6 +31,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
+import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
@@ -52,15 +53,15 @@ class MixnetFinalPayloadTest extends MapperSetUp {
 	@BeforeAll
 	static void setUpAll() {
 		final int nbrMessage = 4;
-		gqGroup = SerializationUtils.getGqGroup();
+		gqGroup = SerializationTestData.getGqGroup();
 
-		final VerifiableShuffle verifiableShuffle = SerializationUtils.getVerifiableShuffle(nbrMessage);
-		previousRemainingPublicKey = SerializationUtils.getPublicKey();
-		verifiablePlaintextDecryption = SerializationUtils.getVerifiablePlaintextDecryption(nbrMessage);
+		final VerifiableShuffle verifiableShuffle = SerializationTestData.getVerifiableShuffle(nbrMessage);
+		previousRemainingPublicKey = SerializationTestData.getPublicKey();
+		verifiablePlaintextDecryption = SerializationTestData.getVerifiablePlaintextDecryption(nbrMessage);
 
 		// Generate random bytes for signature content and create payload signature.
 		secureRandom.nextBytes(randomBytes);
-		final X509Certificate certificate = SerializationUtils.generateTestCertificate();
+		final X509Certificate certificate = SerializationTestData.generateTestCertificate();
 		signature = new CryptoPrimitivesPayloadSignature(randomBytes, new X509Certificate[] { certificate });
 
 		mixnetFinalPayload = new MixnetFinalPayload(gqGroup, verifiableShuffle, verifiablePlaintextDecryption, previousRemainingPublicKey, signature);
@@ -68,20 +69,20 @@ class MixnetFinalPayloadTest extends MapperSetUp {
 		// Create expected json.
 		rootNode = mapper.createObjectNode();
 
-		final JsonNode encryptionGroupNode = SerializationUtils.createEncryptionGroupNode(gqGroup);
+		final JsonNode encryptionGroupNode = SerializationTestData.createEncryptionGroupNode(gqGroup);
 		rootNode.set("encryptionGroup", encryptionGroupNode);
 
-		final ObjectNode verifiableShuffleNode = SerializationUtils.createVerifiableShuffleNode(verifiableShuffle);
+		final ObjectNode verifiableShuffleNode = SerializationTestData.createVerifiableShuffleNode(verifiableShuffle);
 		rootNode.set("verifiableShuffle", verifiableShuffleNode);
 
-		final ObjectNode verifiablePlaintextDecryptionNode = SerializationUtils
+		final ObjectNode verifiablePlaintextDecryptionNode = SerializationTestData
 				.createVerifiablePlaintextDecryptionNode(verifiablePlaintextDecryption);
 		rootNode.set("verifiablePlaintextDecryption", verifiablePlaintextDecryptionNode);
 
-		final ArrayNode previousRemainingPublicKeyNode = SerializationUtils.createPublicKeyNode(previousRemainingPublicKey);
+		final ArrayNode previousRemainingPublicKeyNode = SerializationTestData.createPublicKeyNode(previousRemainingPublicKey);
 		rootNode.set("previousRemainingElectionPublicKey", previousRemainingPublicKeyNode);
 
-		final JsonNode signatureNode = SerializationUtils.createSignatureNode(signature);
+		final JsonNode signatureNode = SerializationTestData.createSignatureNode(signature);
 		rootNode.set("signature", signatureNode);
 	}
 
@@ -118,17 +119,17 @@ class MixnetFinalPayloadTest extends MapperSetUp {
 		// Create expected json.
 		final ObjectNode rootNode = mapper.createObjectNode();
 
-		final JsonNode encryptionGroupNode = SerializationUtils.createEncryptionGroupNode(gqGroup);
+		final JsonNode encryptionGroupNode = SerializationTestData.createEncryptionGroupNode(gqGroup);
 		rootNode.set("encryptionGroup", encryptionGroupNode);
 
-		final ObjectNode verifiablePlaintextDecryptionNode = SerializationUtils
+		final ObjectNode verifiablePlaintextDecryptionNode = SerializationTestData
 				.createVerifiablePlaintextDecryptionNode(verifiablePlaintextDecryption);
 		rootNode.set("verifiablePlaintextDecryption", verifiablePlaintextDecryptionNode);
 
-		final ArrayNode previousRemainingPublicKeyNode = SerializationUtils.createPublicKeyNode(previousRemainingPublicKey);
+		final ArrayNode previousRemainingPublicKeyNode = SerializationTestData.createPublicKeyNode(previousRemainingPublicKey);
 		rootNode.set("previousRemainingElectionPublicKey", previousRemainingPublicKeyNode);
 
-		final JsonNode signatureNode = SerializationUtils.createSignatureNode(signature);
+		final JsonNode signatureNode = SerializationTestData.createSignatureNode(signature);
 		rootNode.set("signature", signatureNode);
 
 		final MixnetFinalPayload result = mapper.readValue(mapper.writeValueAsString(mixnetFinalPayload), MixnetFinalPayload.class);

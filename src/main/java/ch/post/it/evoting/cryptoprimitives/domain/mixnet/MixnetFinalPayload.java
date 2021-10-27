@@ -26,9 +26,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.common.collect.ImmutableList;
 
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
+import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
+import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
 
@@ -37,7 +40,7 @@ import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
  */
 @JsonPropertyOrder({ "encryptionGroup", "verifiableShuffle", "verifiablePlaintextDecryption", "previousRemainingElectionPublicKey" })
 @JsonDeserialize(using = MixnetFinalPayloadDeserializer.class)
-public class MixnetFinalPayload {
+public class MixnetFinalPayload implements HashableList {
 
 	@JsonProperty
 	private final GqGroup encryptionGroup;
@@ -117,8 +120,14 @@ public class MixnetFinalPayload {
 		return signature;
 	}
 
-	public void setSignature(final CryptoPrimitivesPayloadSignature signature) {
+	/**
+	 * @param signature must be not null
+	 * @return this
+	 */
+	public MixnetFinalPayload setSignature(final CryptoPrimitivesPayloadSignature signature) {
+		checkNotNull(signature);
 		this.signature = signature;
+		return this;
 	}
 
 	@Override
@@ -138,5 +147,16 @@ public class MixnetFinalPayload {
 	@Override
 	public int hashCode() {
 		return Objects.hash(encryptionGroup, verifiableShuffle, verifiablePlaintextDecryption, previousRemainingElectionPublicKey, signature);
+	}
+
+	@Override
+	public ImmutableList<? extends Hashable> toHashableForm() {
+		if (this.verifiableShuffle != null) {
+			return ImmutableList.of(this.encryptionGroup, this.verifiableShuffle, this.verifiablePlaintextDecryption.getDecryptedVotes(),
+					this.verifiablePlaintextDecryption.getDecryptionProofs(), this.previousRemainingElectionPublicKey);
+		} else {
+			return ImmutableList.of(this.encryptionGroup, this.verifiablePlaintextDecryption.getDecryptedVotes(),
+					this.verifiablePlaintextDecryption.getDecryptionProofs(), this.previousRemainingElectionPublicKey);
+		}
 	}
 }
