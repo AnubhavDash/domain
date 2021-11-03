@@ -5,18 +5,18 @@
 
 	<groupId>ch.post.it.evoting.cryptoprimitives.domain</groupId>
 	<artifactId>crypto-primitives-domain</artifactId>
-	<version>0.12.0.0</version>
+	<version>0.12.0.1</version>
 	<packaging>jar</packaging>
 	<name>Crypto Primitives Domain</name>
 
 	<properties>
 		<bouncycastle.version>1.69</bouncycastle.version>
 		<crypto-primitives.version>0.12.0.0</crypto-primitives.version>
-		<jackson.version>2.12.4</jackson.version>
+		<jackson.version>2.12.5</jackson.version>
 		<jacoco.version>0.8.7</jacoco.version>
 		<java.version>1.8</java.version>
-		<junit-jupiter.version>5.7.2</junit-jupiter.version>
-		<mockito.version>3.11.2</mockito.version>
+		<junit-jupiter.version>5.8.1</junit-jupiter.version>
+		<mockito.version>3.12.4</mockito.version>
 
 		<!-- Sonar -->
 		<sonar.scm.disabled>true</sonar.scm.disabled>
