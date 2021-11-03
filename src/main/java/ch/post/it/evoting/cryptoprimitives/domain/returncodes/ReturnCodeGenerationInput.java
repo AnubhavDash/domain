@@ -30,7 +30,8 @@ import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
 
-@JsonPropertyOrder({ "verificationCardId", "encryptedHashedSquaredConfirmationKey", "encryptedHashedSquaredPartialChoiceReturnCodes" })
+@JsonPropertyOrder({ "verificationCardId", "encryptedHashedSquaredConfirmationKey", "encryptedHashedSquaredPartialChoiceReturnCodes",
+		"verificationCardPublicKey" })
 public class ReturnCodeGenerationInput implements HashableList {
 
 	@JsonProperty
@@ -100,9 +101,10 @@ public class ReturnCodeGenerationInput implements HashableList {
 			return false;
 		}
 		final ReturnCodeGenerationInput that = (ReturnCodeGenerationInput) o;
-		return verificationCardId.equals(that.verificationCardId) && encryptedHashedSquaredConfirmationKey
-				.equals(that.encryptedHashedSquaredConfirmationKey) && encryptedHashedSquaredPartialChoiceReturnCodes
-				.equals(that.encryptedHashedSquaredPartialChoiceReturnCodes) && verificationCardPublicKey.equals(that.verificationCardPublicKey);
+		return verificationCardId.equals(that.verificationCardId) &&
+				encryptedHashedSquaredConfirmationKey.equals(that.encryptedHashedSquaredConfirmationKey) &&
+				encryptedHashedSquaredPartialChoiceReturnCodes.equals(that.encryptedHashedSquaredPartialChoiceReturnCodes) &&
+				verificationCardPublicKey.equals(that.verificationCardPublicKey);
 	}
 
 	@Override
@@ -113,8 +115,8 @@ public class ReturnCodeGenerationInput implements HashableList {
 
 	@Override
 	public ImmutableList<Hashable> toHashableForm() {
-		return ImmutableList
-				.of(HashableString.from(verificationCardId), encryptedHashedSquaredConfirmationKey, encryptedHashedSquaredPartialChoiceReturnCodes);
+		return ImmutableList.of(HashableString.from(verificationCardId), encryptedHashedSquaredConfirmationKey,
+				encryptedHashedSquaredPartialChoiceReturnCodes, verificationCardPublicKey);
 	}
 
 }
