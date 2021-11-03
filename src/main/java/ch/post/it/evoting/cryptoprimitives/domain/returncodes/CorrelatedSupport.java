@@ -15,6 +15,7 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.returncodes;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class CorrelatedSupport  {
@@ -41,5 +42,22 @@ public class CorrelatedSupport  {
 
 	public void setCorrelationId(UUID correlationId) {
 		this.correlationId = correlationId;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		CorrelatedSupport that = (CorrelatedSupport) o;
+		return Objects.equals(correlationId, that.correlationId);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(correlationId);
 	}
 }
