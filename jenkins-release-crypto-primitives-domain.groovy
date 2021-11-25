@@ -52,6 +52,8 @@ public performRelease(projectName, gitUrl, branchName, autoMerge, mavenGoals, ma
 		commonBuildPipeline.LOGGER('service version', "set new service version ${releaseVersion} in pom.xml!")
 		sh "mvn -s ${EVOTING_HOME}/.mvn/settings.xml ${commonBuildPipeline.MAVEN_POM_NAME} versions:set -DnewVersion=${releaseVersion}"
 		sh "mvn -s ${EVOTING_HOME}/.mvn/settings.xml ${commonBuildPipeline.MAVEN_POM_NAME} versions:commit"
+
+		sh 'sed -i "s/<project.build.outputTimestamp>\\(.*\\)<\\/project.build.outputTimestamp>/<project.build.outputTimestamp>$(date +\'%Y-%m-%dT%H:%M:%S+02:00\')<\\/project.build.outputTimestamp>/g" pom.xml'
 	}
 
 	// run release build
@@ -171,6 +173,8 @@ def resetPomVersion(projectName, workspace, gitUrl, branchName, releaseVersion, 
 	commonBuildPipeline.LOGGER('service version', "set snapshot service version ${newSnapshotVersion} in pom.xml!")
 	sh "mvn -s ${EVOTING_HOME}/.mvn/settings.xml ${commonBuildPipeline.MAVEN_POM_NAME} versions:set -DnewVersion=${newSnapshotVersion}"
 	sh "mvn -s ${EVOTING_HOME}/.mvn/settings.xml ${commonBuildPipeline.MAVEN_POM_NAME} versions:commit"
+
+	sh 'sed -i "s/<project.build.outputTimestamp>\\(.*\\)<\\/project.build.outputTimestamp>/<project.build.outputTimestamp>$(date +\'%Y-%m-%dT%H:%M:%S+02:00\')<\\/project.build.outputTimestamp>/g" pom.xml'
 
 	//Add
 	sh "git pull && git add --all"
