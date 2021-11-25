@@ -296,6 +296,7 @@ public class SerializationTestData extends MapperSetUp {
 		return rootNode;
 	}
 
+
 	// ===============================================================================================================================================
 	// Arguments creation.
 	// ===============================================================================================================================================
@@ -407,7 +408,7 @@ public class SerializationTestData extends MapperSetUp {
 	}
 
 	public static ReturnCodeGenerationResponsePayload getResponsePayload(final String tenantId, final String electionEventId,
-			final String verificationCardSetId, final int chunkId) {
+																		 final String verificationCardSetId, final int chunkId) {
 
 		final List<ReturnCodeGenerationOutput> returnCodeGenerationOutputs = Arrays
 				.asList(getReturnCodeGenerationOutput("1"), getReturnCodeGenerationOutput("2"));
@@ -461,9 +462,7 @@ public class SerializationTestData extends MapperSetUp {
 	}
 
 	public static ReturnCodeGenerationRequestPayload getRequestPayload(final Ballot ballot, final String tenantId, final String electionEventId,
-			final String verificationCardSetId, final int chunkId) {
-
-		final List<String> partialChoiceReturnCodesAllowList = Arrays.asList("a", "b", "c", "d");
+																	   final String verificationCardSetId, final int chunkId) {
 
 		final List<ElGamalMultiRecipientCiphertext> ciphertexts = getCiphertexts(2);
 		final ElGamalMultiRecipientPublicKey verificationCardPublicKey = getPublicKey();
@@ -474,8 +473,7 @@ public class SerializationTestData extends MapperSetUp {
 		final CombinedCorrectnessInformation combinedCorrectnessInformation = new CombinedCorrectnessInformation(ballot);
 
 		final ReturnCodeGenerationRequestPayload requestPayload = new ReturnCodeGenerationRequestPayload(tenantId, electionEventId,
-				verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId, gqGroup, returnCodeGenerationInputs,
-				combinedCorrectnessInformation);
+				verificationCardSetId, chunkId, gqGroup, returnCodeGenerationInputs, combinedCorrectnessInformation);
 
 		// Generate random bytes for signature content and create payload signature.
 		final byte[] randomBytes = new byte[10];
@@ -492,11 +490,6 @@ public class SerializationTestData extends MapperSetUp {
 		rootNode.put("tenantId", requestPayload.getTenantId());
 		rootNode.put("electionEventId", requestPayload.getElectionEventId());
 		rootNode.put("verificationCardSetId", requestPayload.getVerificationCardSetId());
-
-		final JsonNode partialChoiceReturnCodesAllowListNode = mapper.readTree(
-				mapper.writeValueAsString(requestPayload.getPartialChoiceReturnCodesAllowList()));
-		rootNode.set("partialChoiceReturnCodesAllowList", partialChoiceReturnCodesAllowListNode);
-
 		rootNode.put("chunkId", requestPayload.getChunkId());
 
 		final JsonNode encryptionGroupNode = SerializationTestData.createEncryptionGroupNode(gqGroup);
