@@ -44,20 +44,16 @@ public class ReturnCodeGenerationRequestPayloadDeserializer extends JsonDeserial
 		final String verificationCardSetId = mapper.readValue(node.get("verificationCardSetId").toString(), String.class);
 		final int chunkId = mapper.readValue(node.get("chunkId").toString(), Integer.class);
 
-		final List<String> partialChoiceReturnCodesAllowList = Arrays.asList(
-				mapper.readValue(node.get("partialChoiceReturnCodesAllowList").toString(), String[].class));
-
 		final List<ReturnCodeGenerationInput> returnCodeGenerationInputs = Arrays.asList(mapper.reader().withAttribute("group", gqGroup)
 				.readValue(node.get("returnCodeGenerationInputs").toString(), ReturnCodeGenerationInput[].class));
 
 		final CombinedCorrectnessInformation combinedCorrectnessInformation = mapper.reader().withAttribute("group", gqGroup)
 				.readValue(node.get("combinedCorrectnessInformation").toString(), CombinedCorrectnessInformation.class);
 
-		final CryptoPrimitivesPayloadSignature signature = mapper.reader()
-				.readValue(node.get("signature").toString(), CryptoPrimitivesPayloadSignature.class);
+		final CryptoPrimitivesPayloadSignature signature = mapper.reader().readValue(node.get("signature").toString(), CryptoPrimitivesPayloadSignature.class);
 
-		return new ReturnCodeGenerationRequestPayload(tenantId, electionEventId, verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId,
-				gqGroup, returnCodeGenerationInputs, combinedCorrectnessInformation, signature);
+		return new ReturnCodeGenerationRequestPayload(tenantId, electionEventId, verificationCardSetId, chunkId, gqGroup, returnCodeGenerationInputs,
+				combinedCorrectnessInformation, signature);
 	}
 
 }
