@@ -20,7 +20,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -36,8 +35,8 @@ import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
-@JsonPropertyOrder({ "tenantId", "electionEventId", "verificationCardSetId", "partialChoiceReturnCodesAllowList", "chunkId", "encryptionGroup",
-		"returnCodeGenerationInputs", "combinedCorrectnessInformation", "signature" })
+@JsonPropertyOrder({ "tenantId", "electionEventId", "verificationCardSetId", "chunkId", "encryptionGroup", "returnCodeGenerationInputs",
+		"combinedCorrectnessInformation", "signature" })
 @JsonDeserialize(using = ReturnCodeGenerationRequestPayloadDeserializer.class)
 public class ReturnCodeGenerationRequestPayload implements HashableList {
 
@@ -49,9 +48,6 @@ public class ReturnCodeGenerationRequestPayload implements HashableList {
 
 	@JsonProperty
 	private final String verificationCardSetId;
-
-	@JsonProperty
-	private final List<String> partialChoiceReturnCodesAllowList;
 
 	@JsonProperty
 	private final int chunkId;
@@ -76,8 +72,6 @@ public class ReturnCodeGenerationRequestPayload implements HashableList {
 			final String electionEventId,
 			@JsonProperty("verificationCardSetId")
 			final String verificationCardSetId,
-			@JsonProperty("partialChoiceReturnCodesAllowList")
-			final List<String> partialChoiceReturnCodesAllowList,
 			@JsonProperty("chunkId")
 			final int chunkId,
 			@JsonProperty("encryptionGroup")
@@ -92,7 +86,6 @@ public class ReturnCodeGenerationRequestPayload implements HashableList {
 		this.tenantId = checkNotNull(tenantId);
 		this.electionEventId = checkNotNull(electionEventId);
 		this.verificationCardSetId = checkNotNull(verificationCardSetId);
-		this.partialChoiceReturnCodesAllowList = checkNotNull(partialChoiceReturnCodesAllowList);
 		this.chunkId = chunkId;
 		this.encryptionGroup = checkNotNull(encryptionGroup);
 		this.returnCodeGenerationInputs = checkNotNull(returnCodeGenerationInputs);
@@ -104,13 +97,12 @@ public class ReturnCodeGenerationRequestPayload implements HashableList {
 	 * Creates an unsigned payload.
 	 */
 	public ReturnCodeGenerationRequestPayload(final String tenantId, final String electionEventId, final String verificationCardSetId,
-			final List<String> partialChoiceReturnCodesAllowList, final int chunkId, final GqGroup encryptionGroup,
-			final List<ReturnCodeGenerationInput> returnCodeGenerationInputs, final CombinedCorrectnessInformation combinedCorrectnessInformation) {
+			final int chunkId, final GqGroup encryptionGroup, final List<ReturnCodeGenerationInput> returnCodeGenerationInputs,
+			final CombinedCorrectnessInformation combinedCorrectnessInformation) {
 
 		this.tenantId = checkNotNull(tenantId);
 		this.electionEventId = checkNotNull(electionEventId);
 		this.verificationCardSetId = checkNotNull(verificationCardSetId);
-		this.partialChoiceReturnCodesAllowList = checkNotNull(partialChoiceReturnCodesAllowList);
 		this.chunkId = chunkId;
 		this.encryptionGroup = checkNotNull(encryptionGroup);
 		this.returnCodeGenerationInputs = checkNotNull(returnCodeGenerationInputs);
@@ -127,10 +119,6 @@ public class ReturnCodeGenerationRequestPayload implements HashableList {
 
 	public String getVerificationCardSetId() {
 		return verificationCardSetId;
-	}
-
-	public List<String> getPartialChoiceReturnCodesAllowList() {
-		return partialChoiceReturnCodesAllowList;
 	}
 
 	public int getChunkId() {
@@ -166,31 +154,22 @@ public class ReturnCodeGenerationRequestPayload implements HashableList {
 			return false;
 		}
 		final ReturnCodeGenerationRequestPayload that = (ReturnCodeGenerationRequestPayload) o;
-		return chunkId == that.chunkId
-				&& tenantId.equals(that.tenantId)
-				&& electionEventId.equals(that.electionEventId)
-				&& verificationCardSetId.equals(that.verificationCardSetId)
-				&& partialChoiceReturnCodesAllowList.equals(that.partialChoiceReturnCodesAllowList)
-				&& encryptionGroup.equals(that.encryptionGroup)
-				&& returnCodeGenerationInputs.equals(that.returnCodeGenerationInputs)
-				&& combinedCorrectnessInformation.equals(that.combinedCorrectnessInformation)
-				&& Objects.equals(signature, that.signature);
+		return chunkId == that.chunkId && tenantId.equals(that.tenantId) && electionEventId.equals(that.electionEventId) && verificationCardSetId
+				.equals(that.verificationCardSetId) && encryptionGroup.equals(that.encryptionGroup) && returnCodeGenerationInputs
+				.equals(that.returnCodeGenerationInputs) && combinedCorrectnessInformation.equals(that.combinedCorrectnessInformation) && Objects
+				.equals(signature, that.signature);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(tenantId, electionEventId, verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId, encryptionGroup,
-				returnCodeGenerationInputs, combinedCorrectnessInformation, signature);
+		return Objects.hash(tenantId, electionEventId, verificationCardSetId, chunkId, encryptionGroup, returnCodeGenerationInputs,
+				combinedCorrectnessInformation, signature);
 	}
 
 	@Override
 	public ImmutableList<? extends Hashable> toHashableForm() {
-		final List<HashableString> hashableAllowList = partialChoiceReturnCodesAllowList.stream()
-				.map(HashableString::from)
-				.collect(Collectors.toList());
-
 		return ImmutableList.of(HashableString.from(tenantId), HashableString.from(electionEventId), HashableString.from(verificationCardSetId),
-				HashableList.from(hashableAllowList), HashableBigInteger.from(BigInteger.valueOf(chunkId)), encryptionGroup,
-				HashableList.from(returnCodeGenerationInputs), combinedCorrectnessInformation);
+				HashableBigInteger.from(BigInteger.valueOf(chunkId)), encryptionGroup, HashableList.from(returnCodeGenerationInputs),
+				combinedCorrectnessInformation);
 	}
 }
