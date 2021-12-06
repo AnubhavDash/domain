@@ -83,12 +83,12 @@ class CombinedCorrectnessInformationTest {
 				Arguments.of(BALLOT_2_JSON, combinedCorrectnessInformation2, 1, "8522fc66faf2452e8062abe247ef5a24"),
 				Arguments.of(BALLOT_2_JSON, combinedCorrectnessInformation2, 2, "4c432e954efa4d8dbc5c5a8416d2e054"),
 
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 0, "e65ce1ebeb9840a79c952a6ceae4c681"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 6, "e65ce1ebeb9840a79c952a6ceae4c681"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 7, "e727a2d916774758bd0c6f256c5ae241"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 8, "afaf857e8612471aa019f4b4ae0c4cd5"),
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 0, "e727a2d916774758bd0c6f256c5ae241"),
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 1, "e65ce1ebeb9840a79c952a6ceae4c681"),
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 7, "e65ce1ebeb9840a79c952a6ceae4c681"),
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 8, "117bad3080214e94afe1abc811ebb2fb"),
 				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 9, "afaf857e8612471aa019f4b4ae0c4cd5"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 10, "117bad3080214e94afe1abc811ebb2fb"));
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 10, "afaf857e8612471aa019f4b4ae0c4cd5"));
 	}
 
 	private static Stream<Arguments> getCorrectnessIdForSelectionIndexOutOfBoundInputTestSource() {
@@ -118,22 +118,19 @@ class CombinedCorrectnessInformationTest {
 				Arguments.of(BALLOT_2_JSON, combinedCorrectnessInformation2, 8, "4c432e954efa4d8dbc5c5a8416d2e054"),
 				Arguments.of(BALLOT_2_JSON, combinedCorrectnessInformation2, 9, "4c432e954efa4d8dbc5c5a8416d2e054"),
 
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 0, "e65ce1ebeb9840a79c952a6ceae4c681"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 1, "e65ce1ebeb9840a79c952a6ceae4c681"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 97, "e65ce1ebeb9840a79c952a6ceae4c681"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 98, "e65ce1ebeb9840a79c952a6ceae4c681"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 99, "e727a2d916774758bd0c6f256c5ae241"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 100, "e727a2d916774758bd0c6f256c5ae241"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 105, "e727a2d916774758bd0c6f256c5ae241"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 106, "e727a2d916774758bd0c6f256c5ae241"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 107, "afaf857e8612471aa019f4b4ae0c4cd5"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 108, "afaf857e8612471aa019f4b4ae0c4cd5"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 115, "afaf857e8612471aa019f4b4ae0c4cd5"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 116, "afaf857e8612471aa019f4b4ae0c4cd5"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 117, "117bad3080214e94afe1abc811ebb2fb"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 118, "117bad3080214e94afe1abc811ebb2fb"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 122, "117bad3080214e94afe1abc811ebb2fb"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 123, "117bad3080214e94afe1abc811ebb2fb"));
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 0, "e727a2d916774758bd0c6f256c5ae241"),
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 1, "e727a2d916774758bd0c6f256c5ae241"),
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 7, "e727a2d916774758bd0c6f256c5ae241"),
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 8, "e65ce1ebeb9840a79c952a6ceae4c681"),
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 9, "e65ce1ebeb9840a79c952a6ceae4c681"),
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 105, "e65ce1ebeb9840a79c952a6ceae4c681"),
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 106, "e65ce1ebeb9840a79c952a6ceae4c681"),
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 107, "117bad3080214e94afe1abc811ebb2fb"),
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 108, "117bad3080214e94afe1abc811ebb2fb"),
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 113, "117bad3080214e94afe1abc811ebb2fb"),
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 114, "afaf857e8612471aa019f4b4ae0c4cd5"),
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 122, "afaf857e8612471aa019f4b4ae0c4cd5"),
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 123, "afaf857e8612471aa019f4b4ae0c4cd5"));
 	}
 
 	private static Stream<Arguments> getCorrectnessIdForVotingOptionIndexOutOfBoundInputTestSource() {
@@ -143,12 +140,13 @@ class CombinedCorrectnessInformationTest {
 	}
 
 	private static Stream<Arguments> combinedCorrectnessInformationFromJsonTestSource() {
-		return Stream.of(Arguments
-						.of("combinedCorrectnessInformation.json", 0, "e7c8b3ac09f64d95b08a6f451e0608fe", 1, "e7c8b3ac09f64d95b08a6f451e0608fe", 13, 432),
+		return Stream.of(
+				Arguments.of("combinedCorrectnessInformation.json", 0, "e7c8b3ac09f64d95b08a6f451e0608fe", 1, "e7c8b3ac09f64d95b08a6f451e0608fe", 13,
+						432),
 				Arguments.of("combinedCorrectnessInformation2.json", 0, "2d22a5bfa0f0406a9812576f925e1cea", 1, "2d22a5bfa0f0406a9812576f925e1cea", 3,
-						10), Arguments
-						.of("combinedCorrectnessInformation3.json", 0, "e65ce1ebeb9840a79c952a6ceae4c681", 8, "e65ce1ebeb9840a79c952a6ceae4c681", 11,
-								124));
+						10),
+				Arguments.of("combinedCorrectnessInformation3.json", 0, "e727a2d916774758bd0c6f256c5ae241", 1, "e727a2d916774758bd0c6f256c5ae241", 11,
+						124));
 	}
 
 	private static Ballot getBallotFromResourceName(final String resourceName) throws IOException {
@@ -244,15 +242,15 @@ class CombinedCorrectnessInformationTest {
 	}
 
 	@Test
-	@DisplayName("built from a malformed ballot with missing questions, throws a CombinedCorrectnessInformationException.")
+	@DisplayName("built from a malformed ballot with an exceeded questions size, throws a CombinedCorrectnessInformationException.")
 	void combinedCorrectnessInformationExceptionTest() throws IOException {
-		final Ballot ballotNoCorrespondingQuestionFound = getBallotFromResourceName("ballotNoCorrespondingQuestionFound.json");
+		final Ballot ballotNoCorrespondingQuestionFound = getBallotFromResourceName("ballotExceededQuestionsSize.json");
 
 		final CombinedCorrectnessInformationException combinedCorrectnessInformationException = assertThrows(
 				CombinedCorrectnessInformationException.class, () -> new CombinedCorrectnessInformation(ballotNoCorrespondingQuestionFound));
 
 		assertEquals(
-				"No corresponding question found in contest with id 17966dc82c0841db996b0c718a3255e3 for attribute with id acc7fffa007e413d8c2c51f80039f810.",
+				"A contest with template \"listsAndCandidates\" cannot have more than 2 questions. [contestId=7868bd2dd48e4f6093d3b14d84720f79, questions size of contest=3]",
 				combinedCorrectnessInformationException.getMessage());
 	}
 
