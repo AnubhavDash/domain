@@ -5,12 +5,12 @@
 
 	<groupId>ch.post.it.evoting.cryptoprimitives.domain</groupId>
 	<artifactId>crypto-primitives-domain</artifactId>
-	<version>0.12.0.4</version>
+	<version>0.12.0.5</version>
 	<packaging>jar</packaging>
 	<name>Crypto Primitives Domain</name>
 
 	<properties>
-		<project.build.outputTimestamp>2021-11-26T09:59:57+02:00</project.build.outputTimestamp>
+		<project.build.outputTimestamp>2021-12-06T13:53:36+02:00</project.build.outputTimestamp>
 
 		<bouncycastle.version>1.69</bouncycastle.version>
 		<crypto-primitives.version>0.12.0.0</crypto-primitives.version>
