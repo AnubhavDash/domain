@@ -1,0 +1,15 @@
+{
+  "id": "a5c0305db01142e786533cb48df1c794",
+  "defaultTitle": "ballot_xyz",
+  "defaultDescription": "ballot_xyz",
+  "alias": "ballot_2",
+  "electionEvent": {
+	"id": "df004676c0914e1ba69558f466663cec"
+  },
+  "contests": [],
+  "status": "SIGNED",
+  "details": "Synchronized",
+  "synchronized": "true",
+  "ballotBoxes": "CT-CH-1",
+  "signedObject": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+}
