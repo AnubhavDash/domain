@@ -18,9 +18,13 @@ package ch.post.it.evoting.cryptoprimitives.domain.election;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.stream.Stream;
 
@@ -41,37 +45,42 @@ class CombinedCorrectnessInformationTest {
 	private static final String BALLOT_JSON = "ballot.json";
 	private static final String BALLOT_2_JSON = "ballot2.json";
 	private static final String BALLOT_3_JSON = "ballot3.json";
+	private static final String BALLOT_4_JSON = "ballot4.json";
+	private static final String RESOURCES_FOLDER_NAME = "CombinedCorrectnessInformationTest";
 
 	private static Ballot ballot;
+	private static Ballot ballot2;
 	private static Ballot ballot3;
+	private static Ballot ballot4;
 
 	private static CombinedCorrectnessInformation combinedCorrectnessInformation;
 	private static CombinedCorrectnessInformation combinedCorrectnessInformation2;
 	private static CombinedCorrectnessInformation combinedCorrectnessInformation3;
+	private static CombinedCorrectnessInformation combinedCorrectnessInformation4;
 
 	@BeforeAll
 	static void setUpAll() throws IOException {
 		ballot = getBallotFromResourceName(BALLOT_JSON);
 		ballot3 = getBallotFromResourceName(BALLOT_3_JSON);
-
-		final Ballot ballot2 = getBallotFromResourceName(BALLOT_2_JSON);
+		ballot2 = getBallotFromResourceName(BALLOT_2_JSON);
+		ballot4 = getBallotFromResourceName(BALLOT_4_JSON);
 
 		combinedCorrectnessInformation = new CombinedCorrectnessInformation(ballot);
 		combinedCorrectnessInformation2 = new CombinedCorrectnessInformation(ballot2);
 		combinedCorrectnessInformation3 = new CombinedCorrectnessInformation(ballot3);
+		combinedCorrectnessInformation4 = new CombinedCorrectnessInformation(ballot4);
 	}
 
 	private static Stream<Arguments> getTotalNumberOfSelectionsTestSource() {
-
-		return Stream
-				.of(Arguments.of(BALLOT_JSON, combinedCorrectnessInformation, 13), Arguments.of(BALLOT_2_JSON, combinedCorrectnessInformation2, 3),
-						Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 11));
+		return Stream.of(Arguments.of(BALLOT_JSON, combinedCorrectnessInformation, 13),
+				Arguments.of(BALLOT_2_JSON, combinedCorrectnessInformation2, 3), Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 11),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 6));
 	}
 
 	private static Stream<Arguments> getTotalNumberOfVotingOptionsTestSource() {
-		return Stream
-				.of(Arguments.of(BALLOT_JSON, combinedCorrectnessInformation, 432), Arguments.of(BALLOT_2_JSON, combinedCorrectnessInformation2, 10),
-						Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 124));
+		return Stream.of(Arguments.of(BALLOT_JSON, combinedCorrectnessInformation, 432),
+				Arguments.of(BALLOT_2_JSON, combinedCorrectnessInformation2, 10), Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 124),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 25));
 	}
 
 	private static Stream<Arguments> getCorrectnessIdForSelectionIndexTestSource() {
@@ -88,13 +97,22 @@ class CombinedCorrectnessInformationTest {
 				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 7, "e65ce1ebeb9840a79c952a6ceae4c681"),
 				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 8, "117bad3080214e94afe1abc811ebb2fb"),
 				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 9, "afaf857e8612471aa019f4b4ae0c4cd5"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 10, "afaf857e8612471aa019f4b4ae0c4cd5"));
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 10, "afaf857e8612471aa019f4b4ae0c4cd5"),
+
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 0, "b3053227e0b144b0ae4126f7ce24f4ab"),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 1, "7340e7a7697c4223a7aade1a37b1575b"),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 2, "65ee9ef89a9d413fa4efd6cfc4e69011"),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 3, "235c5ea9ff57489aa193608dcc802328"),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 4, "54013b5029d84b0cbb31349d4f68a27a"),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 5, "54013b5029d84b0cbb31349d4f68a27a")
+
+		);
 	}
 
 	private static Stream<Arguments> getCorrectnessIdForSelectionIndexOutOfBoundInputTestSource() {
-		return Stream
-				.of(Arguments.of(BALLOT_JSON, combinedCorrectnessInformation, 13), Arguments.of(BALLOT_2_JSON, combinedCorrectnessInformation2, 3),
-						Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 11));
+		return Stream.of(Arguments.of(BALLOT_JSON, combinedCorrectnessInformation, 13),
+				Arguments.of(BALLOT_2_JSON, combinedCorrectnessInformation2, 3), Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 11),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 6));
 	}
 
 	private static Stream<Arguments> getCorrectnessIdForVotingOptionIndexTestSource() {
@@ -130,13 +148,26 @@ class CombinedCorrectnessInformationTest {
 				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 113, "117bad3080214e94afe1abc811ebb2fb"),
 				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 114, "afaf857e8612471aa019f4b4ae0c4cd5"),
 				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 122, "afaf857e8612471aa019f4b4ae0c4cd5"),
-				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 123, "afaf857e8612471aa019f4b4ae0c4cd5"));
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 123, "afaf857e8612471aa019f4b4ae0c4cd5"),
+
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 0, "b3053227e0b144b0ae4126f7ce24f4ab"),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 2, "b3053227e0b144b0ae4126f7ce24f4ab"),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 3, "7340e7a7697c4223a7aade1a37b1575b"),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 5, "7340e7a7697c4223a7aade1a37b1575b"),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 6, "65ee9ef89a9d413fa4efd6cfc4e69011"),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 8, "65ee9ef89a9d413fa4efd6cfc4e69011"),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 9, "235c5ea9ff57489aa193608dcc802328"),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 11, "235c5ea9ff57489aa193608dcc802328"),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 12, "54013b5029d84b0cbb31349d4f68a27a"),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 24, "54013b5029d84b0cbb31349d4f68a27a")
+
+		);
 	}
 
 	private static Stream<Arguments> getCorrectnessIdForVotingOptionIndexOutOfBoundInputTestSource() {
-		return Stream
-				.of(Arguments.of(BALLOT_JSON, combinedCorrectnessInformation, 432), Arguments.of(BALLOT_2_JSON, combinedCorrectnessInformation2, 10),
-						Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 124));
+		return Stream.of(Arguments.of(BALLOT_JSON, combinedCorrectnessInformation, 432),
+				Arguments.of(BALLOT_2_JSON, combinedCorrectnessInformation2, 10), Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 124),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 25));
 	}
 
 	private static Stream<Arguments> combinedCorrectnessInformationFromJsonTestSource() {
@@ -146,16 +177,32 @@ class CombinedCorrectnessInformationTest {
 				Arguments.of("combinedCorrectnessInformation2.json", 0, "2d22a5bfa0f0406a9812576f925e1cea", 1, "2d22a5bfa0f0406a9812576f925e1cea", 3,
 						10),
 				Arguments.of("combinedCorrectnessInformation3.json", 0, "e727a2d916774758bd0c6f256c5ae241", 1, "e727a2d916774758bd0c6f256c5ae241", 11,
-						124));
+						124),
+				Arguments.of("combinedCorrectnessInformation4.json", 0, "b3053227e0b144b0ae4126f7ce24f4ab", 1, "b3053227e0b144b0ae4126f7ce24f4ab", 6,
+						25)
+
+		);
+	}
+
+	private static Stream<Arguments> combinedCorrectnessInformationJsonMatchingTestSource() {
+		return Stream.of(Arguments.of("ballot.json", ballot, "combinedCorrectnessInformation.json"),
+				Arguments.of("ballot2.json", ballot2, "combinedCorrectnessInformation2.json"),
+				Arguments.of("ballot3.json", ballot3, "combinedCorrectnessInformation3.json"),
+				Arguments.of("ballot4.json", ballot4, "combinedCorrectnessInformation4.json")
+
+		);
 	}
 
 	private static Ballot getBallotFromResourceName(final String resourceName) throws IOException {
-		return new ObjectMapper().readValue(CombinedCorrectnessInformationTest.class.getClassLoader().getResource(resourceName), Ballot.class);
+		return new ObjectMapper().readValue(
+				CombinedCorrectnessInformationTest.class.getClassLoader().getResource(RESOURCES_FOLDER_NAME + File.separator + resourceName),
+				Ballot.class);
 	}
 
 	private static CombinedCorrectnessInformation getCombinedCorrectnessInformationFromJson(final String jsonFilename) throws IOException {
-		return new ObjectMapper()
-				.readValue(CombinedCorrectnessInformationTest.class.getClassLoader().getResource(jsonFilename), CombinedCorrectnessInformation.class);
+		return new ObjectMapper().readValue(
+				CombinedCorrectnessInformationTest.class.getClassLoader().getResource(RESOURCES_FOLDER_NAME + File.separator + jsonFilename),
+				CombinedCorrectnessInformation.class);
 	}
 
 	@ParameterizedTest(name = "built from {0} expected value {2}.")
@@ -243,14 +290,87 @@ class CombinedCorrectnessInformationTest {
 
 	@Test
 	@DisplayName("built from a malformed ballot with an exceeded questions size, throws a CombinedCorrectnessInformationException.")
-	void combinedCorrectnessInformationExceptionTest() throws IOException {
-		final Ballot ballotNoCorrespondingQuestionFound = getBallotFromResourceName("ballotExceededQuestionsSize.json");
+	void exceededQuestionsSizeCombinedCorrectnessInformationExceptionTest() throws IOException {
+		final Ballot ballotExceededQuestionsSize = getBallotFromResourceName("ballotExceededQuestionsSize.json");
+
+		final CombinedCorrectnessInformationException combinedCorrectnessInformationException = assertThrows(
+				CombinedCorrectnessInformationException.class, () -> new CombinedCorrectnessInformation(ballotExceededQuestionsSize));
+
+		assertEquals(
+				"A contest with template \"listsAndCandidates\" cannot have more than 2 questions. [contestId=7868bd2dd48e4f6093d3b14d84720f79, questions size of contest=3]",
+				combinedCorrectnessInformationException.getMessage());
+	}
+
+	@Test
+	@DisplayName("built from a malformed ballot with an unknown contest's template, throws a CombinedCorrectnessInformationException.")
+	void unknownContestTemplateCombinedCorrectnessInformationExceptionTest() throws IOException {
+		final Ballot ballotNoCorrespondingQuestionFound = getBallotFromResourceName("ballotUnknownContestTemplate.json");
 
 		final CombinedCorrectnessInformationException combinedCorrectnessInformationException = assertThrows(
 				CombinedCorrectnessInformationException.class, () -> new CombinedCorrectnessInformation(ballotNoCorrespondingQuestionFound));
 
+		assertEquals("Contests with template \"unknownTemplate\" are not supported. [contestId=e7446a430b244a9bb12da153e35601cd]",
+				combinedCorrectnessInformationException.getMessage());
+	}
+
+	@Test
+	@DisplayName("built from a malformed ballot with an attribute without a related question, throws a CombinedCorrectnessInformationException.")
+	void attributeWithoutRelatedQuestionCombinedCorrectnessInformationExceptionTest() throws IOException {
+		final Ballot ballotNoCorrespondingAttributeQuestion = getBallotFromResourceName("ballotNoCorrespondingAttributeQuestion.json");
+
+		final CombinedCorrectnessInformationException combinedCorrectnessInformationException = assertThrows(
+				CombinedCorrectnessInformationException.class, () -> new CombinedCorrectnessInformation(ballotNoCorrespondingAttributeQuestion));
+
 		assertEquals(
-				"A contest with template \"listsAndCandidates\" cannot have more than 2 questions. [contestId=7868bd2dd48e4f6093d3b14d84720f79, questions size of contest=3]",
+				"No corresponding question found in contest with id f64da23c11e641a1ac1defa897c3d279 for attribute with id 2d22a5bfa0f0406a9812576f925e1ceb.",
+				combinedCorrectnessInformationException.getMessage());
+	}
+
+	@Test
+	@DisplayName("built from a malformed ballot with no contests, throws a CombinedCorrectnessInformationException.")
+	void noContestsCombinedCorrectnessInformationExceptionTest() throws IOException {
+		final Ballot ballotNoContests = getBallotFromResourceName("ballotNoContests.json");
+
+		final CombinedCorrectnessInformationException combinedCorrectnessInformationException = assertThrows(
+				CombinedCorrectnessInformationException.class, () -> new CombinedCorrectnessInformation(ballotNoContests));
+
+		assertEquals("The provided contests for the ballot with id a5c0305db01142e786533cb48df1c794 are null.",
+				combinedCorrectnessInformationException.getMessage());
+	}
+
+	@Test
+	@DisplayName("built from a malformed ballot with empty contests, throws a CombinedCorrectnessInformationException.")
+	void emptyContestsCombinedCorrectnessInformationExceptionTest() throws IOException {
+		final Ballot ballotEmptyContests = getBallotFromResourceName("ballotEmptyContests.json");
+
+		final CombinedCorrectnessInformationException combinedCorrectnessInformationException = assertThrows(
+				CombinedCorrectnessInformationException.class, () -> new CombinedCorrectnessInformation(ballotEmptyContests));
+
+		assertEquals("The provided contests for the ballot with id a5c0305db01142e786533cb48df1c794 are empty.",
+				combinedCorrectnessInformationException.getMessage());
+	}
+
+	@Test
+	@DisplayName("built from a malformed ballot with a contest with no questions, throws a CombinedCorrectnessInformationException.")
+	void noQuestionsCombinedCorrectnessInformationExceptionTest() throws IOException {
+		final Ballot ballotContestNoQuestions = getBallotFromResourceName("ballotContestNoQuestions.json");
+
+		final CombinedCorrectnessInformationException combinedCorrectnessInformationException = assertThrows(
+				CombinedCorrectnessInformationException.class, () -> new CombinedCorrectnessInformation(ballotContestNoQuestions));
+
+		assertEquals("The provided questions for the contest with id 17966dc82c0841db996b0c718a3255e3 are null.",
+				combinedCorrectnessInformationException.getMessage());
+	}
+
+	@Test
+	@DisplayName("built from a malformed ballot with a contest with empty questions, throws a CombinedCorrectnessInformationException.")
+	void emptyQuestionsCombinedCorrectnessInformationExceptionTest() throws IOException {
+		final Ballot ballotContestEmptyQuestions = getBallotFromResourceName("ballotContestEmptyQuestions.json");
+
+		final CombinedCorrectnessInformationException combinedCorrectnessInformationException = assertThrows(
+				CombinedCorrectnessInformationException.class, () -> new CombinedCorrectnessInformation(ballotContestEmptyQuestions));
+
+		assertEquals("The provided questions for the contest with id 17966dc82c0841db996b0c718a3255e3 are empty.",
 				combinedCorrectnessInformationException.getMessage());
 	}
 
@@ -263,17 +383,18 @@ class CombinedCorrectnessInformationTest {
 		assertDoesNotThrow(() -> new ObjectMapper().writeValueAsString(combinedCorrectnessInformation));
 	}
 
-	@Test
+	@ParameterizedTest(name = "built from {0}.")
+	@MethodSource("combinedCorrectnessInformationJsonMatchingTestSource")
 	@DisplayName("built from a valid ballot and mapped to a JSON string, matches the expected JSON string.")
-	void combinedCorrectnessInformationJsonMatchingTest() throws IOException {
+	void combinedCorrectnessInformationJsonMatchingTest(final String ballotJsonFileName, final Ballot ballot,
+			final String combinedCorrectnessInformationJsonFileName) throws IOException {
 
-		final CombinedCorrectnessInformation combinedCorrectnessInformation = new CombinedCorrectnessInformation(ballot3);
-
+		final CombinedCorrectnessInformation combinedCorrectnessInformation = new CombinedCorrectnessInformation(ballot);
 		final CombinedCorrectnessInformation combinedCorrectnessInformationRebuiltFromJSON = getCombinedCorrectnessInformationFromJson(
-				"combinedCorrectnessInformation3.json");
+				combinedCorrectnessInformationJsonFileName);
 
 		assertEquals(new ObjectMapper().writeValueAsString(combinedCorrectnessInformationRebuiltFromJSON),
-				new ObjectMapper().writeValueAsString(combinedCorrectnessInformation));
+				new ObjectMapper().writeValueAsString(new CombinedCorrectnessInformation(ballot)));
 	}
 
 	@ParameterizedTest(name = "built from {0}.")
@@ -296,4 +417,11 @@ class CombinedCorrectnessInformationTest {
 						combinedCorrectnessInformationRebuiltFromJSON.getTotalNumberOfVotingOptions()));
 	}
 
+	@Test
+	@DisplayName("built from a valid ballot, calling equals method returns the expected result.")
+	void equalsTest() {
+		assertAll(() -> assertEquals(combinedCorrectnessInformation, new CombinedCorrectnessInformation(ballot)),
+				() -> assertEquals(combinedCorrectnessInformation, combinedCorrectnessInformation),
+				() -> assertFalse(combinedCorrectnessInformation.equals(null)));
+	}
 }
