@@ -1,0 +1,29 @@
+{
+  "correctnessInformationList": [
+	{
+	  "correctnessId": "b3053227e0b144b0ae4126f7ce24f4ab",
+	  "numberOfSelections": 1,
+	  "numberOfVotingOptions": 3
+	},
+	{
+	  "correctnessId": "7340e7a7697c4223a7aade1a37b1575b",
+	  "numberOfSelections": 1,
+	  "numberOfVotingOptions": 3
+	},
+	{
+	  "correctnessId": "65ee9ef89a9d413fa4efd6cfc4e69011",
+	  "numberOfSelections": 1,
+	  "numberOfVotingOptions": 3
+	},
+	{
+	  "correctnessId": "235c5ea9ff57489aa193608dcc802328",
+	  "numberOfSelections": 1,
+	  "numberOfVotingOptions": 3
+	},
+	{
+	  "correctnessId": "54013b5029d84b0cbb31349d4f68a27a",
+	  "numberOfSelections": 2,
+	  "numberOfVotingOptions": 13
+	}
+  ]
+}
