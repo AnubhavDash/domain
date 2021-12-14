@@ -1,0 +1,552 @@
+{
+  "contests": [
+	{
+	  "id": "9ce8a72bd9f8470298e84d91ed6609ff",
+	  "defaultTitle": "Federal referendum",
+	  "alias": "1038046106-1",
+	  "defaultDescription": "Federal referendum",
+	  "electionEvent": {
+		"id": "3f393591776f4a0f9dc1b281052bae74"
+	  },
+	  "template": "options",
+	  "fullBlank": "false",
+	  "options": [
+		{
+		  "attribute": "3f7b4882509f425ca1c4f5b5e9ca0612",
+		  "id": "0132d7cfcac44ee5b991ea564618ce2e",
+		  "representation": "5"
+		},
+		{
+		  "attribute": "e7682e5d23a6415181fff4ca92c21acb",
+		  "id": "5fbc207c2f4e4bfe89db2402e425676b",
+		  "representation": "7"
+		},
+		{
+		  "attribute": "ddb331b54a3047e481cc7f4d68651458",
+		  "id": "9bd3bcd33128402290eb2cb936bbbb32",
+		  "representation": "29"
+		},
+		{
+		  "attribute": "083f1e762ba041939abf7c91e21a575e",
+		  "id": "e38e00ddc94b468787be5ceb3040d109",
+		  "representation": "17"
+		},
+		{
+		  "attribute": "abbc6605a58e402cbb4b4fae12caeeec",
+		  "id": "b03b38a231034702ae1aff7204fa613f",
+		  "representation": "23"
+		},
+		{
+		  "attribute": "0c08b8b74b4d40d581f1a638c08fb446",
+		  "id": "2205a0dab4db4e2e8cef2853daec7fa8",
+		  "representation": "31"
+		}
+	  ],
+	  "attributes": [
+		{
+		  "related": [
+			"b3053227e0b144b0ae4126f7ce24f4ab"
+		  ],
+		  "id": "abbc6605a58e402cbb4b4fae12caeeec",
+		  "alias": "BLANK_4b2121a323164583aa7327feb30229ce",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"b3053227e0b144b0ae4126f7ce24f4ab"
+		  ],
+		  "id": "207525f041c44c80bb08c6da9ff2352a",
+		  "alias": "WRITE_IN_4b2121a323164583aa7327feb30229ce",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"7340e7a7697c4223a7aade1a37b1575b"
+		  ],
+		  "id": "fa8026b4fe7c48e0b92521d139a7a835",
+		  "alias": "WRITE_IN_ebf4d24927fe4c04bd12d859e2a5604c",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"7340e7a7697c4223a7aade1a37b1575b"
+		  ],
+		  "id": "e7682e5d23a6415181fff4ca92c21acb",
+		  "alias": "BLANK_ebf4d24927fe4c04bd12d859e2a5604c",
+		  "correctness": "false"
+		},
+		{
+		  "related": [],
+		  "id": "b3053227e0b144b0ae4126f7ce24f4ab",
+		  "alias": "1045844777-EVotingAbstimmungsfrage",
+		  "correctness": "true"
+		},
+		{
+		  "related": [],
+		  "id": "7340e7a7697c4223a7aade1a37b1575b",
+		  "alias": "1045844779-EVotingAbstimmungsfrage",
+		  "correctness": "true"
+		},
+		{
+		  "related": [
+			"b3053227e0b144b0ae4126f7ce24f4ab"
+		  ],
+		  "id": "083f1e762ba041939abf7c91e21a575e",
+		  "alias": "10511384-a04d-37c8-8ea8-89f14c2c8ea4",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"b3053227e0b144b0ae4126f7ce24f4ab"
+		  ],
+		  "id": "0c08b8b74b4d40d581f1a638c08fb446",
+		  "alias": "036828d2-ee6c-3982-9a50-b9c1c25180d8",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"7340e7a7697c4223a7aade1a37b1575b"
+		  ],
+		  "id": "ddb331b54a3047e481cc7f4d68651458",
+		  "alias": "accd3377-8cc0-3d1a-abd4-a6f439d554e0",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"7340e7a7697c4223a7aade1a37b1575b"
+		  ],
+		  "id": "3f7b4882509f425ca1c4f5b5e9ca0612",
+		  "alias": "6bc7bfc0-5671-37ab-9512-fb024e11cc26",
+		  "correctness": "false"
+		}
+	  ],
+	  "questions": [
+		{
+		  "id": "ebf4d24927fe4c04bd12d859e2a5604c",
+		  "max": "1",
+		  "min": "0",
+		  "accumulation": "1",
+		  "writeIn": "false",
+		  "blankAttribute": "e7682e5d23a6415181fff4ca92c21acb",
+		  "writeInAttribute": "fa8026b4fe7c48e0b92521d139a7a835",
+		  "attribute": "7340e7a7697c4223a7aade1a37b1575b",
+		  "fusions": []
+		},
+		{
+		  "id": "4b2121a323164583aa7327feb30229ce",
+		  "max": "1",
+		  "min": "0",
+		  "accumulation": "1",
+		  "writeIn": "false",
+		  "blankAttribute": "abbc6605a58e402cbb4b4fae12caeeec",
+		  "writeInAttribute": "207525f041c44c80bb08c6da9ff2352a",
+		  "attribute": "b3053227e0b144b0ae4126f7ce24f4ab",
+		  "fusions": []
+		}
+	  ]
+	},
+	{
+	  "id": "690c5dd67c1045a2bdaf1d1104417fb0",
+	  "defaultTitle": "Cantonal referendum",
+	  "alias": "1038046106-2",
+	  "defaultDescription": "Cantonal referendum",
+	  "electionEvent": {
+		"id": "3f393591776f4a0f9dc1b281052bae74"
+	  },
+	  "template": "options",
+	  "fullBlank": "false",
+	  "options": [
+		{
+		  "attribute": "5559d28970674b80864aafab5a175088",
+		  "id": "85640151b7034ab4bbd453a4b8632dfc",
+		  "representation": "37"
+		},
+		{
+		  "attribute": "0d3ca183e97f4d3db1a0b6002111e102",
+		  "id": "35b452c2ed754632b449fba7d58e7e28",
+		  "representation": "59"
+		},
+		{
+		  "attribute": "9046cb2ab17347ae8a44061d5026df3e",
+		  "id": "48fce3f1f9274fb1a66ef0a09e542748",
+		  "representation": "71"
+		},
+		{
+		  "attribute": "36da620d25a44fe9a1c00d5102755e1f",
+		  "id": "0b17bc63445b40fa9120d04403e91d9d",
+		  "representation": "47"
+		},
+		{
+		  "attribute": "5616f80d48fa4aee8ec945c5249fcb2e",
+		  "id": "83829710b090491b98adbdfb98d44086",
+		  "representation": "73"
+		},
+		{
+		  "attribute": "0ae820e726c54ec9a15ee5bac16030a4",
+		  "id": "1e7f5e45745c4c88b5f1a56d5b00d559",
+		  "representation": "79"
+		}
+	  ],
+	  "attributes": [
+		{
+		  "related": [
+			"235c5ea9ff57489aa193608dcc802328"
+		  ],
+		  "id": "5559d28970674b80864aafab5a175088",
+		  "alias": "BLANK_968a760bc55642cd91805540bfeef161",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"235c5ea9ff57489aa193608dcc802328"
+		  ],
+		  "id": "27ff29c5a71e4143b15e8c22669b9a93",
+		  "alias": "WRITE_IN_968a760bc55642cd91805540bfeef161",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"65ee9ef89a9d413fa4efd6cfc4e69011"
+		  ],
+		  "id": "0ae820e726c54ec9a15ee5bac16030a4",
+		  "alias": "BLANK_f70dab48718545ed87d37dc7fc1590eb",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"65ee9ef89a9d413fa4efd6cfc4e69011"
+		  ],
+		  "id": "c013166c45a746ddb1bb3bc5680ed69d",
+		  "alias": "WRITE_IN_f70dab48718545ed87d37dc7fc1590eb",
+		  "correctness": "false"
+		},
+		{
+		  "related": [],
+		  "id": "65ee9ef89a9d413fa4efd6cfc4e69011",
+		  "alias": "1045844957-EVotingAbstimmungsfrage",
+		  "correctness": "true"
+		},
+		{
+		  "related": [],
+		  "id": "235c5ea9ff57489aa193608dcc802328",
+		  "alias": "1045844956-EVotingAbstimmungsfrage",
+		  "correctness": "true"
+		},
+		{
+		  "related": [
+			"65ee9ef89a9d413fa4efd6cfc4e69011"
+		  ],
+		  "id": "36da620d25a44fe9a1c00d5102755e1f",
+		  "alias": "ce84154f-0a5a-3e93-85a6-92ec1986b6c6",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"65ee9ef89a9d413fa4efd6cfc4e69011"
+		  ],
+		  "id": "5616f80d48fa4aee8ec945c5249fcb2e",
+		  "alias": "00af9ff3-ef95-3204-b5fe-137f73858f6b",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"235c5ea9ff57489aa193608dcc802328"
+		  ],
+		  "id": "9046cb2ab17347ae8a44061d5026df3e",
+		  "alias": "a56d1cb2-1578-3636-9537-ded89b4c4715",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"235c5ea9ff57489aa193608dcc802328"
+		  ],
+		  "id": "0d3ca183e97f4d3db1a0b6002111e102",
+		  "alias": "3cbabd4b-6ee1-3546-93ce-54a128658d1d",
+		  "correctness": "false"
+		}
+	  ],
+	  "questions": [
+		{
+		  "id": "968a760bc55642cd91805540bfeef161",
+		  "max": "1",
+		  "min": "0",
+		  "accumulation": "1",
+		  "writeIn": "false",
+		  "blankAttribute": "5559d28970674b80864aafab5a175088",
+		  "writeInAttribute": "27ff29c5a71e4143b15e8c22669b9a93",
+		  "attribute": "235c5ea9ff57489aa193608dcc802328",
+		  "fusions": []
+		},
+		{
+		  "id": "f70dab48718545ed87d37dc7fc1590eb",
+		  "max": "1",
+		  "min": "0",
+		  "accumulation": "1",
+		  "writeIn": "false",
+		  "blankAttribute": "0ae820e726c54ec9a15ee5bac16030a4",
+		  "writeInAttribute": "c013166c45a746ddb1bb3bc5680ed69d",
+		  "attribute": "65ee9ef89a9d413fa4efd6cfc4e69011",
+		  "fusions": []
+		}
+	  ]
+	},
+	{
+	  "id": "9ea5e0a5e611477e98bf377c1e99455a",
+	  "defaultTitle": "Cantonal election",
+	  "alias": "1-2",
+	  "defaultDescription": "Cantonal election",
+	  "electionEvent": {
+		"id": "3f393591776f4a0f9dc1b281052bae74"
+	  },
+	  "template": "listsAndCandidates",
+	  "fullBlank": "true",
+	  "options": [
+		{
+		  "attribute": "a5b3cd12ff7b4beb9eb8c85666fb71b8",
+		  "id": "42ca469ae73d4f90847e51a7b16f06ad",
+		  "representation": "107"
+		},
+		{
+		  "attribute": "3b6b1b7769ea4617a34a544aee233155",
+		  "id": "f0794eedd8594d1b9c01faa64184cc3e",
+		  "representation": "127"
+		},
+		{
+		  "attribute": "7630d23dc7924458b2669377b74961cf",
+		  "id": "b462d89402844bf8b073be4e08678835",
+		  "representation": "149"
+		},
+		{
+		  "attribute": "240b44433ab84bfa9026befd52d7f869",
+		  "id": "82463a7d25bc4d2a8ca36670cc80faaa",
+		  "representation": "167"
+		},
+		{
+		  "attribute": "b58ff930de504c389038979c31ddfa7c",
+		  "id": "e06220f09d83400b8516eb6882560eb9",
+		  "representation": "199"
+		},
+		{
+		  "attribute": "a5b3cd12ff7b4beb9eb8c85666fb71b8",
+		  "id": "773515ce874743759ae322c635b28285",
+		  "representation": "229"
+		},
+		{
+		  "attribute": "4a547a2039f043819904466637088084",
+		  "id": "9f2756d6482b4919951705055e01cfec",
+		  "representation": "241"
+		},
+		{
+		  "attribute": "240b44433ab84bfa9026befd52d7f869",
+		  "id": "16d3e0869e54468cb4c6a35ce1330a30",
+		  "representation": "257"
+		},
+		{
+		  "attribute": "e62962e48d514a298a7a3504920146ca",
+		  "id": "7fe80371738148e5b7771e17afb2b988",
+		  "representation": "269"
+		},
+		{
+		  "attribute": "4f938630f7914b7a9b45721f431ccc6e",
+		  "id": "d52c65267b294828a4d09cc4a0ef7fd4",
+		  "representation": "271"
+		},
+		{
+		  "attribute": "4a6b31a36f4d41a2ab650946ba453733",
+		  "id": "382cf71cd34b4052a2f95b5b5a1ebc6f",
+		  "representation": "277"
+		},
+		{
+		  "attribute": "775cfa8f121149be9e0c1950dcda68dd",
+		  "id": "dee1edbbdce24484ae360ea28bd43ca0",
+		  "representation": "281"
+		},
+		{
+		  "attribute": "3ce6d24f8867475d81325854523023e9",
+		  "id": "61b50dd7df8940178c916ebaf299e8e1",
+		  "representation": "283"
+		}
+	  ],
+	  "attributes": [
+		{
+		  "related": [
+			"54013b5029d84b0cbb31349d4f68a27a"
+		  ],
+		  "id": "240b44433ab84bfa9026befd52d7f869",
+		  "alias": "WRITE_IN_6aaa476cd8d342a5ab829bfd0b0966e4",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"54013b5029d84b0cbb31349d4f68a27a"
+		  ],
+		  "id": "a5b3cd12ff7b4beb9eb8c85666fb71b8",
+		  "alias": "BLANK_6aaa476cd8d342a5ab829bfd0b0966e4",
+		  "correctness": "false"
+		},
+		{
+		  "related": [],
+		  "id": "54013b5029d84b0cbb31349d4f68a27a",
+		  "alias": "candidates",
+		  "correctness": "true"
+		},
+		{
+		  "related": [],
+		  "id": "8dfafb10bec54b95aed01c60fc45fd5b",
+		  "alias": "list_for_1-1",
+		  "correctness": "false"
+		},
+		{
+		  "related": [],
+		  "id": "11cb60f236ac444ebcdfc5991d0ee759",
+		  "alias": "list_for_1-2",
+		  "correctness": "false"
+		},
+		{
+		  "related": [],
+		  "id": "30312ebc08c34f5dadef1db7bb7722a6",
+		  "alias": "list_for_1-3",
+		  "correctness": "false"
+		},
+		{
+		  "related": [],
+		  "id": "b759e4348cc84cb8972000ef1313fa17",
+		  "alias": "list_for_1-4",
+		  "correctness": "false"
+		},
+		{
+		  "related": [],
+		  "id": "59b992ae69b44bb29615bbeff2760746",
+		  "alias": "list_for_1-5",
+		  "correctness": "false"
+		},
+		{
+		  "related": [],
+		  "id": "f29581f95bda4b7aafb705040f43c601",
+		  "alias": "list_for_1-6",
+		  "correctness": "false"
+		},
+		{
+		  "related": [],
+		  "id": "d5339c2d29324e8cbfd5da5e7b04011c",
+		  "alias": "list_for_1-7",
+		  "correctness": "false"
+		},
+		{
+		  "related": [],
+		  "id": "8c0f94471bac49c4bc8bf82eee50dc58",
+		  "alias": "list_for_1-8",
+		  "correctness": "false"
+		},
+		{
+		  "related": [],
+		  "id": "d2b77919e9564f6d8873ff533356ea43",
+		  "alias": "list_for_1-9",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"8dfafb10bec54b95aed01c60fc45fd5b",
+			"54013b5029d84b0cbb31349d4f68a27a"
+		  ],
+		  "id": "4a547a2039f043819904466637088084",
+		  "alias": "1-1",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"11cb60f236ac444ebcdfc5991d0ee759",
+			"54013b5029d84b0cbb31349d4f68a27a"
+		  ],
+		  "id": "4a6b31a36f4d41a2ab650946ba453733",
+		  "alias": "1-2",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"30312ebc08c34f5dadef1db7bb7722a6",
+			"54013b5029d84b0cbb31349d4f68a27a"
+		  ],
+		  "id": "3b6b1b7769ea4617a34a544aee233155",
+		  "alias": "1-3",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"b759e4348cc84cb8972000ef1313fa17",
+			"54013b5029d84b0cbb31349d4f68a27a"
+		  ],
+		  "id": "4f938630f7914b7a9b45721f431ccc6e",
+		  "alias": "1-4",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"59b992ae69b44bb29615bbeff2760746",
+			"54013b5029d84b0cbb31349d4f68a27a"
+		  ],
+		  "id": "b58ff930de504c389038979c31ddfa7c",
+		  "alias": "1-5",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"f29581f95bda4b7aafb705040f43c601",
+			"54013b5029d84b0cbb31349d4f68a27a"
+		  ],
+		  "id": "e62962e48d514a298a7a3504920146ca",
+		  "alias": "1-6",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"d5339c2d29324e8cbfd5da5e7b04011c",
+			"54013b5029d84b0cbb31349d4f68a27a"
+		  ],
+		  "id": "775cfa8f121149be9e0c1950dcda68dd",
+		  "alias": "1-7",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"8c0f94471bac49c4bc8bf82eee50dc58",
+			"54013b5029d84b0cbb31349d4f68a27a"
+		  ],
+		  "id": "7630d23dc7924458b2669377b74961cf",
+		  "alias": "1-8",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"d2b77919e9564f6d8873ff533356ea43",
+			"54013b5029d84b0cbb31349d4f68a27a"
+		  ],
+		  "id": "3ce6d24f8867475d81325854523023e9",
+		  "alias": "1-9",
+		  "correctness": "false"
+		}
+	  ],
+	  "questions": [
+		{
+		  "id": "6aaa476cd8d342a5ab829bfd0b0966e4",
+		  "max": "2",
+		  "min": "1",
+		  "accumulation": "1",
+		  "writeIn": "true",
+		  "blankAttribute": "a5b3cd12ff7b4beb9eb8c85666fb71b8",
+		  "writeInAttribute": "240b44433ab84bfa9026befd52d7f869",
+		  "attribute": "54013b5029d84b0cbb31349d4f68a27a",
+		  "fusions": []
+		}
+	  ]
+	}
+  ],
+  "defaultTitle": "ballot_1038046106-1_1038046106-2_1-2",
+  "alias": "ballot_3",
+  "id": "3f66e21a953744d2a6139bc6f4c89507",
+  "electionEvent": {
+	"id": "3f393591776f4a0f9dc1b281052bae74"
+  },
+  "defaultDescription": "ballot_1038046106-1_1038046106-2_1-2",
+  "ballotBoxes": "CT-CH-1|CT-MU-10009 + CT-CT-1|CT-MU-10009"
+}
