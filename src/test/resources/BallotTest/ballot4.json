@@ -1,0 +1,157 @@
+{
+  "contests": [
+	{
+	  "id": "690c5dd67c1045a2bdaf1d1104417fb0",
+	  "defaultTitle": "Cantonal referendum",
+	  "alias": "1038046106-2",
+	  "defaultDescription": "Cantonal referendum",
+	  "electionEvent": {
+		"id": "3f393591776f4a0f9dc1b281052bae74"
+	  },
+	  "template": "template",
+	  "fullBlank": "false",
+	  "options": [
+		{
+		  "attribute": "5559d28970674b80864aafab5a175088",
+		  "id": "85640151b7034ab4bbd453a4b8632dfc",
+		  "representation": "37"
+		},
+		{
+		  "attribute": "0d3ca183e97f4d3db1a0b6002111e102",
+		  "id": "35b452c2ed754632b449fba7d58e7e28",
+		  "representation": "59"
+		},
+		{
+		  "attribute": "9046cb2ab17347ae8a44061d5026df3e",
+		  "id": "48fce3f1f9274fb1a66ef0a09e542748",
+		  "representation": "71"
+		},
+		{
+		  "attribute": "36da620d25a44fe9a1c00d5102755e1f",
+		  "id": "0b17bc63445b40fa9120d04403e91d9d",
+		  "representation": "47"
+		},
+		{
+		  "attribute": "5616f80d48fa4aee8ec945c5249fcb2e",
+		  "id": "83829710b090491b98adbdfb98d44086",
+		  "representation": "73"
+		},
+		{
+		  "attribute": "0ae820e726c54ec9a15ee5bac16030a4",
+		  "id": "1e7f5e45745c4c88b5f1a56d5b00d559",
+		  "representation": "79"
+		}
+	  ],
+	  "attributes": [
+		{
+		  "related": [
+			"235c5ea9ff57489aa193608dcc802328"
+		  ],
+		  "id": "5559d28970674b80864aafab5a175088",
+		  "alias": "BLANK_968a760bc55642cd91805540bfeef161",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"235c5ea9ff57489aa193608dcc802328"
+		  ],
+		  "id": "27ff29c5a71e4143b15e8c22669b9a93",
+		  "alias": "WRITE_IN_968a760bc55642cd91805540bfeef161",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"65ee9ef89a9d413fa4efd6cfc4e69011"
+		  ],
+		  "id": "0ae820e726c54ec9a15ee5bac16030a4",
+		  "alias": "BLANK_f70dab48718545ed87d37dc7fc1590eb",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"65ee9ef89a9d413fa4efd6cfc4e69011"
+		  ],
+		  "id": "c013166c45a746ddb1bb3bc5680ed69d",
+		  "alias": "WRITE_IN_f70dab48718545ed87d37dc7fc1590eb",
+		  "correctness": "false"
+		},
+		{
+		  "related": [],
+		  "id": "65ee9ef89a9d413fa4efd6cfc4e69011",
+		  "alias": "1045844957-EVotingAbstimmungsfrage",
+		  "correctness": "true"
+		},
+		{
+		  "related": [],
+		  "id": "235c5ea9ff57489aa193608dcc802328",
+		  "alias": "1045844956-EVotingAbstimmungsfrage",
+		  "correctness": "true"
+		},
+		{
+		  "related": [
+			"65ee9ef89a9d413fa4efd6cfc4e69011"
+		  ],
+		  "id": "36da620d25a44fe9a1c00d5102755e1f",
+		  "alias": "ce84154f-0a5a-3e93-85a6-92ec1986b6c6",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"65ee9ef89a9d413fa4efd6cfc4e69011"
+		  ],
+		  "id": "5616f80d48fa4aee8ec945c5249fcb2e",
+		  "alias": "00af9ff3-ef95-3204-b5fe-137f73858f6b",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"235c5ea9ff57489aa193608dcc802328"
+		  ],
+		  "id": "9046cb2ab17347ae8a44061d5026df3e",
+		  "alias": "a56d1cb2-1578-3636-9537-ded89b4c4715",
+		  "correctness": "false"
+		},
+		{
+		  "related": [
+			"235c5ea9ff57489aa193608dcc802328"
+		  ],
+		  "id": "0d3ca183e97f4d3db1a0b6002111e102",
+		  "alias": "3cbabd4b-6ee1-3546-93ce-54a128658d1d",
+		  "correctness": "false"
+		}
+	  ],
+	  "questions": [
+		{
+		  "id": "968a760bc55642cd91805540bfeef161",
+		  "max": "1",
+		  "min": "0",
+		  "accumulation": "1",
+		  "writeIn": "false",
+		  "blankAttribute": "5559d28970674b80864aafab5a175088",
+		  "writeInAttribute": "27ff29c5a71e4143b15e8c22669b9a93",
+		  "attribute": "235c5ea9ff57489aa193608dcc802328",
+		  "fusions": []
+		},
+		{
+		  "id": "f70dab48718545ed87d37dc7fc1590eb",
+		  "max": "1",
+		  "min": "0",
+		  "accumulation": "1",
+		  "writeIn": "false",
+		  "blankAttribute": "0ae820e726c54ec9a15ee5bac16030a4",
+		  "writeInAttribute": "c013166c45a746ddb1bb3bc5680ed69d",
+		  "attribute": "65ee9ef89a9d413fa4efd6cfc4e69011",
+		  "fusions": []
+		}
+	  ]
+	}
+  ],
+  "defaultTitle": "ballot_1038046106-1_1038046106-2_1-2",
+  "alias": "ballot_3",
+  "id": "3f66e21a953744d2a6139bc6f4c89507",
+  "electionEvent": {
+	"id": "3f393591776f4a0f9dc1b281052bae74"
+  },
+  "defaultDescription": "ballot_1038046106-1_1038046106-2_1-2",
+  "ballotBoxes": "CT-CH-1|CT-MU-10009 + CT-CT-1|CT-MU-10009"
+}
