@@ -18,11 +18,8 @@ package ch.post.it.evoting.cryptoprimitives.domain.election;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,8 +33,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import ch.post.it.evoting.cryptoprimitives.domain.election.exceptions.CombinedCorrectnessInformationException;
 
 @DisplayName("A combined correctness information")
 class CombinedCorrectnessInformationTest {
@@ -289,89 +284,89 @@ class CombinedCorrectnessInformationTest {
 	}
 
 	@Test
-	@DisplayName("built from a malformed ballot with an exceeded questions size, throws a CombinedCorrectnessInformationException.")
-	void exceededQuestionsSizeCombinedCorrectnessInformationExceptionTest() throws IOException {
+	@DisplayName("built from a malformed ballot with an exceeded questions size, throws an IllegalArgumentException.")
+	void exceededQuestionsSizeIllegalArgumentExceptionTest() throws IOException {
 		final Ballot ballotExceededQuestionsSize = getBallotFromResourceName("ballotExceededQuestionsSize.json");
 
-		final CombinedCorrectnessInformationException combinedCorrectnessInformationException = assertThrows(
-				CombinedCorrectnessInformationException.class, () -> new CombinedCorrectnessInformation(ballotExceededQuestionsSize));
+		final IllegalArgumentException illegalArgumentException = assertThrows(
+				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotExceededQuestionsSize));
 
 		assertEquals(
 				"A contest with template \"listsAndCandidates\" cannot have more than 2 questions. [contestId=7868bd2dd48e4f6093d3b14d84720f79, questions size of contest=3]",
-				combinedCorrectnessInformationException.getMessage());
+				illegalArgumentException.getMessage());
 	}
 
 	@Test
-	@DisplayName("built from a malformed ballot with an unknown contest's template, throws a CombinedCorrectnessInformationException.")
-	void unknownContestTemplateCombinedCorrectnessInformationExceptionTest() throws IOException {
+	@DisplayName("built from a malformed ballot with an unknown contest's template, throws an IllegalArgumentException.")
+	void unknownContestTemplateIllegalArgumentExceptionTest() throws IOException {
 		final Ballot ballotNoCorrespondingQuestionFound = getBallotFromResourceName("ballotUnknownContestTemplate.json");
 
-		final CombinedCorrectnessInformationException combinedCorrectnessInformationException = assertThrows(
-				CombinedCorrectnessInformationException.class, () -> new CombinedCorrectnessInformation(ballotNoCorrespondingQuestionFound));
+		final IllegalArgumentException illegalArgumentException = assertThrows(
+				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotNoCorrespondingQuestionFound));
 
 		assertEquals("Contests with template \"unknownTemplate\" are not supported. [contestId=e7446a430b244a9bb12da153e35601cd]",
-				combinedCorrectnessInformationException.getMessage());
+				illegalArgumentException.getMessage());
 	}
 
 	@Test
-	@DisplayName("built from a malformed ballot with an attribute without a related question, throws a CombinedCorrectnessInformationException.")
-	void attributeWithoutRelatedQuestionCombinedCorrectnessInformationExceptionTest() throws IOException {
+	@DisplayName("built from a malformed ballot with an attribute without a related question, throws an IllegalArgumentException.")
+	void attributeWithoutRelatedQuestionIllegalArgumentExceptionTest() throws IOException {
 		final Ballot ballotNoCorrespondingAttributeQuestion = getBallotFromResourceName("ballotNoCorrespondingAttributeQuestion.json");
 
-		final CombinedCorrectnessInformationException combinedCorrectnessInformationException = assertThrows(
-				CombinedCorrectnessInformationException.class, () -> new CombinedCorrectnessInformation(ballotNoCorrespondingAttributeQuestion));
+		final IllegalArgumentException illegalArgumentException = assertThrows(
+				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotNoCorrespondingAttributeQuestion));
 
 		assertEquals(
-				"No corresponding question found in contest with id f64da23c11e641a1ac1defa897c3d279 for attribute with id 2d22a5bfa0f0406a9812576f925e1ceb.",
-				combinedCorrectnessInformationException.getMessage());
+				"No corresponding question to attribute found in contest. [contestId=f64da23c11e641a1ac1defa897c3d279, attributeId=2d22a5bfa0f0406a9812576f925e1ceb].",
+				illegalArgumentException.getMessage());
 	}
 
 	@Test
-	@DisplayName("built from a malformed ballot with no contests, throws a CombinedCorrectnessInformationException.")
-	void noContestsCombinedCorrectnessInformationExceptionTest() throws IOException {
+	@DisplayName("built from a malformed ballot with no contests, throws an IllegalArgumentException.")
+	void noContestsIllegalArgumentExceptionTest() throws IOException {
 		final Ballot ballotNoContests = getBallotFromResourceName("ballotNoContests.json");
 
-		final CombinedCorrectnessInformationException combinedCorrectnessInformationException = assertThrows(
-				CombinedCorrectnessInformationException.class, () -> new CombinedCorrectnessInformation(ballotNoContests));
+		final IllegalArgumentException illegalArgumentException = assertThrows(
+				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotNoContests));
 
-		assertEquals("The provided contests for the ballot with id a5c0305db01142e786533cb48df1c794 are null.",
-				combinedCorrectnessInformationException.getMessage());
+		assertEquals("The ballot contains a null contests list. [ballotId=a5c0305db01142e786533cb48df1c794]",
+				illegalArgumentException.getMessage());
 	}
 
 	@Test
-	@DisplayName("built from a malformed ballot with empty contests, throws a CombinedCorrectnessInformationException.")
-	void emptyContestsCombinedCorrectnessInformationExceptionTest() throws IOException {
+	@DisplayName("built from a malformed ballot with empty contests, throws an IllegalArgumentException.")
+	void emptyContestsIllegalArgumentExceptionTest() throws IOException {
 		final Ballot ballotEmptyContests = getBallotFromResourceName("ballotEmptyContests.json");
 
-		final CombinedCorrectnessInformationException combinedCorrectnessInformationException = assertThrows(
-				CombinedCorrectnessInformationException.class, () -> new CombinedCorrectnessInformation(ballotEmptyContests));
+		final IllegalArgumentException illegalArgumentException = assertThrows(
+				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotEmptyContests));
 
-		assertEquals("The provided contests for the ballot with id a5c0305db01142e786533cb48df1c794 are empty.",
-				combinedCorrectnessInformationException.getMessage());
+		assertEquals("The ballot contains an empty contests list. [ballotId=a5c0305db01142e786533cb48df1c794]",
+				illegalArgumentException.getMessage());
 	}
 
 	@Test
-	@DisplayName("built from a malformed ballot with a contest with no questions, throws a CombinedCorrectnessInformationException.")
-	void noQuestionsCombinedCorrectnessInformationExceptionTest() throws IOException {
+	@DisplayName("built from a malformed ballot with a contest with no questions, throws an IllegalArgumentException.")
+	void noQuestionsIllegalArgumentExceptionTest() throws IOException {
 		final Ballot ballotContestNoQuestions = getBallotFromResourceName("ballotContestNoQuestions.json");
 
-		final CombinedCorrectnessInformationException combinedCorrectnessInformationException = assertThrows(
-				CombinedCorrectnessInformationException.class, () -> new CombinedCorrectnessInformation(ballotContestNoQuestions));
+		final IllegalArgumentException illegalArgumentException = assertThrows(
+				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotContestNoQuestions));
 
-		assertEquals("The provided questions for the contest with id 17966dc82c0841db996b0c718a3255e3 are null.",
-				combinedCorrectnessInformationException.getMessage());
+		assertEquals("The contest contains a null questions list. [contestId=17966dc82c0841db996b0c718a3255e3]",
+				illegalArgumentException.getMessage());
 	}
 
 	@Test
-	@DisplayName("built from a malformed ballot with a contest with empty questions, throws a CombinedCorrectnessInformationException.")
-	void emptyQuestionsCombinedCorrectnessInformationExceptionTest() throws IOException {
+	@DisplayName("built from a malformed ballot with a contest with empty questions, throws an IllegalArgumentException.")
+	void emptyQuestionsIllegalArgumentExceptionTest() throws IOException {
 		final Ballot ballotContestEmptyQuestions = getBallotFromResourceName("ballotContestEmptyQuestions.json");
 
-		final CombinedCorrectnessInformationException combinedCorrectnessInformationException = assertThrows(
-				CombinedCorrectnessInformationException.class, () -> new CombinedCorrectnessInformation(ballotContestEmptyQuestions));
+		final IllegalArgumentException illegalArgumentException = assertThrows(
+				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotContestEmptyQuestions));
 
-		assertEquals("The provided questions for the contest with id 17966dc82c0841db996b0c718a3255e3 are empty.",
-				combinedCorrectnessInformationException.getMessage());
+		assertEquals("The contest contains an empty questions list. [contestId=17966dc82c0841db996b0c718a3255e3]",
+				illegalArgumentException.getMessage());
 	}
 
 	@Test
@@ -394,7 +389,7 @@ class CombinedCorrectnessInformationTest {
 				combinedCorrectnessInformationJsonFileName);
 
 		assertEquals(new ObjectMapper().writeValueAsString(combinedCorrectnessInformationRebuiltFromJSON),
-				new ObjectMapper().writeValueAsString(new CombinedCorrectnessInformation(ballot)));
+				new ObjectMapper().writeValueAsString(combinedCorrectnessInformation));
 	}
 
 	@ParameterizedTest(name = "built from {0}.")
@@ -421,7 +416,7 @@ class CombinedCorrectnessInformationTest {
 	@DisplayName("built from a valid ballot, calling equals method returns the expected result.")
 	void equalsTest() {
 		assertAll(() -> assertEquals(combinedCorrectnessInformation, new CombinedCorrectnessInformation(ballot)),
-				() -> assertEquals(combinedCorrectnessInformation, combinedCorrectnessInformation),
-				() -> assertFalse(combinedCorrectnessInformation.equals(null)));
+				() -> assertEquals(combinedCorrectnessInformation, combinedCorrectnessInformation)
+		);
 	}
 }
