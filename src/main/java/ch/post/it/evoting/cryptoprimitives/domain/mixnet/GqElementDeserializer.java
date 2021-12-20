@@ -44,7 +44,7 @@ class GqElementDeserializer extends JsonDeserializer<GqElement> {
 		final JsonNode node = new ObjectMapper().readTree(parser);
 		final String value = node.asText();
 
-		return GqElement.create(hexToBigInteger(value), gqGroup);
+		return GqElement.GqElementFactory.fromValue(hexToBigInteger(value), gqGroup);
 	}
 
 }
