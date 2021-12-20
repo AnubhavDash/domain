@@ -16,6 +16,7 @@
 package ch.post.it.evoting.cryptoprimitives.domain;
 
 import static ch.post.it.evoting.cryptoprimitives.domain.mixnet.ConversionUtils.bigIntegerToHex;
+import static ch.post.it.evoting.cryptoprimitives.math.GqElement.GqElementFactory;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
@@ -88,11 +89,11 @@ public class SerializationTestData extends MapperSetUp {
 	private static final BigInteger FIVE = BigInteger.valueOf(5);
 	private static final BigInteger NINE = BigInteger.valueOf(9);
 
-	private static final GqElement gOne = GqElement.create(ONE, gqGroup);
-	private static final GqElement gThree = GqElement.create(THREE, gqGroup);
-	private static final GqElement gFour = GqElement.create(FOUR, gqGroup);
-	private static final GqElement gFive = GqElement.create(FIVE, gqGroup);
-	private static final GqElement gNine = GqElement.create(NINE, gqGroup);
+	private static final GqElement gOne = GqElementFactory.fromValue(ONE, gqGroup);
+	private static final GqElement gThree = GqElementFactory.fromValue(THREE, gqGroup);
+	private static final GqElement gFour = GqElementFactory.fromValue(FOUR, gqGroup);
+	private static final GqElement gFive = GqElementFactory.fromValue(FIVE, gqGroup);
+	private static final GqElement gNine = GqElementFactory.fromValue(NINE, gqGroup);
 
 	private static final ZqElement zZero = ZqElement.create(ZERO, zqGroup);
 	private static final ZqElement zOne = ZqElement.create(ONE, zqGroup);
@@ -117,7 +118,7 @@ public class SerializationTestData extends MapperSetUp {
 
 	public static ElGamalMultiRecipientMessage getMessage() {
 		final List<GqElement> messageElements = Arrays
-				.asList(GqElement.create(BigInteger.valueOf(4), gqGroup), GqElement.create(BigInteger.valueOf(5), gqGroup));
+				.asList(GqElementFactory.fromValue(BigInteger.valueOf(4), gqGroup), GqElementFactory.fromValue(BigInteger.valueOf(5), gqGroup));
 
 		return new ElGamalMultiRecipientMessage(messageElements);
 	}
@@ -127,17 +128,17 @@ public class SerializationTestData extends MapperSetUp {
 	}
 
 	public static List<ElGamalMultiRecipientCiphertext> getCiphertexts(final int nbr) {
-		final GqElement gamma = GqElement.create(BigInteger.valueOf(4), gqGroup);
+		final GqElement gamma = GqElementFactory.fromValue(BigInteger.valueOf(4), gqGroup);
 		final List<GqElement> phis = Arrays
-				.asList(GqElement.create(BigInteger.valueOf(5), gqGroup), GqElement.create(BigInteger.valueOf(9), gqGroup));
+				.asList(GqElementFactory.fromValue(BigInteger.valueOf(5), gqGroup), GqElementFactory.fromValue(BigInteger.valueOf(9), gqGroup));
 		final ElGamalMultiRecipientCiphertext ciphertext = ElGamalMultiRecipientCiphertext.create(gamma, phis);
 
 		return Collections.nCopies(nbr, ciphertext);
 	}
 
 	public static ElGamalMultiRecipientCiphertext getSinglePhiCiphertext() {
-		final GqElement gamma = GqElement.create(BigInteger.valueOf(4), gqGroup);
-		final List<GqElement> phis = Collections.singletonList(GqElement.create(BigInteger.valueOf(5), gqGroup));
+		final GqElement gamma = GqElementFactory.fromValue(BigInteger.valueOf(4), gqGroup);
+		final List<GqElement> phis = Collections.singletonList(GqElementFactory.fromValue(BigInteger.valueOf(5), gqGroup));
 
 		return ElGamalMultiRecipientCiphertext.create(gamma, phis);
 	}
@@ -153,7 +154,7 @@ public class SerializationTestData extends MapperSetUp {
 
 	public static ElGamalMultiRecipientPublicKey getPublicKey() {
 		final List<GqElement> keyElements = Arrays
-				.asList(GqElement.create(BigInteger.valueOf(4), gqGroup), GqElement.create(BigInteger.valueOf(9), gqGroup));
+				.asList(GqElementFactory.fromValue(BigInteger.valueOf(4), gqGroup), GqElementFactory.fromValue(BigInteger.valueOf(9), gqGroup));
 		return new ElGamalMultiRecipientPublicKey(keyElements);
 	}
 
