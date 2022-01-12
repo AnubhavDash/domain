@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Post CH Ltd
+ * Copyright 2022 Post CH Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import ch.post.it.evoting.cryptoprimitives.domain.mixnet.GqElementMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.GqGroupMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.HadamardArgumentMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.MultiExponentiationArgumentMixIn;
+import ch.post.it.evoting.cryptoprimitives.domain.mixnet.PlaintextEqualityProofMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.ProductArgumentMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.ShuffleArgumentMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.SingleValueProductArgumentMixIn;
@@ -52,6 +53,7 @@ import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
 import ch.post.it.evoting.cryptoprimitives.mixnet.ZeroArgument;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.DecryptionProof;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.ExponentiationProof;
+import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.PlaintextEqualityProof;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecryptions;
 
 /**
@@ -81,7 +83,9 @@ public class DomainObjectMapper {
 				.addMixIn(VerifiableShuffle.class, VerifiableShuffleMixIn.class)
 				.addMixIn(VerifiableDecryptions.class, VerifiableDecryptionsMixIn.class)
 				// Proofs.
-				.addMixIn(DecryptionProof.class, DecryptionProofMixIn.class).addMixIn(ExponentiationProof.class, ExponentiationProofMixIn.class)
+				.addMixIn(DecryptionProof.class, DecryptionProofMixIn.class)
+				.addMixIn(ExponentiationProof.class, ExponentiationProofMixIn.class)
+				.addMixIn(PlaintextEqualityProof.class, PlaintextEqualityProofMixIn.class)
 				// Arguments.
 				.addMixIn(ShuffleArgument.class, ShuffleArgumentMixIn.class)
 				.addMixIn(MultiExponentiationArgument.class, MultiExponentiationArgumentMixIn.class)
