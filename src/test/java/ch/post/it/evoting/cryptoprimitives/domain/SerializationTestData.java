@@ -255,6 +255,24 @@ public class SerializationTestData extends MapperSetUp {
 		return decryptionProofsArrayNode;
 	}
 
+	public static ArrayNode createExponentiationProofsNode(final GroupVector<ExponentiationProof, ZqGroup> exponentiationProofs) {
+		final ArrayNode exponentiationProofsArrayNode = mapper.createArrayNode();
+
+		final List<JsonNode> proofsNodes = exponentiationProofs.stream().map(proof -> {
+			try {
+				return mapper.readTree(mapper.writeValueAsString(proof));
+			} catch (JsonProcessingException e) {
+				throw new RuntimeException("Failed to serialize proofs.");
+			}
+		}).collect(Collectors.toList());
+
+		for (JsonNode jsonNode : proofsNodes) {
+			exponentiationProofsArrayNode.add(jsonNode);
+		}
+
+		return exponentiationProofsArrayNode;
+	}
+
 	public static ArrayNode createPublicKeyNode(final ElGamalMultiRecipientPublicKey publicKey) {
 		final ArrayNode keyArrayNode = mapper.createArrayNode();
 		for (int i = 0; i < publicKey.size(); i++) {
