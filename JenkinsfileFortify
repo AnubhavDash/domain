@@ -24,7 +24,7 @@ properties([
 node {
     timestamps {
         env.JAVA_HOME = "${tool 'jdk-8u131'}"
-        env.PATH = "${tool 'Fortify_20.1.0'}/Fortify_SCA_and_Apps_20.1.0/bin:${tool 'maven-3.3.9'}/bin:${env.PATH}"
+        env.PATH = "${tool 'Fortify_21.1.2'}/Fortify_SCA_and_Apps_21.1.2/bin:${tool 'maven-3.3.9'}/bin:${env.PATH}"
 
         step([$class: 'StashNotifier'])
         currentBuild.result = 'SUCCESS'
@@ -52,11 +52,13 @@ node {
         }
 
         stage('Fortify analysis') {
+            // crypto-primitives-domain is sent to the crypto-primitives project in Fortify
+            // But with another version so that it belongs to the same license
             sh '''
-                SSC_PROJ_NAME=crypto-primitives-domain
-                SSC_PROJ_VERSION=1.0
+                SSC_PROJ_NAME=crypto-primitives
+                SSC_PROJ_VERSION=crypto-primitives-domain
                 sourceanalyzer -b "${JOB_NAME}" -clean
-                sourceanalyzer -b "${JOB_NAME}" -verbose -Xmx6096M -64 -exclude "**/*Test.java" -exclude "**/Test*.java" "**/*.java" "**/*.jsp"  "**/custom/**/*.js"
+                sourceanalyzer -b "${JOB_NAME}" -verbose -Xmx6096M -64 -exclude "**/*Test.java" -exclude "**/Test*.java" "**/*.java"
                 sourceanalyzer -b "${JOB_NAME}" -verbose -Xmx8G -64 -f "${JOB_NAME}.fpr" -logfile "${JOB_NAME}_sourceanalyser.log" -scan
                 fortifyclient uploadFPR -file "${JOB_NAME}.fpr" -project "${SSC_PROJ_NAME}" -version "${SSC_PROJ_VERSION}" -authtoken "${SSCProd_UploadToken}" -url "${SSCProd_URL}"
             '''
