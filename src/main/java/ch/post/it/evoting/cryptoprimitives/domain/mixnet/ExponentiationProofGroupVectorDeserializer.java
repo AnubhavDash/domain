@@ -32,7 +32,7 @@ import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.ExponentiationPro
 /**
  * Deserializes a json into a {@link GroupVector} of {@link ExponentiationProof}s.
  */
-class ExponentiationProofGroupVectorDeserializer extends JsonDeserializer<GroupVector<ExponentiationProof, ZqGroup>> {
+public class ExponentiationProofGroupVectorDeserializer extends JsonDeserializer<GroupVector<ExponentiationProof, ZqGroup>> {
 
 	/**
 	 * The {@code context} must provide the {@link GqGroup} that will be used to reconstruct the underlying {@link ZqElement}s.
