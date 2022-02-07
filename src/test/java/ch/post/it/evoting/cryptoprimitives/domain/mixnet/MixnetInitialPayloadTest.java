@@ -41,6 +41,8 @@ import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 @DisplayName("A MixnetInitialPayload")
 class MixnetInitialPayloadTest extends MapperSetUp {
 
+	private static final String ELECTION_EVENT_ID = "4b7a8f063b564dbf8e24420d3f52f54f";
+	private static final String BALLOT_BOX_ID = "cbf8ac1c1bcf444da0ccf5d7e956153b";
 	private static final int NBR_CIPHERTEXT = 10;
 	private static final SecureRandom secureRandom = new SecureRandom();
 	private static final byte[] randomBytes = new byte[10];
@@ -60,10 +62,17 @@ class MixnetInitialPayloadTest extends MapperSetUp {
 		final X509Certificate certificate = SerializationTestData.generateTestCertificate();
 		final CryptoPrimitivesPayloadSignature signature = new CryptoPrimitivesPayloadSignature(randomBytes, new X509Certificate[] { certificate });
 
-		initialPayload = new MixnetInitialPayload(gqGroup, ciphertexts, electionPublicKey).setSignature(signature);
+		initialPayload = new MixnetInitialPayload(ELECTION_EVENT_ID, BALLOT_BOX_ID, gqGroup, ciphertexts,
+				electionPublicKey).setSignature(signature);
 
 		// Create expected Json.
 		rootNode = mapper.createObjectNode();
+
+		final JsonNode electionEventIdNode = mapper.readTree(mapper.writeValueAsString(ELECTION_EVENT_ID));
+		rootNode.set("electionEventId", electionEventIdNode);
+
+		final JsonNode ballotBoxIdNode = mapper.readTree(mapper.writeValueAsString(BALLOT_BOX_ID));
+		rootNode.set("ballotBoxId", ballotBoxIdNode);
 
 		final JsonNode encryptionGroupNode = mapper.readTree(mapper.writeValueAsString(gqGroup));
 		rootNode.set("encryptionGroup", encryptionGroupNode);

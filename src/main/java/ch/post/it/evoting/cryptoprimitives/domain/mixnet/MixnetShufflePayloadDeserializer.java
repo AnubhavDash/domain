@@ -40,6 +40,10 @@ class MixnetShufflePayloadDeserializer extends JsonDeserializer<MixnetShufflePay
 		final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
 
 		final JsonNode node = mapper.readTree(parser);
+
+		final String electionEventId = mapper.readValue(node.get("electionEventId").toString(), String.class);
+		final String ballotBoxId = mapper.readValue(node.get("ballotBoxId").toString(), String.class);
+
 		final JsonNode encryptionGroupNode = node.get("encryptionGroup");
 		final GqGroup gqGroup = mapper.readValue(encryptionGroupNode.toString(), GqGroup.class);
 		final String groupAttribute = "group";
@@ -67,7 +71,7 @@ class MixnetShufflePayloadDeserializer extends JsonDeserializer<MixnetShufflePay
 
 		final CryptoPrimitivesPayloadSignature signature = mapper.reader().readValue(node.get("signature").toString(), CryptoPrimitivesPayloadSignature.class);
 
-		return new MixnetShufflePayload(gqGroup, verifiableDecryptions, verifiableShuffle, remainingElectionPublicKey,
+		return new MixnetShufflePayload(electionEventId, ballotBoxId, gqGroup, verifiableDecryptions, verifiableShuffle, remainingElectionPublicKey,
 				previousRemainingElectionPublicKey, nodeElectionPublicKey, nodeId, signature);
 	}
 }
