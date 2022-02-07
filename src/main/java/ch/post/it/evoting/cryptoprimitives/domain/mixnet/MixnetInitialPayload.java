@@ -15,6 +15,7 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.UUIDValidations.validateUUID;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
@@ -38,14 +39,21 @@ import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCipherte
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
+import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
 /**
  * The payload sent to the first mixing control component.
  */
-@JsonPropertyOrder({ "encryptionGroup", "ciphertexts", "electionPublicKey", "signature", "signingPublicKey" })
+@JsonPropertyOrder({ "electionEventId", "ballotBoxId", "encryptionGroup", "ciphertexts", "electionPublicKey", "signature", "signingPublicKey" })
 @JsonDeserialize(as = MixnetInitialPayload.class, using = MixnetInitialPayload.MixnetInitialPayloadDeserializer.class)
 public class MixnetInitialPayload implements MixnetPayload {
+
+	@JsonProperty(required = true)
+	private final String electionEventId;
+
+	@JsonProperty(required = true)
+	private final String ballotBoxId;
 
 	@JsonProperty(required = true)
 	private final GqGroup encryptionGroup;
@@ -62,18 +70,37 @@ public class MixnetInitialPayload implements MixnetPayload {
 	/**
 	 * Constructs an unsigned payload.  All fields must be non null.
 	 */
-	public MixnetInitialPayload(final GqGroup encryptionGroup, final List<ElGamalMultiRecipientCiphertext> encryptedVotes,
+	public MixnetInitialPayload(final String electionEventId, final String ballotBoxId, final GqGroup encryptionGroup,
+			final List<ElGamalMultiRecipientCiphertext> encryptedVotes,
 			final ElGamalMultiRecipientPublicKey electionPublicKey) {
 
+		checkNotNull(electionEventId);
+		checkNotNull(ballotBoxId);
 		checkNotNull(encryptionGroup);
 		checkNotNull(encryptedVotes);
 		checkNotNull(electionPublicKey);
 
+		validateUUID(electionEventId);
+		validateUUID(ballotBoxId);
+
+		this.electionEventId = electionEventId;
+		this.ballotBoxId = ballotBoxId;
 		this.encryptionGroup = encryptionGroup;
 		this.encryptedVotes = encryptedVotes;
 		this.electionPublicKey = electionPublicKey;
 	}
 
+	@Override
+	public String getBallotBoxId() {
+		return ballotBoxId;
+	}
+
+	@Override
+	public String getElectionEventId() {
+		return electionEventId;
+	}
+
+	@Override
 	public GqGroup getEncryptionGroup() {
 		return encryptionGroup;
 	}
@@ -114,18 +141,20 @@ public class MixnetInitialPayload implements MixnetPayload {
 			return false;
 		}
 		final MixnetInitialPayload that = (MixnetInitialPayload) o;
-		return Objects.equals(encryptionGroup, that.encryptionGroup) && Objects.equals(encryptedVotes, that.encryptedVotes) && Objects
-				.equals(electionPublicKey, that.electionPublicKey) && Objects.equals(signature, that.signature);
+		return Objects.equals(electionEventId, that.electionEventId) && Objects.equals(ballotBoxId, that.ballotBoxId)
+				&& Objects.equals(encryptionGroup, that.encryptionGroup) && Objects.equals(encryptedVotes, that.encryptedVotes)
+				&& Objects.equals(electionPublicKey, that.electionPublicKey) && Objects.equals(signature, that.signature);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(encryptionGroup, encryptedVotes, electionPublicKey, signature);
+		return Objects.hash(electionEventId, ballotBoxId, encryptionGroup, encryptedVotes, electionPublicKey, signature);
 	}
 
 	@Override
 	public ImmutableList<? extends Hashable> toHashableForm() {
-		return ImmutableList.of(this.encryptionGroup, HashableList.from(this.encryptedVotes), this.electionPublicKey);
+		return ImmutableList.of(HashableString.from(this.electionEventId), HashableString.from(this.ballotBoxId), this.encryptionGroup,
+				HashableList.from(this.encryptedVotes), this.electionPublicKey);
 	}
 
 	/**
@@ -139,6 +168,10 @@ public class MixnetInitialPayload implements MixnetPayload {
 			final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
 
 			final JsonNode node = mapper.readTree(parser);
+
+			final String electionEventId = mapper.readValue(node.get("electionEventId").toString(), String.class);
+			final String ballotBoxId = mapper.readValue(node.get("ballotBoxId").toString(), String.class);
+
 			final JsonNode encryptionGroupNode = node.get("encryptionGroup");
 			final GqGroup gqGroup = mapper.readValue(encryptionGroupNode.toString(), GqGroup.class);
 			final String groupAttribute = "group";
@@ -149,9 +182,11 @@ public class MixnetInitialPayload implements MixnetPayload {
 			final ElGamalMultiRecipientPublicKey electionPublicKey = mapper.reader().withAttribute(groupAttribute, gqGroup)
 					.readValue(node.get("electionPublicKey").toString(), ElGamalMultiRecipientPublicKey.class);
 
-			final CryptoPrimitivesPayloadSignature signature = mapper.reader().readValue(node.get("signature").toString(), CryptoPrimitivesPayloadSignature.class);
+			final CryptoPrimitivesPayloadSignature signature = mapper.reader()
+					.readValue(node.get("signature").toString(), CryptoPrimitivesPayloadSignature.class);
 
-			return new MixnetInitialPayload(gqGroup, Arrays.asList(encryptedVotesArray), electionPublicKey).setSignature(signature);
+			return new MixnetInitialPayload(electionEventId, ballotBoxId, gqGroup, Arrays.asList(encryptedVotesArray), electionPublicKey)
+					.setSignature(signature);
 		}
 	}
 

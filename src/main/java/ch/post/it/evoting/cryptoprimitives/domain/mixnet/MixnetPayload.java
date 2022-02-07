@@ -23,6 +23,7 @@ import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayl
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
+import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
 /**
  * Represents a mixnet payload. This payload is the input or the output of a mixing / decryption operation.
@@ -37,4 +38,10 @@ public interface MixnetPayload extends HashableList {
 	CryptoPrimitivesPayloadSignature getSignature();
 
 	MixnetPayload setSignature(final CryptoPrimitivesPayloadSignature signature);
+
+	GqGroup getEncryptionGroup();
+
+	String getBallotBoxId();
+
+	String getElectionEventId();
 }
