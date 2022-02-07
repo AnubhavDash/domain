@@ -15,6 +15,7 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.UUIDValidations.validateUUID;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigInteger;
@@ -34,6 +35,7 @@ import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCipherte
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableBigInteger;
+import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecryptions;
@@ -42,10 +44,16 @@ import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecrypt
  * Encapsulates the output of a mixing / decryption operation. If the ballot box contained only one vote, the verifiableShuffle is null, since
  * shuffling only works with at least two votes.
  */
-@JsonPropertyOrder({ "encryptionGroup", "verifiableDecryptions", "verifiableShuffle", "remainingElectionPublicKey",
+@JsonPropertyOrder({ "electionEventId", "ballotBoxId", "encryptionGroup", "verifiableDecryptions", "verifiableShuffle", "remainingElectionPublicKey",
 		"previousRemainingElectionPublicKey", "nodeElectionPublicKey", "nodeId", "signature", "signingPublicKey" })
 @JsonDeserialize(as = MixnetShufflePayload.class, using = MixnetShufflePayloadDeserializer.class)
 public class MixnetShufflePayload implements MixnetPayload {
+
+	@JsonProperty
+	private final String electionEventId;
+
+	@JsonProperty
+	private final String ballotBoxId;
 
 	@JsonProperty
 	private final GqGroup encryptionGroup;
@@ -73,7 +81,11 @@ public class MixnetShufflePayload implements MixnetPayload {
 	private CryptoPrimitivesPayloadSignature signature;
 
 	@JsonCreator
-	public MixnetShufflePayload(
+	public 	MixnetShufflePayload(
+			@JsonProperty(value = "electionEventId", required = true)
+			final String electionEventId,
+			@JsonProperty(value = "ballotBoxId", required = true)
+			final String ballotBoxId,
 			@JsonProperty(value = "encryptionGroup", required = true)
 			final GqGroup encryptionGroup,
 			@JsonProperty(value = "verifiableDecryptions", required = true)
@@ -91,6 +103,8 @@ public class MixnetShufflePayload implements MixnetPayload {
 			@JsonProperty(value = "signature", required = true)
 			final CryptoPrimitivesPayloadSignature signature) {
 
+		this.electionEventId = electionEventId;
+		this.ballotBoxId = ballotBoxId;
 		this.encryptionGroup = encryptionGroup;
 		this.verifiableDecryptions = verifiableDecryptions;
 		this.verifiableShuffle = verifiableShuffle;
@@ -104,17 +118,25 @@ public class MixnetShufflePayload implements MixnetPayload {
 	/**
 	 * Constructs an unsigned payload.
 	 */
-	public MixnetShufflePayload(final GqGroup encryptionGroup, final VerifiableDecryptions verifiableDecryptions,
+	public MixnetShufflePayload(final String electionEventId, final String ballotBoxId, final GqGroup encryptionGroup,
+			final VerifiableDecryptions verifiableDecryptions,
 			final VerifiableShuffle verifiableShuffle, final ElGamalMultiRecipientPublicKey remainingElectionPublicKey,
 			final ElGamalMultiRecipientPublicKey previousRemainingElectionPublicKey, final ElGamalMultiRecipientPublicKey nodeElectionPublicKey,
 			final int nodeId) {
 
+		checkNotNull(electionEventId);
+		checkNotNull(ballotBoxId);
 		checkNotNull(encryptionGroup);
 		checkNotNull(verifiableDecryptions);
 		checkNotNull(remainingElectionPublicKey);
 		checkNotNull(previousRemainingElectionPublicKey);
 		checkNotNull(nodeElectionPublicKey);
 
+		validateUUID(electionEventId);
+		validateUUID(ballotBoxId);
+
+		this.electionEventId = electionEventId;
+		this.ballotBoxId = ballotBoxId;
 		this.encryptionGroup = encryptionGroup;
 		this.verifiableDecryptions = verifiableDecryptions;
 		this.verifiableShuffle = verifiableShuffle;
@@ -124,6 +146,17 @@ public class MixnetShufflePayload implements MixnetPayload {
 		this.nodeId = nodeId;
 	}
 
+	@Override
+	public String getBallotBoxId() {
+		return ballotBoxId;
+	}
+
+	@Override
+	public String getElectionEventId() {
+		return electionEventId;
+	}
+
+	@Override
 	public GqGroup getEncryptionGroup() {
 		return encryptionGroup;
 	}
@@ -180,28 +213,31 @@ public class MixnetShufflePayload implements MixnetPayload {
 			return false;
 		}
 		final MixnetShufflePayload that = (MixnetShufflePayload) o;
-		return nodeId == that.nodeId && Objects.equals(encryptionGroup, that.encryptionGroup) &&
-				Objects.equals(verifiableDecryptions, that.verifiableDecryptions) && Objects.equals(verifiableShuffle, that.verifiableShuffle) &&
-				Objects.equals(remainingElectionPublicKey, that.remainingElectionPublicKey) &&
-				Objects.equals(previousRemainingElectionPublicKey, that.previousRemainingElectionPublicKey) &&
-				Objects.equals(nodeElectionPublicKey, that.nodeElectionPublicKey) && Objects.equals(signature, that.signature);
+		return nodeId == that.nodeId && Objects.equals(electionEventId, that.electionEventId) && Objects
+				.equals(ballotBoxId, that.ballotBoxId) && Objects.equals(encryptionGroup, that.encryptionGroup) && Objects
+				.equals(verifiableDecryptions, that.verifiableDecryptions) && Objects.equals(verifiableShuffle, that.verifiableShuffle)
+				&& Objects.equals(remainingElectionPublicKey, that.remainingElectionPublicKey) && Objects
+				.equals(previousRemainingElectionPublicKey, that.previousRemainingElectionPublicKey) && Objects
+				.equals(nodeElectionPublicKey, that.nodeElectionPublicKey) && Objects.equals(signature, that.signature);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(encryptionGroup, verifiableDecryptions, verifiableShuffle, remainingElectionPublicKey, previousRemainingElectionPublicKey,
-				nodeElectionPublicKey, nodeId, signature);
+		return Objects.hash(electionEventId, ballotBoxId, encryptionGroup, verifiableDecryptions, verifiableShuffle, remainingElectionPublicKey,
+				previousRemainingElectionPublicKey, nodeElectionPublicKey, nodeId, signature);
 	}
 
 	@Override
 	public ImmutableList<? extends Hashable> toHashableForm() {
 		final int numberOfVotes = this.getEncryptedVotes().size();
 		if (numberOfVotes > 1) {
-			return ImmutableList.of(this.encryptionGroup, this.verifiableDecryptions, this.verifiableShuffle, this.remainingElectionPublicKey,
-					this.previousRemainingElectionPublicKey, this.nodeElectionPublicKey, HashableBigInteger.from(BigInteger.valueOf(this.nodeId)));
+			return ImmutableList.of(HashableString.from(this.electionEventId), HashableString.from(this.ballotBoxId), this.encryptionGroup,
+					this.verifiableDecryptions, this.verifiableShuffle, this.remainingElectionPublicKey, this.previousRemainingElectionPublicKey,
+					this.nodeElectionPublicKey, HashableBigInteger.from(BigInteger.valueOf(this.nodeId)));
 		} else {
-			return ImmutableList.of(this.encryptionGroup, this.verifiableDecryptions, this.remainingElectionPublicKey,
-					this.previousRemainingElectionPublicKey, this.nodeElectionPublicKey, HashableBigInteger.from(BigInteger.valueOf(this.nodeId)));
+			return ImmutableList.of(HashableString.from(this.electionEventId), HashableString.from(this.ballotBoxId), this.encryptionGroup,
+					this.verifiableDecryptions, this.remainingElectionPublicKey, this.previousRemainingElectionPublicKey, this.nodeElectionPublicKey,
+					HashableBigInteger.from(BigInteger.valueOf(this.nodeId)));
 		}
 	}
 }

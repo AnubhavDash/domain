@@ -28,11 +28,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Object for exchanging MixnetPayloads between the voting-server and the control components. Contains information about the state of the mixing
  * process of the payloads.
  */
-@JsonPropertyOrder({ "ballotBoxDetails", "nodeToVisit", "payload", "retryCount", "mixnetError" })
+@JsonPropertyOrder({ "nodeToVisit", "payload", "retryCount", "mixnetError" })
 public class MixnetState {
 
-	@JsonProperty
-	private final BallotBoxDetails ballotBoxDetails;
 	@JsonProperty
 	private final MixnetPayload payload;
 	@JsonProperty
@@ -46,8 +44,6 @@ public class MixnetState {
 
 	@JsonCreator
 	public MixnetState(
-			@JsonProperty(value = "ballotBoxDetails", required = true)
-			final BallotBoxDetails ballotBoxDetails,
 			@JsonProperty(value = "nodeToVisit", required = true)
 			final int nodeToVisit,
 			@JsonProperty(value = "payload", required = true)
@@ -57,19 +53,14 @@ public class MixnetState {
 			@JsonProperty("mixnetError")
 			final String mixnetError) {
 
-		this.ballotBoxDetails = ballotBoxDetails;
 		this.nodeToVisit = nodeToVisit;
 		this.payload = payload;
 		this.retryCount = retryCount;
 		this.mixnetError = mixnetError;
 	}
 
-	public MixnetState(final BallotBoxDetails ballotBoxDetails, final MixnetPayload payload) {
-		this(ballotBoxDetails, 0, payload, 5, null);
-	}
-
-	public BallotBoxDetails getBallotBoxDetails() {
-		return ballotBoxDetails;
+	public MixnetState(final MixnetPayload payload) {
+		this(0, payload, 5, null);
 	}
 
 	public MixnetPayload getPayload() {
@@ -111,12 +102,12 @@ public class MixnetState {
 			return false;
 		}
 		final MixnetState that = (MixnetState) o;
-		return nodeToVisit == that.nodeToVisit && retryCount == that.retryCount && Objects.equals(ballotBoxDetails, that.ballotBoxDetails) && Objects
-				.equals(payload, that.payload) && Objects.equals(mixnetError, that.mixnetError);
+		return nodeToVisit == that.nodeToVisit && retryCount == that.retryCount && Objects.equals(payload, that.payload) && Objects
+				.equals(mixnetError, that.mixnetError);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(ballotBoxDetails, nodeToVisit, payload, retryCount, mixnetError);
+		return Objects.hash(nodeToVisit, payload, retryCount, mixnetError);
 	}
 }

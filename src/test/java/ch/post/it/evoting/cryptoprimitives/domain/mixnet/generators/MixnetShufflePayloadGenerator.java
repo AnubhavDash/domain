@@ -33,6 +33,8 @@ import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecrypt
 
 public class MixnetShufflePayloadGenerator {
 
+	private static final String ELECTION_EVENT_ID = "f8ba3dd3844a4815af39c63570c12006";
+	private static final String BALLOT_BOX_ID = "0d31a1148f95488fae6827391425dc08";
 	private static final Random secureRandom = new SecureRandom();
 	private final GqGroup group;
 
@@ -59,7 +61,7 @@ public class MixnetShufflePayloadGenerator {
 		// VerifiableDecryptions.
 		final VerifiableDecryptions verifiableDecryptions = new VerifiableDecryptionGenerator(group).genVerifiableDecryption(numVotes, voteSize);
 
-		return new MixnetShufflePayload(group, verifiableDecryptions, verifiableShuffle, remainingElectionPublicKey,
+		return new MixnetShufflePayload(ELECTION_EVENT_ID, BALLOT_BOX_ID, group, verifiableDecryptions, verifiableShuffle, remainingElectionPublicKey,
 				previousRemainingElectionPublicKey, nodeElectionPublicKey, nodeId, signature);
 	}
 }
