@@ -47,10 +47,14 @@ import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecrypt
 
 class MixnetShufflePayloadTest extends MapperSetUp {
 
+	private static final String ELECTION_EVENT_ID = "4b7a8f063b564dbf8e24420d3f52f54f";
+	private static final String BALLOT_BOX_ID = "cbf8ac1c1bcf444da0ccf5d7e956153b";
 	private static final int NBR_CIPHERTEXT = 4;
 	private static final SecureRandom secureRandom = new SecureRandom();
 	private static final byte[] randomBytes = new byte[10];
 
+	private static String electionEventId;
+	private static String ballotBoxId;
 	private static List<ElGamalMultiRecipientCiphertext> ciphertexts;
 	private static VerifiableDecryptions verifiableDecryptions;
 	private static ElGamalMultiRecipientPublicKey remainingElectionPublicKey;
@@ -62,6 +66,9 @@ class MixnetShufflePayloadTest extends MapperSetUp {
 
 	@BeforeAll
 	static void setUpAll() throws JsonProcessingException {
+		electionEventId = ELECTION_EVENT_ID;
+		ballotBoxId = BALLOT_BOX_ID;
+
 		gqGroup = SerializationTestData.getGqGroup();
 
 		ciphertexts = SerializationTestData.getCiphertexts(NBR_CIPHERTEXT);
@@ -80,6 +87,12 @@ class MixnetShufflePayloadTest extends MapperSetUp {
 
 		// Create expected json.
 		rootNode = mapper.createObjectNode();
+
+		final JsonNode electionEventIdNode = mapper.readTree(mapper.writeValueAsString(electionEventId));
+		rootNode.set("electionEventId", electionEventIdNode);
+
+		final JsonNode ballotBoxIdNode = mapper.readTree(mapper.writeValueAsString(ballotBoxId));
+		rootNode.set("ballotBoxId", ballotBoxIdNode);
 
 		final JsonNode encryptionGroupNode = mapper.readTree(mapper.writeValueAsString(gqGroup));
 		rootNode.set("encryptionGroup", encryptionGroupNode);
@@ -119,7 +132,7 @@ class MixnetShufflePayloadTest extends MapperSetUp {
 			final VerifiableShuffle verifiableShuffle = new VerifiableShuffle(GroupVector.from(ciphertexts),
 					SerializationTestData.createShuffleArgument());
 
-			mixnetShufflePayload = new MixnetShufflePayload(gqGroup, verifiableDecryptions, verifiableShuffle, remainingElectionPublicKey,
+			mixnetShufflePayload = new MixnetShufflePayload(electionEventId, ballotBoxId, gqGroup, verifiableDecryptions, verifiableShuffle, remainingElectionPublicKey,
 					previousRemainingElectionPublicKey, nodeElectionPublicKey, 0, signature);
 		}
 
@@ -161,7 +174,7 @@ class MixnetShufflePayloadTest extends MapperSetUp {
 
 		@BeforeAll
 		void setUpAll() {
-			payloadWithoutVerifiableShuffle = new MixnetShufflePayload(gqGroup, verifiableDecryptions, null, remainingElectionPublicKey,
+			payloadWithoutVerifiableShuffle = new MixnetShufflePayload(electionEventId, ballotBoxId, gqGroup, verifiableDecryptions, null, remainingElectionPublicKey,
 					previousRemainingElectionPublicKey, nodeElectionPublicKey, 0, signature);
 
 			rootNodeCopy = rootNode.deepCopy();
