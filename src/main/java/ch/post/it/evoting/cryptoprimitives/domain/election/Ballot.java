@@ -15,10 +15,10 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.election;
 
-import static ch.post.it.evoting.cryptoprimitives.ConversionService.stringToInteger;
 import static ch.post.it.evoting.cryptoprimitives.domain.election.BallotValidations.checkContestsNotNullAndNotEmpty;
 import static ch.post.it.evoting.cryptoprimitives.domain.election.BallotValidations.checkNotNullAndNotEmpty;
 import static ch.post.it.evoting.cryptoprimitives.domain.election.BallotValidations.checkQuestionsSizeOfListsAndCandidatesContest;
+import static ch.post.it.evoting.cryptoprimitives.utils.ConversionService.stringToInteger;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigInteger;
