@@ -33,7 +33,7 @@ public class CorrelatedSupport  {
 	 * @param correlationId the correlation identifier.
 	 */
 	public CorrelatedSupport(UUID correlationId) {
-		setCorrelationId(correlationId);
+		this.correlationId = correlationId;
 	}
 
 	public UUID getCorrelationId() {
