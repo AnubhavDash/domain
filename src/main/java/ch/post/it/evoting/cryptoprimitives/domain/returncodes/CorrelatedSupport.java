@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Post CH Ltd
+ * Copyright 2022 Post CH Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public class CorrelatedSupport  {
 	 * @param correlationId the correlation identifier.
 	 */
 	public CorrelatedSupport(UUID correlationId) {
-		setCorrelationId(correlationId);
+		this.correlationId = correlationId;
 	}
 
 	public UUID getCorrelationId() {
