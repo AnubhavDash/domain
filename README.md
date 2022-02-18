@@ -10,11 +10,12 @@ The crypto-primitives-domain library is released under Apache 2.0.
 
 ## Code Quality
 
-We strive for excellent code quality and to minimize the risk of bugs and vulnerabilities. We rely on the following tools for code analysis.
+We strive for excellent code quality to minimize the risk of bugs and vulnerabilities. We rely on the following tools for code analysis.
 
 | Tool        | Focus                 |
 |-------------|-----------------------|
 | [SonarQube](https://www.sonarqube.org/)  | Code quality and code security      |
+| [Fortify](https://www.microfocus.com/de-de/products/static-code-analysis-sast/overview)  | Static Application Security Testing    |
 | [JFrog X-Ray](https://jfrog.com/xray/) | Common vulnerabilities and exposures (CVE) analysis, Open-source software (OSS) license compliance | |
 
 ### SonarQube Analysis
@@ -23,18 +24,28 @@ We parametrize SonarQube with the built-in Sonar way quality profile. The SonarQ
 
 ![SonarQube](SonarQube.jpg)
 
-Out of the 2 code smells:
+Out of the 4 code smells:
 
 * 2 code smells concern duplicated blocks in the Return Code Generation classes. We left the code blocks as is since removing them reduces the code's readability.
+* 2 code smells concern too many parameters in constructor classes. We left the constructor classes as is to ensure a better alignment to the specification.
 
+### Fortify Analysis
+
+The Fortify analysis showed 0 critical, 0 high, 0 medium, and 2 low criticality issues. We manually reviewed the 2 low-criticality issues and assessed them as false positives.
 
 ### JFrog X-Ray Analysis
 
 The X-Ray analysis indicates that none of the crypto-primitives-domain' 3rd party dependencies contains known vulnerabilities or non-compliant open source software licenses. As a general principle, we try to minimize external dependencies in cryptographic libraries and only rely on well-tested and widely used 3rd party components.
+
+## Change Log Release 0.13
+
+The following functionalities and improvements are included in release 0.13:
+
+* Refactored the CombinedCorrectnessInformation object and GetEncodedVotingOptions method.
+* Included the electionEventID and ballotBoxID in the Mix net payload objects.
 
 ## Future work
 
 We plan for the following improvements to the crypto-primitives-domain library:
 
 * Encapsulate ids (ballot box IDs, voting card set id, election event id) in objects
-* Add tests for Ballot#getEncodedVotingOptions
