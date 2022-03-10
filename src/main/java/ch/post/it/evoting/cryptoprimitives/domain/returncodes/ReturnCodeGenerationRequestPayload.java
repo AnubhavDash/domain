@@ -39,7 +39,7 @@ import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 @JsonPropertyOrder({ "tenantId", "electionEventId", "verificationCardSetId", "partialChoiceReturnCodesAllowList", "chunkId", "encryptionGroup",
 		"returnCodeGenerationInputs", "combinedCorrectnessInformation", "signature" })
 @JsonDeserialize(using = ReturnCodeGenerationRequestPayloadDeserializer.class)
-public class ReturnCodeGenerationRequestPayload implements HashableList {
+public class ReturnCodeGenerationRequestPayload implements SignedPayload {
 
 	@JsonProperty
 	private final String tenantId;
@@ -154,7 +154,7 @@ public class ReturnCodeGenerationRequestPayload implements HashableList {
 	}
 
 	public void setSignature(CryptoPrimitivesPayloadSignature signature) {
-		this.signature = signature;
+		this.signature = checkNotNull(signature);
 	}
 
 	@Override

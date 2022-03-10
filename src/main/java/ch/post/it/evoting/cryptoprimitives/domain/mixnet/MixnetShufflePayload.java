@@ -112,7 +112,7 @@ public class MixnetShufflePayload implements MixnetPayload {
 		this.previousRemainingElectionPublicKey = previousRemainingElectionPublicKey;
 		this.nodeElectionPublicKey = nodeElectionPublicKey;
 		this.nodeId = nodeId;
-		this.signature = signature;
+		this.signature = checkNotNull(signature);
 	}
 
 	/**
@@ -124,26 +124,18 @@ public class MixnetShufflePayload implements MixnetPayload {
 			final ElGamalMultiRecipientPublicKey previousRemainingElectionPublicKey, final ElGamalMultiRecipientPublicKey nodeElectionPublicKey,
 			final int nodeId) {
 
-		checkNotNull(electionEventId);
-		checkNotNull(ballotBoxId);
-		checkNotNull(encryptionGroup);
-		checkNotNull(verifiableDecryptions);
-		checkNotNull(remainingElectionPublicKey);
-		checkNotNull(previousRemainingElectionPublicKey);
-		checkNotNull(nodeElectionPublicKey);
+		this.electionEventId = checkNotNull(electionEventId);
+		this.ballotBoxId = checkNotNull(ballotBoxId);
+		this.encryptionGroup = checkNotNull(encryptionGroup);
+		this.verifiableDecryptions = checkNotNull(verifiableDecryptions);
+		this.verifiableShuffle = verifiableShuffle;
+		this.remainingElectionPublicKey = checkNotNull(remainingElectionPublicKey);
+		this.previousRemainingElectionPublicKey = checkNotNull(previousRemainingElectionPublicKey);
+		this.nodeElectionPublicKey = checkNotNull(nodeElectionPublicKey);
+		this.nodeId = nodeId;
 
 		validateUUID(electionEventId);
 		validateUUID(ballotBoxId);
-
-		this.electionEventId = electionEventId;
-		this.ballotBoxId = ballotBoxId;
-		this.encryptionGroup = encryptionGroup;
-		this.verifiableDecryptions = verifiableDecryptions;
-		this.verifiableShuffle = verifiableShuffle;
-		this.remainingElectionPublicKey = remainingElectionPublicKey;
-		this.previousRemainingElectionPublicKey = previousRemainingElectionPublicKey;
-		this.nodeElectionPublicKey = nodeElectionPublicKey;
-		this.nodeId = nodeId;
 	}
 
 	@Override
@@ -198,10 +190,8 @@ public class MixnetShufflePayload implements MixnetPayload {
 	}
 
 	@Override
-	public MixnetShufflePayload setSignature(final CryptoPrimitivesPayloadSignature signature) {
-		checkNotNull(signature);
-		this.signature = signature;
-		return this;
+	public void setSignature(final CryptoPrimitivesPayloadSignature signature) {
+		this.signature = checkNotNull(signature);
 	}
 
 	@Override
