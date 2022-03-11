@@ -63,7 +63,7 @@ class MixnetInitialPayloadTest extends MapperSetUp {
 		final CryptoPrimitivesPayloadSignature signature = new CryptoPrimitivesPayloadSignature(randomBytes, new X509Certificate[] { certificate });
 
 		initialPayload = new MixnetInitialPayload(ELECTION_EVENT_ID, BALLOT_BOX_ID, gqGroup, ciphertexts,
-				electionPublicKey).setSignature(signature);
+				electionPublicKey,signature);
 
 		// Create expected Json.
 		rootNode = mapper.createObjectNode();
