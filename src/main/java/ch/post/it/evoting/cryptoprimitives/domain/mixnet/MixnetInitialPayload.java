@@ -45,7 +45,7 @@ import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 /**
  * The payload sent to the first mixing control component.
  */
-@JsonPropertyOrder({ "electionEventId", "ballotBoxId", "encryptionGroup", "ciphertexts", "electionPublicKey", "signature", "signingPublicKey" })
+@JsonPropertyOrder({ "electionEventId", "ballotBoxId", "encryptionGroup", "ciphertexts", "electionPublicKey", "signature" })
 @JsonDeserialize(as = MixnetInitialPayload.class, using = MixnetInitialPayload.MixnetInitialPayloadDeserializer.class)
 public class MixnetInitialPayload implements MixnetPayload {
 
@@ -72,22 +72,32 @@ public class MixnetInitialPayload implements MixnetPayload {
 	 */
 	public MixnetInitialPayload(final String electionEventId, final String ballotBoxId, final GqGroup encryptionGroup,
 			final List<ElGamalMultiRecipientCiphertext> encryptedVotes,
-			final ElGamalMultiRecipientPublicKey electionPublicKey) {
+			final ElGamalMultiRecipientPublicKey electionPublicKey,
+			final CryptoPrimitivesPayloadSignature signature ) {
 
-		checkNotNull(electionEventId);
-		checkNotNull(ballotBoxId);
-		checkNotNull(encryptionGroup);
-		checkNotNull(encryptedVotes);
-		checkNotNull(electionPublicKey);
+		this.electionEventId = checkNotNull(electionEventId);
+		this.ballotBoxId = checkNotNull(ballotBoxId);
+		this.encryptionGroup = checkNotNull(encryptionGroup);
+		this.encryptedVotes = checkNotNull(encryptedVotes);
+		this.electionPublicKey = checkNotNull(electionPublicKey);
+		this.signature = checkNotNull(signature);
 
 		validateUUID(electionEventId);
 		validateUUID(ballotBoxId);
+	}
 
-		this.electionEventId = electionEventId;
-		this.ballotBoxId = ballotBoxId;
-		this.encryptionGroup = encryptionGroup;
-		this.encryptedVotes = encryptedVotes;
-		this.electionPublicKey = electionPublicKey;
+	public MixnetInitialPayload(final String electionEventId, final String ballotBoxId, final GqGroup encryptionGroup,
+			final List<ElGamalMultiRecipientCiphertext> encryptedVotes,
+			final ElGamalMultiRecipientPublicKey electionPublicKey) {
+
+		this.electionEventId = checkNotNull(electionEventId);
+		this.ballotBoxId = checkNotNull(ballotBoxId);
+		this.encryptionGroup = checkNotNull(encryptionGroup);
+		this.encryptedVotes = checkNotNull(encryptedVotes);
+		this.electionPublicKey = checkNotNull(electionPublicKey);
+
+		validateUUID(electionEventId);
+		validateUUID(ballotBoxId);
 	}
 
 	@Override
@@ -126,10 +136,9 @@ public class MixnetInitialPayload implements MixnetPayload {
 	}
 
 	@Override
-	public MixnetInitialPayload setSignature(final CryptoPrimitivesPayloadSignature signature) {
-		checkNotNull(signature);
-		this.signature = signature;
-		return this;
+	public void setSignature(final CryptoPrimitivesPayloadSignature signature) {
+		this.signature = checkNotNull(signature);
+
 	}
 
 	@Override
@@ -185,8 +194,7 @@ public class MixnetInitialPayload implements MixnetPayload {
 			final CryptoPrimitivesPayloadSignature signature = mapper.reader()
 					.readValue(node.get("signature").toString(), CryptoPrimitivesPayloadSignature.class);
 
-			return new MixnetInitialPayload(electionEventId, ballotBoxId, gqGroup, Arrays.asList(encryptedVotesArray), electionPublicKey)
-					.setSignature(signature);
+			return new MixnetInitialPayload(electionEventId, ballotBoxId, gqGroup, Arrays.asList(encryptedVotesArray), electionPublicKey, signature);
 		}
 	}
 
