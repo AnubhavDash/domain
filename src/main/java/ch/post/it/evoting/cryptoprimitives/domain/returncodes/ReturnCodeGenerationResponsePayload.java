@@ -37,7 +37,7 @@ import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 @JsonPropertyOrder({ "tenantId", "electionEventId", "verificationCardSetId", "chunkId", "encryptionGroup", "returnCodeGenerationOutputs", "nodeId",
 		"signature" })
 @JsonDeserialize(using = ReturnCodeGenerationResponsePayloadDeserializer.class)
-public class ReturnCodeGenerationResponsePayload implements HashableList {
+public class ReturnCodeGenerationResponsePayload implements SignedPayload {
 
 	@JsonProperty
 	private final String tenantId;
