@@ -72,7 +72,7 @@ class MixnetStateTest extends MapperSetUp {
 	@Nested
 	@DisplayName("with a MixnetInitialPayload")
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-	class WithInitialPayload {
+	class WithInitialPayloadTest {
 
 		private final byte[] randomBytes = new byte[10];
 
@@ -88,7 +88,7 @@ class MixnetStateTest extends MapperSetUp {
 					new X509Certificate[] { certificate });
 
 			final MixnetInitialPayload initialPayload = new MixnetInitialPayload(ELECTION_EVENT_ID, BALLOT_BOX_ID, gqGroup, ciphertexts,
-					electionPublicKey).setSignature(signature);
+					electionPublicKey,signature);
 			mixnetState = new MixnetState(initialPayload);
 
 			// Expected MixnetInitialPayload.
@@ -173,7 +173,7 @@ class MixnetStateTest extends MapperSetUp {
 	@Nested
 	@DisplayName("with a MixnetShufflePayload")
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-	class WithShufflePayload {
+	class WithShufflePayloadTest {
 
 		private final byte[] randomBytes = new byte[10];
 

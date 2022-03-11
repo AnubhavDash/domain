@@ -3,7 +3,7 @@
 ---
 
 Crypto-Primitives-Domain
-Copyright 2021 Post CH Ltd.
+Copyright 2022 Post CH Ltd.
 
 The crypto-primitives-domain library encapsulates data objects of the Swiss Post Voting System developed at Post CH Ltd.
 
