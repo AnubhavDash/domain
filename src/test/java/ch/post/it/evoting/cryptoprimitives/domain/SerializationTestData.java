@@ -44,14 +44,15 @@ import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.SecurityLevel;
 import ch.post.it.evoting.cryptoprimitives.SecurityLevelConfig;
 import ch.post.it.evoting.cryptoprimitives.domain.election.Ballot;
 import ch.post.it.evoting.cryptoprimitives.domain.election.CombinedCorrectnessInformation;
+import ch.post.it.evoting.cryptoprimitives.domain.mapper.DomainObjectMapper;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.VerifiablePlaintextDecryption;
 import ch.post.it.evoting.cryptoprimitives.domain.returncodes.ReturnCodeGenerationInput;
 import ch.post.it.evoting.cryptoprimitives.domain.returncodes.ReturnCodeGenerationOutput;
@@ -64,6 +65,7 @@ import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPrivateK
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.math.GqElement;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
+import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.math.ZqElement;
 import ch.post.it.evoting.cryptoprimitives.math.ZqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.HadamardArgument;
@@ -76,7 +78,9 @@ import ch.post.it.evoting.cryptoprimitives.mixnet.ZeroArgument;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.DecryptionProof;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.ExponentiationProof;
 
-public class SerializationTestData extends MapperSetUp {
+public class SerializationTestData {
+
+	private static final ObjectMapper mapper = DomainObjectMapper.getNewInstance();
 
 	private static final GqGroup gqGroup = getGqGroup();
 	private static final ZqGroup zqGroup = ZqGroup.sameOrderAs(gqGroup);
