@@ -14,8 +14,10 @@ def MAVEN_SNAPSHOT_REPO = 'libs-snapshot-evoting-local'
 def MAVEN_RESOLVE_REPO = 'maven-evoting-virtual'
 def MAVEN_PARAMS = '-T 1.5C -U --settings .mvn/settings.xml --no-transfer-progress'
 
+def PR_ID = env.BRANCH_NAME.replace('PR-', '')
+
 // Tools
-def MAVEN = 'maven-3.8.2'
+def MAVEN = 'maven-3'
 
 pipeline {
 
@@ -29,6 +31,10 @@ pipeline {
 		ansiColor('xterm')
 		timestamps()
 	}
+
+	tools {
+   		maven "${MAVEN}"
+    }
 
 	stages {
 
@@ -91,8 +97,14 @@ pipeline {
 
 		stage('Sonar') {
 			steps {
-				withEnv(["EVOTING_HOME=${env.WORKSPACE}"]) {
-					sh "mvn --settings ${EVOTING_HOME}/.mvn/settings.xml sonar:sonar -Dsonar.branch.name=$BRANCH_NAME"
+				script {
+					withEnv(["EVOTING_HOME=${env.WORKSPACE}"]) {
+						if (env.BRANCH_NAME.startsWith('PR-')) {
+							sh "mvn --settings ${EVOTING_HOME}/.mvn/settings.xml sonar:sonar -Dsonar.projectName=${PROJECT_NAME} -Dsonar.pullrequest.key=${PR_ID} -Dsonar.pullrequest.branch=${env.CHANGE_BRANCH} -Dsonar.pullrequest.base=${env.CHANGE_TARGET}"
+						} else {
+							sh "mvn --settings ${EVOTING_HOME}/.mvn/settings.xml sonar:sonar -Dsonar.branch.name=$BRANCH_NAME"
+						}
+					}
 				}
 			}
 		}
