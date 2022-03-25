@@ -21,6 +21,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.DecryptionProofMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.ElGamalMultiRecipientCiphertextMixIn;
+import ch.post.it.evoting.cryptoprimitives.domain.mixnet.ElGamalMultiRecipientKeyPairMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.ElGamalMultiRecipientMessageMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.ElGamalMultiRecipientPrivateKeyMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.ElGamalMultiRecipientPublicKeyMixIn;
@@ -38,6 +39,7 @@ import ch.post.it.evoting.cryptoprimitives.domain.mixnet.VerifiableShuffleMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.ZeroArgumentMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.ZqElementMixIn;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
+import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientKeyPair;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientMessage;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPrivateKey;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
@@ -79,6 +81,7 @@ public class DomainObjectMapper {
 				.addMixIn(ElGamalMultiRecipientMessage.class, ElGamalMultiRecipientMessageMixIn.class)
 				.addMixIn(ElGamalMultiRecipientPublicKey.class, ElGamalMultiRecipientPublicKeyMixIn.class)
 				.addMixIn(ElGamalMultiRecipientPrivateKey.class, ElGamalMultiRecipientPrivateKeyMixIn.class)
+				.addMixIn(ElGamalMultiRecipientKeyPair.class, ElGamalMultiRecipientKeyPairMixIn.class)
 				// Verifiable.
 				.addMixIn(VerifiableShuffle.class, VerifiableShuffleMixIn.class)
 				.addMixIn(VerifiableDecryptions.class, VerifiableDecryptionsMixIn.class)
