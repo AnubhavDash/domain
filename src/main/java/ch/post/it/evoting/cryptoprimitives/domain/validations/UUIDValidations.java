@@ -45,12 +45,15 @@ public final class UUIDValidations {
 	 * @throws NullPointerException      if the string is null.
 	 * @throws FailedValidationException if the string validation fails.
 	 */
-	public static void validateUUID(final String toValidate) {
+	public static String validateUUID(final String toValidate) {
 		checkNotNull(toValidate);
 
 		if (!UUID_PATTERN.matcher(toValidate).matches()) {
 			throw new FailedValidationException(
-					String.format("The given string (%s) does not comply with the required UUID format (%s).", toValidate, UUID_REGEX));
+					String.format("The given string does not comply with the required UUID format. [string: %s, format: %s].", toValidate,
+							UUID_REGEX));
 		}
+
+		return toValidate;
 	}
 }
