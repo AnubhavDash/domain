@@ -81,7 +81,7 @@ public class MixnetShufflePayload implements MixnetPayload {
 	private CryptoPrimitivesPayloadSignature signature;
 
 	@JsonCreator
-	public 	MixnetShufflePayload(
+	public MixnetShufflePayload(
 			@JsonProperty(value = "electionEventId", required = true)
 			final String electionEventId,
 			@JsonProperty(value = "ballotBoxId", required = true)
@@ -124,8 +124,8 @@ public class MixnetShufflePayload implements MixnetPayload {
 			final ElGamalMultiRecipientPublicKey previousRemainingElectionPublicKey, final ElGamalMultiRecipientPublicKey nodeElectionPublicKey,
 			final int nodeId) {
 
-		this.electionEventId = checkNotNull(electionEventId);
-		this.ballotBoxId = checkNotNull(ballotBoxId);
+		this.electionEventId = validateUUID(electionEventId);
+		this.ballotBoxId = validateUUID(ballotBoxId);
 		this.encryptionGroup = checkNotNull(encryptionGroup);
 		this.verifiableDecryptions = checkNotNull(verifiableDecryptions);
 		this.verifiableShuffle = verifiableShuffle;
@@ -133,9 +133,6 @@ public class MixnetShufflePayload implements MixnetPayload {
 		this.previousRemainingElectionPublicKey = checkNotNull(previousRemainingElectionPublicKey);
 		this.nodeElectionPublicKey = checkNotNull(nodeElectionPublicKey);
 		this.nodeId = nodeId;
-
-		validateUUID(electionEventId);
-		validateUUID(ballotBoxId);
 	}
 
 	@Override
