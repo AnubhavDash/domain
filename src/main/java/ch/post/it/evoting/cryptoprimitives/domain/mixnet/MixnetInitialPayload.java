@@ -73,31 +73,25 @@ public class MixnetInitialPayload implements MixnetPayload {
 	public MixnetInitialPayload(final String electionEventId, final String ballotBoxId, final GqGroup encryptionGroup,
 			final List<ElGamalMultiRecipientCiphertext> encryptedVotes,
 			final ElGamalMultiRecipientPublicKey electionPublicKey,
-			final CryptoPrimitivesPayloadSignature signature ) {
+			final CryptoPrimitivesPayloadSignature signature) {
 
-		this.electionEventId = checkNotNull(electionEventId);
-		this.ballotBoxId = checkNotNull(ballotBoxId);
+		this.electionEventId = validateUUID(electionEventId);
+		this.ballotBoxId = validateUUID(ballotBoxId);
 		this.encryptionGroup = checkNotNull(encryptionGroup);
 		this.encryptedVotes = checkNotNull(encryptedVotes);
 		this.electionPublicKey = checkNotNull(electionPublicKey);
 		this.signature = checkNotNull(signature);
-
-		validateUUID(electionEventId);
-		validateUUID(ballotBoxId);
 	}
 
 	public MixnetInitialPayload(final String electionEventId, final String ballotBoxId, final GqGroup encryptionGroup,
 			final List<ElGamalMultiRecipientCiphertext> encryptedVotes,
 			final ElGamalMultiRecipientPublicKey electionPublicKey) {
 
-		this.electionEventId = checkNotNull(electionEventId);
-		this.ballotBoxId = checkNotNull(ballotBoxId);
+		this.electionEventId = validateUUID(electionEventId);
+		this.ballotBoxId = validateUUID(ballotBoxId);
 		this.encryptionGroup = checkNotNull(encryptionGroup);
 		this.encryptedVotes = checkNotNull(encryptedVotes);
 		this.electionPublicKey = checkNotNull(electionPublicKey);
-
-		validateUUID(electionEventId);
-		validateUUID(ballotBoxId);
 	}
 
 	@Override
