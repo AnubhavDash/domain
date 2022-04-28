@@ -54,16 +54,16 @@ public class CryptoPrimitivesPayloadSignature {
 	 * Creates the representation of a crypto-primitives signature.
 	 *
 	 * @param signatureContents the byte stream containing the signature
-	 * @param certificateChain  the certificate chain to be used when validating the signature
+	 * @param certificateChain  the certificate chain to be used when validating the signature. Null if using direct trust.
 	 */
 	@JsonCreator
 	public CryptoPrimitivesPayloadSignature(
 			@JsonProperty(value = "signatureContents", required = true)
 					byte[] signatureContents,
-			@JsonProperty(value = "certificateChain", required = true)
+			@JsonProperty(value = "certificateChain")
 					X509Certificate[] certificateChain) {
 		this.signatureContents = checkNotNull(signatureContents);
-		this.certificateChain = checkNotNull(certificateChain);
+		this.certificateChain = certificateChain;
 	}
 
 	/**
