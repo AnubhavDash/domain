@@ -32,6 +32,7 @@ import ch.post.it.evoting.cryptoprimitives.domain.mixnet.HadamardArgumentMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.MultiExponentiationArgumentMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.PlaintextEqualityProofMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.ProductArgumentMixIn;
+import ch.post.it.evoting.cryptoprimitives.domain.mixnet.SchnorrProofMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.ShuffleArgumentMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.SingleValueProductArgumentMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.VerifiableDecryptionsMixIn;
@@ -56,6 +57,7 @@ import ch.post.it.evoting.cryptoprimitives.mixnet.ZeroArgument;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.DecryptionProof;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.ExponentiationProof;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.PlaintextEqualityProof;
+import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.SchnorrProof;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecryptions;
 
 /**
@@ -89,6 +91,7 @@ public class DomainObjectMapper {
 				.addMixIn(DecryptionProof.class, DecryptionProofMixIn.class)
 				.addMixIn(ExponentiationProof.class, ExponentiationProofMixIn.class)
 				.addMixIn(PlaintextEqualityProof.class, PlaintextEqualityProofMixIn.class)
+				.addMixIn(SchnorrProof.class, SchnorrProofMixIn.class)
 				// Arguments.
 				.addMixIn(ShuffleArgument.class, ShuffleArgumentMixIn.class)
 				.addMixIn(MultiExponentiationArgument.class, MultiExponentiationArgumentMixIn.class)
