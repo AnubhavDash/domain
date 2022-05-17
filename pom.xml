@@ -5,22 +5,23 @@
 
 	<groupId>ch.post.it.evoting.cryptoprimitives.domain</groupId>
 	<artifactId>crypto-primitives-domain</artifactId>
-	<version>0.14.1.2</version>
+	<version>0.14.2.0</version>
 	<packaging>jar</packaging>
 	<name>Crypto Primitives Domain</name>
 
 	<properties>
-		<maven-enforcer-plugin.requiredJavaVersion>[1.8.0-312, 1.9)</maven-enforcer-plugin.requiredJavaVersion>
+		<maven-enforcer-plugin.requiredJavaVersion>[17.0.3]</maven-enforcer-plugin.requiredJavaVersion>
 		<maven-enforcer-plugin.requiredMavenVersion>3.8.5</maven-enforcer-plugin.requiredMavenVersion>
-		<project.build.outputTimestamp>2022-05-03T10:37:45+02:00</project.build.outputTimestamp>
+		<project.build.outputTimestamp>2022-05-17T14:23:23+02:00</project.build.outputTimestamp>
 
 		<bouncycastle.version>1.70</bouncycastle.version>
-		<crypto-primitives.version>0.14.1.0</crypto-primitives.version>
+		<crypto-primitives.version>0.14.2.0</crypto-primitives.version>
 		<jackson.version>2.12.6</jackson.version>
 		<jacoco.version>0.8.7</jacoco.version>
-		<java.version>1.8</java.version>
 		<junit-jupiter.version>5.8.2</junit-jupiter.version>
 		<mockito.version>3.12.4</mockito.version>
+
+		<maven.compiler.release>17</maven.compiler.release>
 
 		<!-- Sonar -->
 		<sonar.scm.disabled>true</sonar.scm.disabled>
@@ -29,13 +30,13 @@
 		<sonar.skipDesign>true</sonar.skipDesign>
 		<sonar.junit.reportPaths>${project.basedir}/target/surefire-reports/</sonar.junit.reportPaths>
 		<sonar.coverage.exclusions>**/test/**/*,**/tests/**/*</sonar.coverage.exclusions>
-		<sonar.java.source>${java.version}</sonar.java.source>
-		<sonar.java.target>${java.version}</sonar.java.target>
+		<sonar.java.source>${maven.compiler.release}</sonar.java.source>
+		<sonar.java.target>${maven.compiler.release}</sonar.java.target>
 		<sonar-maven-plugin.version>3.9.0.2155</sonar-maven-plugin.version>
 
 		<!-- Plugins versions -->
 		<maven-deploy-plugin.version>3.0.0-M2</maven-deploy-plugin.version>
-		<maven-compiler-plugin.version>3.10.0</maven-compiler-plugin.version>
+		<maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
 		<maven-enforcer-plugin.version>3.0.0</maven-enforcer-plugin.version>
 		<maven-failsafe-plugin.version>3.0.0-M5</maven-failsafe-plugin.version>
 		<maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
@@ -168,6 +169,14 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${maven.compiler.release}</source>
+					<target>${maven.compiler.release}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
@@ -187,15 +196,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven-compiler-plugin.version}</version>
-				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
