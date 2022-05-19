@@ -86,7 +86,7 @@ public class Ballot {
 	public List<BigInteger> getEncodedVotingOptions() {
 		return getOrderedElectionOptions().stream()
 				.map(electionOption -> stringToInteger(electionOption.getRepresentation()))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	/**
@@ -106,7 +106,7 @@ public class Ballot {
 		return checkContestsNotNullAndNotEmpty(this.contests, this.id).stream()
 				.map(this::getOrderedElectionOptionsFromContest)
 				.flatMap(Collection::stream)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	private List<ElectionOption> getOrderedElectionOptionsFromContest(final Contest contest) {
@@ -140,7 +140,7 @@ public class Ballot {
 				.map(ElectionAttributes::getId)
 				.map(correctnessId -> getOrderedElectionOptions(correctnessId, attributes, electionOptions))
 				.flatMap(Collection::stream)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	private List<ElectionOption> getOrderedElectionOptionsFromListsAndCandidatesTemplateContest(final List<Question> questions,
@@ -156,7 +156,7 @@ public class Ballot {
 				.map(Question::getAttribute)
 				.map(correctnessId -> getOrderedElectionOptions(correctnessId, attributes, electionOptions))
 				.flatMap(Collection::stream)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	/**
@@ -185,8 +185,8 @@ public class Ballot {
 				.map(ElectionAttributes::getId)
 				.map(electionAttributesId -> electionOptions.stream()
 						.filter(electionOption -> electionAttributesId.equals(electionOption.getAttribute()))
-						.collect(Collectors.toList()))
+						.toList())
 				.flatMap(Collection::stream)
-				.collect(Collectors.toList());
+				.toList();
 	}
 }
