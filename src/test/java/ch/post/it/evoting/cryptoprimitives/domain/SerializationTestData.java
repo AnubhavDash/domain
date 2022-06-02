@@ -222,7 +222,7 @@ public class SerializationTestData {
 
 	public static ObjectNode createCiphertextNode(final ElGamalMultiRecipientCiphertext ciphertext) {
 		final GqElement gamma = ciphertext.getGamma();
-		final List<GqElement> phis = ciphertext.stream().skip(1).collect(Collectors.toList());
+		final List<GqElement> phis = ciphertext.stream().skip(1).toList();
 		final ObjectNode ciphertextNode = mapper.createObjectNode().put("gamma", bigIntegerToHex(gamma.getValue()));
 		final ArrayNode phisArrayNode = ciphertextNode.putArray("phis");
 		for (GqElement phi : phis) {
@@ -250,7 +250,7 @@ public class SerializationTestData {
 			} catch (JsonProcessingException e) {
 				throw new RuntimeException("Failed to serialize proofs.");
 			}
-		}).collect(Collectors.toList());
+		}).toList();
 
 		for (JsonNode jsonNode : proofsNodes) {
 			decryptionProofsArrayNode.add(jsonNode);
@@ -268,7 +268,7 @@ public class SerializationTestData {
 			} catch (JsonProcessingException e) {
 				throw new RuntimeException("Failed to serialize proofs.");
 			}
-		}).collect(Collectors.toList());
+		}).toList();
 
 		for (JsonNode jsonNode : proofsNodes) {
 			exponentiationProofsArrayNode.add(jsonNode);
