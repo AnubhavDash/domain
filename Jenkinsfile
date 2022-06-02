@@ -147,7 +147,7 @@ pipeline {
 				}
 			}
 			steps {
-				sh "rm -rf .m2"
+				sh "rm -rf .m2/repository/ch/post/"
 			}
 		}
 	}
