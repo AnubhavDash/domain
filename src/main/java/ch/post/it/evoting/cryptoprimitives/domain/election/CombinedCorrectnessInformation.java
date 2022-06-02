@@ -132,7 +132,7 @@ public class CombinedCorrectnessInformation implements HashableList {
 		return checkContestsNotNullAndNotEmpty(ballot.getContests(), ballot.getId()).stream()
 				.map(CombinedCorrectnessInformation::getCorrectnessInformationListFromContest)
 				.flatMap(Collection::stream)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	/**
@@ -204,7 +204,7 @@ public class CombinedCorrectnessInformation implements HashableList {
 						new CorrectnessInformation(correctnessId,
 								getCorrespondingQuestionByAttribute(questions, correctnessId, contestId).getMax(),
 								getNumberOfVotingOptions(attributes, options, correctnessId)))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	/**
@@ -237,7 +237,7 @@ public class CombinedCorrectnessInformation implements HashableList {
 						new CorrectnessInformation(question.getAttribute(),
 								question.getMax(),
 								getNumberOfVotingOptions(attributes, electionOptions, question.getAttribute())))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	private void initCombinedCorrectnessInformation() {
@@ -271,7 +271,7 @@ public class CombinedCorrectnessInformation implements HashableList {
 		// list of the related election attributes ids, ie list of election attributes ids whose field related (an array) contains the value correctnessId.
 		final List<String> relatedElectionAttributesIdsList = attributes.stream()
 				.filter(electionAttributes -> electionAttributes.getRelated() != null && electionAttributes.getRelated().contains(correctnessId))
-				.map(ElectionAttributes::getId).collect(Collectors.toList());
+				.map(ElectionAttributes::getId).toList();
 
 		// the number of voting options is the number of election options which are present in the list of the related election attributes ids.
 		final long numberOfVotingOptions = electionOptions.stream()
@@ -314,7 +314,7 @@ public class CombinedCorrectnessInformation implements HashableList {
 		int currentIndex = -1;
 		for (final CorrectnessInformation correctnessInformation : correctnessInformationList) {
 			final int increment = getIncrementFunction.applyAsInt(correctnessInformation);
-			final List<Integer> indexesList = IntStream.rangeClosed(currentIndex + 1, currentIndex + increment).boxed().collect(Collectors.toList());
+			final List<Integer> indexesList = IntStream.rangeClosed(currentIndex + 1, currentIndex + increment).boxed().toList();
 
 			correctnessIdToListOfIndexesMap.put(correctnessInformation.getCorrectnessId(), indexesList);
 
