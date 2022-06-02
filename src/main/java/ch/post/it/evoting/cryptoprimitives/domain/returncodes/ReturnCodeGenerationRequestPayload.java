@@ -187,7 +187,7 @@ public class ReturnCodeGenerationRequestPayload implements SignedPayload {
 	public ImmutableList<? extends Hashable> toHashableForm() {
 		final List<HashableString> hashableAllowList = partialChoiceReturnCodesAllowList.stream()
 				.map(HashableString::from)
-				.collect(Collectors.toList());
+				.toList();
 
 		return ImmutableList.of(HashableString.from(tenantId), HashableString.from(electionEventId), HashableString.from(verificationCardSetId),
 				HashableList.from(hashableAllowList), HashableBigInteger.from(BigInteger.valueOf(chunkId)), encryptionGroup,
