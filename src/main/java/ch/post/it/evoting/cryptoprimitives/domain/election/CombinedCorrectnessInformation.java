@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.ToIntFunction;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -129,7 +128,7 @@ public class CombinedCorrectnessInformation implements HashableList {
 
 	private static List<CorrectnessInformation> getCorrectnessInformationListFromBallot(final Ballot ballot) {
 
-		return checkContestsNotNullAndNotEmpty(ballot.getContests(), ballot.getId()).stream()
+		return checkContestsNotNullAndNotEmpty(ballot.contests(), ballot.id()).stream()
 				.map(CombinedCorrectnessInformation::getCorrectnessInformationListFromContest)
 				.flatMap(Collection::stream)
 				.toList();
@@ -175,7 +174,7 @@ public class CombinedCorrectnessInformation implements HashableList {
 
 		} else {
 			throw new IllegalArgumentException(
-					String.format("Contests with template \"%s\" are not supported. [contestId=%s]", template, contestId));
+					String.format("Contests with template \"%s\" are not supported. [contestId: %s]", template, contestId));
 		}
 	}
 
@@ -327,7 +326,7 @@ public class CombinedCorrectnessInformation implements HashableList {
 	private static Question getCorrespondingQuestionByAttribute(final List<Question> questions, final String attribute, final String contestId) {
 		return questions.stream().filter(question -> question.getAttribute().equals(attribute)).findAny().orElseThrow(
 				() -> new IllegalArgumentException(
-						String.format("No corresponding question to attribute found in contest. [contestId=%s, attributeId=%s].", contestId,
+						String.format("No corresponding question to attribute found in contest. [contestId: %s, attributeId: %s].", contestId,
 								attribute)));
 	}
 

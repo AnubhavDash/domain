@@ -292,7 +292,7 @@ class CombinedCorrectnessInformationTest {
 				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotExceededQuestionsSize));
 
 		assertEquals(
-				"A contest with template \"listsAndCandidates\" cannot have more than 2 questions. [contestId=7868bd2dd48e4f6093d3b14d84720f79, questions size of contest=3]",
+				"A contest with template \"listsAndCandidates\" cannot have more than 2 questions. [contestId: 7868bd2dd48e4f6093d3b14d84720f79, questions size of contest: 3]",
 				illegalArgumentException.getMessage());
 	}
 
@@ -304,7 +304,7 @@ class CombinedCorrectnessInformationTest {
 		final IllegalArgumentException illegalArgumentException = assertThrows(
 				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotNoCorrespondingQuestionFound));
 
-		assertEquals("Contests with template \"unknownTemplate\" are not supported. [contestId=e7446a430b244a9bb12da153e35601cd]",
+		assertEquals("Contests with template \"unknownTemplate\" are not supported. [contestId: e7446a430b244a9bb12da153e35601cd]",
 				illegalArgumentException.getMessage());
 	}
 
@@ -317,7 +317,7 @@ class CombinedCorrectnessInformationTest {
 				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotNoCorrespondingAttributeQuestion));
 
 		assertEquals(
-				"No corresponding question to attribute found in contest. [contestId=f64da23c11e641a1ac1defa897c3d279, attributeId=2d22a5bfa0f0406a9812576f925e1ceb].",
+				"No corresponding question to attribute found in contest. [contestId: f64da23c11e641a1ac1defa897c3d279, attributeId: 2d22a5bfa0f0406a9812576f925e1ceb].",
 				illegalArgumentException.getMessage());
 	}
 
@@ -329,7 +329,7 @@ class CombinedCorrectnessInformationTest {
 		final IllegalArgumentException illegalArgumentException = assertThrows(
 				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotNoContests));
 
-		assertEquals("The ballot contains a null contests list. [ballotId=a5c0305db01142e786533cb48df1c794]",
+		assertEquals("The ballot contains a null contests list. [ballotId: a5c0305db01142e786533cb48df1c794]",
 				illegalArgumentException.getMessage());
 	}
 
@@ -341,7 +341,7 @@ class CombinedCorrectnessInformationTest {
 		final IllegalArgumentException illegalArgumentException = assertThrows(
 				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotEmptyContests));
 
-		assertEquals("The ballot contains an empty contests list. [ballotId=a5c0305db01142e786533cb48df1c794]",
+		assertEquals("The ballot contains an empty contests list. [ballotId: a5c0305db01142e786533cb48df1c794]",
 				illegalArgumentException.getMessage());
 	}
 
@@ -353,7 +353,7 @@ class CombinedCorrectnessInformationTest {
 		final IllegalArgumentException illegalArgumentException = assertThrows(
 				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotContestNoQuestions));
 
-		assertEquals("The contest contains a null questions list. [contestId=17966dc82c0841db996b0c718a3255e3]",
+		assertEquals("The contest contains a null questions list. [contestId: 17966dc82c0841db996b0c718a3255e3]",
 				illegalArgumentException.getMessage());
 	}
 
@@ -365,7 +365,7 @@ class CombinedCorrectnessInformationTest {
 		final IllegalArgumentException illegalArgumentException = assertThrows(
 				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotContestEmptyQuestions));
 
-		assertEquals("The contest contains an empty questions list. [contestId=17966dc82c0841db996b0c718a3255e3]",
+		assertEquals("The contest contains an empty questions list. [contestId: 17966dc82c0841db996b0c718a3255e3]",
 				illegalArgumentException.getMessage());
 	}
 
@@ -381,7 +381,7 @@ class CombinedCorrectnessInformationTest {
 	@ParameterizedTest(name = "built from {0}.")
 	@MethodSource("combinedCorrectnessInformationJsonMatchingTestSource")
 	@DisplayName("built from a valid ballot and mapped to a JSON string, matches the expected JSON string.")
-	void combinedCorrectnessInformationJsonMatchingTest(final String ballotJsonFileName, final Ballot ballot,
+	void combinedCorrectnessInformationJsonMatchingTest(final String ignoredBallotJsonFileName, final Ballot ballot,
 			final String combinedCorrectnessInformationJsonFileName) throws IOException {
 
 		final CombinedCorrectnessInformation combinedCorrectnessInformation = new CombinedCorrectnessInformation(ballot);
