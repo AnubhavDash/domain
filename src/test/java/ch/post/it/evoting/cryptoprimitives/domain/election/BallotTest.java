@@ -25,7 +25,9 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -79,7 +81,7 @@ class BallotTest {
 		final Ballot ballot = getBallotFromResourceName(BALLOT4_JSON);
 		final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, ballot::getOrderedElectionOptions);
 
-		assertEquals("Contests with template \"template\" are not supported. [contestId=690c5dd67c1045a2bdaf1d1104417fb0]",
+		assertEquals("Contests with template \"template\" are not supported. [contestId: 690c5dd67c1045a2bdaf1d1104417fb0]",
 				Throwables.getRootCause(illegalArgumentException).getMessage());
 	}
 
@@ -92,6 +94,39 @@ class BallotTest {
 				stringToInteger("71"), stringToInteger("59"));
 
 		assertEquals(expected, ballot.getEncodedVotingOptions());
+	}
+
+	@Test
+	@DisplayName("built from a valid ballot json file, calling getActualVotingOptions returns the expected actual voting options.")
+	void getActualVotingOptionsReturnsExpectedTest() throws IOException {
+
+		final Ballot ballot = getBallotFromResourceName(BALLOT_JSON);
+		final List<String> expected = List.of(
+				"BLANK_f70dab48718545ed87d37dc7fc1590eb",
+				"ce84154f-0a5a-3e93-85a6-92ec1986b6c6",
+				"00af9ff3-ef95-3204-b5fe-137f73858f6b",
+				"BLANK_968a760bc55642cd91805540bfeef161",
+				"a56d1cb2-1578-3636-9537-ded89b4c4715",
+				"3cbabd4b-6ee1-3546-93ce-54a128658d1d");
+
+		assertEquals(expected, ballot.getActualVotingOptions());
+	}
+
+	@Test
+	@DisplayName("calling getAttributeAlias throws Exception upon missing element and upon multiple matching elements.")
+	void getActualVotingOptionThrows() {
+
+		final String attribute = "attribute";
+
+		final List<ElectionAttributes> attributes = List.of(
+						new ElectionAttributes(attribute, "ignored", Collections.emptyList(), true),
+						new ElectionAttributes(attribute, "ignored", Collections.emptyList(), true));
+
+		// No matching element.
+		assertThrows(NoSuchElementException.class, () -> Ballot.getAttributeAlias("id", attributes));
+
+		// Multiple matching elements.
+		assertThrows(IllegalArgumentException.class, () -> Ballot.getAttributeAlias(attribute, attributes));
 	}
 
 	private static Ballot getBallotFromResourceName(final String resourceName) throws IOException {
