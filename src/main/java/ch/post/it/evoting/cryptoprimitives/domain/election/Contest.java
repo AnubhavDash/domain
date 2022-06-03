@@ -143,10 +143,10 @@ public class Contest {
 	 * <p>
 	 * The {@link Ballot} object does not order the "{@link Question}s" (which can correspond to a selection of referendum-type questions, but also to
 	 * a selection of a list or a number of candidates) according to the way the "questions" appear on the voter portal. In case of an election with
-	 * lists and candidates (contest's template {@value Contest#LISTS_AND_CANDIDATES_TEMPLATE} and {@value
-	 * Contest#MAX_LISTS_AND_CANDIDATES_QUESTIONS_SIZE} questions), if the first question corresponds to an election attribute with the alias {@value
-	 * Contest#CANDIDATES}, we need to swap it with the second question. This swap ensures the first question relates to "lists" and the second to
-	 * {@value Contest#CANDIDATES}.
+	 * lists and candidates (contest's template {@value Contest#LISTS_AND_CANDIDATES_TEMPLATE} and
+	 * {@value Contest#MAX_LISTS_AND_CANDIDATES_QUESTIONS_SIZE} questions), if the first question corresponds to an election attribute with the alias
+	 * {@value Contest#CANDIDATES}, we need to swap it with the second question. This swap ensures the first question relates to "lists" and the
+	 * second to {@value Contest#CANDIDATES}.
 	 *
 	 * @param questions  the list of {@link Question}s of the {@link Contest}. Must be non-null.
 	 * @param attributes the list of {@link ElectionAttributes} of the {@link Contest}. Must be non-null.

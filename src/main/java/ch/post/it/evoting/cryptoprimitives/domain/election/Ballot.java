@@ -25,55 +25,27 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.MoreCollectors;
 
 /**
  * Encapsulates the information contained within a ballot.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Ballot {
-
-	private final String id;
-
-	private final ElectionEvent electionEvent;
-
-	private final List<Contest> contests;
-
-	@JsonCreator
-	public Ballot(
-			@JsonProperty("id")
-			final String id,
-			@JsonProperty("electionEvent")
-			final ElectionEvent electionEvent,
-			@JsonProperty("contests")
-			final List<Contest> contests) {
-
-		this.id = id;
-		this.electionEvent = electionEvent;
-		this.contests = contests;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public ElectionEvent getElectionEvent() {
-		return electionEvent;
-	}
-
-	public List<Contest> getContests() {
-		return contests;
-	}
+public record Ballot(String id,
+					 ElectionEvent electionEvent,
+					 List<Contest> contests) {
 
 	/**
 	 * Returns the voting options - encoded as prime numbers - for this ballot. We order the encoded voting options by two levels: First, by how the
-	 * corresponding questions are displayed on the voter portal and second, by how the voting options appear in the "the {@link ElectionAttributes}
-	 * object of each contest.
+	 * corresponding questions are displayed on the voter portal and second, by how the voting options appear in the {@link ElectionAttributes} object
+	 * of each contest.
 	 *
 	 * @return the voting options encoded as prime numbers.
 	 * @throws IllegalArgumentException if the ballot contains an unsupported {@link Contest} template. Supported templates are
@@ -86,6 +58,31 @@ public class Ballot {
 	public List<BigInteger> getEncodedVotingOptions() {
 		return getOrderedElectionOptions().stream()
 				.map(electionOption -> stringToInteger(electionOption.getRepresentation()))
+				.toList();
+	}
+
+	/**
+	 * Returns the actual voting options - the identifiers of the voting options - for this ballot.  We order the identifiers of the voting options by
+	 * two levels: First, by how the corresponding questions are displayed on the voter portal and second, by how the voting options appear in the
+	 * {@link ElectionAttributes} object of each contest.
+	 *
+	 * @return the actual voting options.
+	 * @throws IllegalArgumentException if the ballot contains an unsupported {@link Contest} template. Supported templates are
+	 *                                  <ul>
+	 *                                      <li>{@value Contest#LISTS_AND_CANDIDATES_TEMPLATE}</li>
+	 *                                      <li>{@value Contest#OPTIONS_TEMPLATE}</li>
+	 *                                  </ul>
+	 */
+	@JsonIgnore
+	public List<String> getActualVotingOptions() {
+		final Map<Contest, List<ElectionOption>> contestToOrderedElectionOptions = checkContestsNotNullAndNotEmpty(this.contests, this.id).stream()
+				.collect(Collectors.toMap(Function.identity(), this::getOrderedElectionOptionsFromContest));
+
+		return contestToOrderedElectionOptions.keySet().stream()
+				.map(contest -> contestToOrderedElectionOptions.get(contest).stream()
+						.map(electionOption -> getAttributeAlias(electionOption.getAttribute(), contest.getAttributes()))
+						.toList()
+				).flatMap(Collection::stream)
 				.toList();
 	}
 
@@ -120,16 +117,13 @@ public class Ballot {
 		checkNotNullAndNotEmpty(attributes, "election attributes", contestId);
 		checkNotNullAndNotEmpty(electionOptions, "election options", contestId);
 
-		if (Contest.OPTIONS_TEMPLATE.equals(template)) {
-			return getOrderedElectionOptionsFromOptionsTemplateContest(attributes, electionOptions);
-
-		} else if (Contest.LISTS_AND_CANDIDATES_TEMPLATE.equals(template)) {
-			return getOrderedElectionOptionsFromListsAndCandidatesTemplateContest(questions, attributes, electionOptions, contestId);
-
-		} else {
-			throw new IllegalArgumentException(
-					String.format("Contests with template \"%s\" are not supported. [contestId=%s]", template, contest.getId()));
-		}
+		return switch (template) {
+			case Contest.OPTIONS_TEMPLATE -> getOrderedElectionOptionsFromOptionsTemplateContest(attributes, electionOptions);
+			case Contest.LISTS_AND_CANDIDATES_TEMPLATE ->
+					getOrderedElectionOptionsFromListsAndCandidatesTemplateContest(questions, attributes, electionOptions, contestId);
+			default -> throw new IllegalArgumentException(
+					String.format("Contests with template \"%s\" are not supported. [contestId: %s]", template, contest.getId()));
+		};
 	}
 
 	private List<ElectionOption> getOrderedElectionOptionsFromOptionsTemplateContest(final List<ElectionAttributes> attributes,
@@ -157,6 +151,21 @@ public class Ballot {
 				.map(correctnessId -> getOrderedElectionOptions(correctnessId, attributes, electionOptions))
 				.flatMap(Collection::stream)
 				.toList();
+	}
+
+	/**
+	 * Returns the attribute's alias (which corresponds to the identifier of the actual voting option) for a given attribute id
+	 *
+	 * @param attributeId the attribute id.
+	 * @param attributes  the attributes list to look into.
+	 */
+	@VisibleForTesting
+	static String getAttributeAlias(final String attributeId, final List<ElectionAttributes> attributes) {
+
+		return attributes.stream()
+				.filter(element -> attributeId.equals(element.getId()))
+				.map(ElectionAttributes::getAlias)
+				.collect(MoreCollectors.onlyElement());
 	}
 
 	/**
