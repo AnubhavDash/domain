@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
@@ -52,10 +51,10 @@ import ch.post.it.evoting.cryptoprimitives.domain.election.Ballot;
 import ch.post.it.evoting.cryptoprimitives.domain.election.CombinedCorrectnessInformation;
 import ch.post.it.evoting.cryptoprimitives.domain.mapper.DomainObjectMapper;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.VerifiablePlaintextDecryption;
-import ch.post.it.evoting.cryptoprimitives.domain.returncodes.ReturnCodeGenerationInput;
-import ch.post.it.evoting.cryptoprimitives.domain.returncodes.ReturnCodeGenerationOutput;
-import ch.post.it.evoting.cryptoprimitives.domain.returncodes.ReturnCodeGenerationRequestPayload;
-import ch.post.it.evoting.cryptoprimitives.domain.returncodes.ReturnCodeGenerationResponsePayload;
+import ch.post.it.evoting.cryptoprimitives.domain.returncodes.ControlComponentCodeShare;
+import ch.post.it.evoting.cryptoprimitives.domain.returncodes.SetupComponentVerificationData;
+import ch.post.it.evoting.cryptoprimitives.domain.returncodes.SetupComponentVerificationDataPayload;
+import ch.post.it.evoting.cryptoprimitives.domain.returncodes.ControlComponentCodeSharesPayload;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientMessage;
@@ -429,14 +428,14 @@ public class SerializationTestData {
 		}
 	}
 
-	public static ReturnCodeGenerationResponsePayload getResponsePayload(final String tenantId, final String electionEventId,
+	public static ControlComponentCodeSharesPayload getResponsePayload(final String tenantId, final String electionEventId,
 			final String verificationCardSetId, final int chunkId) {
 
-		final List<ReturnCodeGenerationOutput> returnCodeGenerationOutputs = Arrays
+		final List<ControlComponentCodeShare> controlComponentCodeShares = Arrays
 				.asList(getReturnCodeGenerationOutput("1"), getReturnCodeGenerationOutput("2"));
 
-		final ReturnCodeGenerationResponsePayload responsePayload = new ReturnCodeGenerationResponsePayload(tenantId, electionEventId,
-				verificationCardSetId, chunkId, gqGroup, returnCodeGenerationOutputs, 1);
+		final ControlComponentCodeSharesPayload responsePayload = new ControlComponentCodeSharesPayload(tenantId, electionEventId,
+				verificationCardSetId, chunkId, gqGroup, controlComponentCodeShares, 1);
 
 		// Generate random bytes for signature content and create payload signature.
 		final byte[] randomBytes = new byte[10];
@@ -448,7 +447,7 @@ public class SerializationTestData {
 		return responsePayload;
 	}
 
-	public static ObjectNode createResponsePayloadNode(final ReturnCodeGenerationResponsePayload responsePayload) throws JsonProcessingException {
+	public static ObjectNode createResponsePayloadNode(final ControlComponentCodeSharesPayload responsePayload) throws JsonProcessingException {
 		final ObjectNode rootNode = mapper.createObjectNode();
 		rootNode.put("tenantId", responsePayload.getTenantId());
 		rootNode.put("electionEventId", responsePayload.getElectionEventId());
@@ -458,8 +457,8 @@ public class SerializationTestData {
 		final JsonNode encryptionGroupNode = SerializationTestData.createEncryptionGroupNode(gqGroup);
 		rootNode.set("encryptionGroup", encryptionGroupNode);
 
-		final JsonNode returnCodeGenerationOutputsNode = mapper.readTree(mapper.writeValueAsString(responsePayload.getReturnCodeGenerationOutputs()));
-		rootNode.set("returnCodeGenerationOutputs", returnCodeGenerationOutputsNode);
+		final JsonNode returnCodeGenerationOutputsNode = mapper.readTree(mapper.writeValueAsString(responsePayload.getControlComponentCodeShares()));
+		rootNode.set("controlComponentCodeShares", returnCodeGenerationOutputsNode);
 
 		rootNode.put("nodeId", 1);
 
@@ -469,7 +468,7 @@ public class SerializationTestData {
 		return rootNode;
 	}
 
-	public static ReturnCodeGenerationOutput getReturnCodeGenerationOutput(final String verificationCardId) {
+	public static ControlComponentCodeShare getReturnCodeGenerationOutput(final String verificationCardId) {
 		final ElGamalMultiRecipientPublicKey voterChoiceReturnCodeGenerationPublicKey = SerializationTestData.getPublicKey();
 		final ElGamalMultiRecipientPublicKey voterVoteCastReturnCodeGenerationPublicKey = SerializationTestData.getPublicKey();
 		final ElGamalMultiRecipientCiphertext exponentiatedEncryptedPartialChoiceReturnCodes = SerializationTestData.getCiphertexts(1).get(0);
@@ -477,27 +476,27 @@ public class SerializationTestData {
 		final ElGamalMultiRecipientCiphertext exponentiatedEncryptedConfirmationKey = SerializationTestData.getSinglePhiCiphertext();
 		final ExponentiationProof encryptedConfirmationKeyExponentiationProof = SerializationTestData.createExponentiationProof();
 
-		return new ReturnCodeGenerationOutput(verificationCardId, voterChoiceReturnCodeGenerationPublicKey,
+		return new ControlComponentCodeShare(verificationCardId, voterChoiceReturnCodeGenerationPublicKey,
 				voterVoteCastReturnCodeGenerationPublicKey, exponentiatedEncryptedPartialChoiceReturnCodes,
 				encryptedPartialChoiceReturnCodeExponentiationProof, exponentiatedEncryptedConfirmationKey,
 				encryptedConfirmationKeyExponentiationProof);
 	}
 
-	public static ReturnCodeGenerationRequestPayload getRequestPayload(final Ballot ballot, final String tenantId, final String electionEventId,
+	public static SetupComponentVerificationDataPayload getRequestPayload(final Ballot ballot, final String tenantId, final String electionEventId,
 			final String verificationCardSetId, final int chunkId) {
 
 		final List<String> partialChoiceReturnCodesAllowList = Arrays.asList("a", "b", "c", "d");
 
 		final List<ElGamalMultiRecipientCiphertext> ciphertexts = getCiphertexts(2);
 		final ElGamalMultiRecipientPublicKey verificationCardPublicKey = getPublicKey();
-		final List<ReturnCodeGenerationInput> returnCodeGenerationInputs = Arrays
-				.asList(new ReturnCodeGenerationInput("1", ciphertexts.get(0), ciphertexts.get(1), verificationCardPublicKey),
-						new ReturnCodeGenerationInput("2", ciphertexts.get(0), ciphertexts.get(1), verificationCardPublicKey));
+		final List<SetupComponentVerificationData> setupComponentVerificationData = Arrays
+				.asList(new SetupComponentVerificationData("1", ciphertexts.get(0), ciphertexts.get(1), verificationCardPublicKey),
+						new SetupComponentVerificationData("2", ciphertexts.get(0), ciphertexts.get(1), verificationCardPublicKey));
 
 		final CombinedCorrectnessInformation combinedCorrectnessInformation = new CombinedCorrectnessInformation(ballot);
 
-		final ReturnCodeGenerationRequestPayload requestPayload = new ReturnCodeGenerationRequestPayload(tenantId, electionEventId,
-				verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId, gqGroup, returnCodeGenerationInputs,
+		final SetupComponentVerificationDataPayload requestPayload = new SetupComponentVerificationDataPayload(tenantId, electionEventId,
+				verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId, gqGroup, setupComponentVerificationData,
 				combinedCorrectnessInformation);
 
 		// Generate random bytes for signature content and create payload signature.
@@ -510,7 +509,7 @@ public class SerializationTestData {
 		return requestPayload;
 	}
 
-	public static ObjectNode createRequestPayloadNode(final ReturnCodeGenerationRequestPayload requestPayload) throws JsonProcessingException {
+	public static ObjectNode createRequestPayloadNode(final SetupComponentVerificationDataPayload requestPayload) throws JsonProcessingException {
 		final ObjectNode rootNode = mapper.createObjectNode();
 		rootNode.put("tenantId", requestPayload.getTenantId());
 		rootNode.put("electionEventId", requestPayload.getElectionEventId());
@@ -525,8 +524,8 @@ public class SerializationTestData {
 		final JsonNode encryptionGroupNode = SerializationTestData.createEncryptionGroupNode(gqGroup);
 		rootNode.set("encryptionGroup", encryptionGroupNode);
 
-		final JsonNode returnCodeGenerationInputsNode = mapper.readTree(mapper.writeValueAsString(requestPayload.getReturnCodeGenerationInputs()));
-		rootNode.set("returnCodeGenerationInputs", returnCodeGenerationInputsNode);
+		final JsonNode returnCodeGenerationInputsNode = mapper.readTree(mapper.writeValueAsString(requestPayload.getSetupComponentVerificationData()));
+		rootNode.set("setupComponentVerificationData", returnCodeGenerationInputsNode);
 
 		final JsonNode combinedCorrectnessInformationNode = mapper
 				.readTree(mapper.writeValueAsString(requestPayload.getCombinedCorrectnessInformation()));

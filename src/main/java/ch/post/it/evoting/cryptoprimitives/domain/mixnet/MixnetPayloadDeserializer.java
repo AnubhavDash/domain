@@ -39,9 +39,9 @@ class MixnetPayloadDeserializer extends JsonDeserializer<MixnetPayload> {
 		final GqGroup gqGroup = mapper.readValue(encryptionGroupNode.toString(), GqGroup.class);
 
 		if (node.has("verifiableDecryptions")) {
-			return mapper.reader().withAttribute("group", gqGroup).readValue(node.toString(), MixnetShufflePayload.class);
+			return mapper.reader().withAttribute("group", gqGroup).readValue(node.toString(), ControlComponentShufflePayload.class);
 		} else {
-			return mapper.reader().withAttribute("group", gqGroup).readValue(node.toString(), MixnetInitialPayload.class);
+			return mapper.reader().withAttribute("group", gqGroup).readValue(node.toString(), ControlComponentBallotBoxPayload.class);
 		}
 	}
 

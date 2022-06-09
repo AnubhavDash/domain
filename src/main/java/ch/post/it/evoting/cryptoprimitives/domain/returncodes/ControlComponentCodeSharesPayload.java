@@ -34,10 +34,10 @@ import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
-@JsonPropertyOrder({ "tenantId", "electionEventId", "verificationCardSetId", "chunkId", "encryptionGroup", "returnCodeGenerationOutputs", "nodeId",
+@JsonPropertyOrder({ "tenantId", "electionEventId", "verificationCardSetId", "chunkId", "encryptionGroup", "controlComponentCodeShares", "nodeId",
 		"signature" })
-@JsonDeserialize(using = ReturnCodeGenerationResponsePayloadDeserializer.class)
-public class ReturnCodeGenerationResponsePayload implements SignedPayload {
+@JsonDeserialize(using = ControlComponentCodeSharesPayloadDeserializer.class)
+public class ControlComponentCodeSharesPayload implements SignedPayload {
 
 	@JsonProperty
 	private final String tenantId;
@@ -55,7 +55,7 @@ public class ReturnCodeGenerationResponsePayload implements SignedPayload {
 	private final GqGroup encryptionGroup;
 
 	@JsonProperty
-	private final List<ReturnCodeGenerationOutput> returnCodeGenerationOutputs;
+	private final List<ControlComponentCodeShare> controlComponentCodeShares;
 
 	@JsonProperty
 	private final int nodeId;
@@ -64,7 +64,7 @@ public class ReturnCodeGenerationResponsePayload implements SignedPayload {
 	private CryptoPrimitivesPayloadSignature signature;
 
 	@JsonCreator
-	public ReturnCodeGenerationResponsePayload(
+	public ControlComponentCodeSharesPayload(
 			@JsonProperty("tenantId")
 			final String tenantId,
 			@JsonProperty("electionEventId")
@@ -75,8 +75,8 @@ public class ReturnCodeGenerationResponsePayload implements SignedPayload {
 			final int chunkId,
 			@JsonProperty("encryptionGroup")
 			final GqGroup encryptionGroup,
-			@JsonProperty("returnCodeGenerationOutputs")
-			final List<ReturnCodeGenerationOutput> returnCodeGenerationOutputs,
+			@JsonProperty("controlComponentCodeShares")
+			final List<ControlComponentCodeShare> controlComponentCodeShares,
 			@JsonProperty("nodeId")
 			final int nodeId,
 			@JsonProperty("signature")
@@ -87,20 +87,20 @@ public class ReturnCodeGenerationResponsePayload implements SignedPayload {
 		this.verificationCardSetId = checkNotNull(verificationCardSetId);
 		this.chunkId = chunkId;
 		this.encryptionGroup = checkNotNull(encryptionGroup);
-		this.returnCodeGenerationOutputs = checkNotNull(returnCodeGenerationOutputs);
+		this.controlComponentCodeShares = checkNotNull(controlComponentCodeShares);
 		this.nodeId = nodeId;
 		this.signature = checkNotNull(signature);
 	}
 
-	public ReturnCodeGenerationResponsePayload(final String tenantId, final String electionEventId, final String verificationCardSetId,
-			final int chunkId, final GqGroup encryptionGroup, final List<ReturnCodeGenerationOutput> returnCodeGenerationOutputs, final int nodeId) {
+	public ControlComponentCodeSharesPayload(final String tenantId, final String electionEventId, final String verificationCardSetId,
+			final int chunkId, final GqGroup encryptionGroup, final List<ControlComponentCodeShare> controlComponentCodeShares, final int nodeId) {
 
 		this.tenantId = checkNotNull(tenantId);
 		this.electionEventId = checkNotNull(electionEventId);
 		this.verificationCardSetId = checkNotNull(verificationCardSetId);
 		this.chunkId = chunkId;
 		this.encryptionGroup = checkNotNull(encryptionGroup);
-		this.returnCodeGenerationOutputs = checkNotNull(returnCodeGenerationOutputs);
+		this.controlComponentCodeShares = checkNotNull(controlComponentCodeShares);
 		this.nodeId = nodeId;
 	}
 
@@ -124,8 +124,8 @@ public class ReturnCodeGenerationResponsePayload implements SignedPayload {
 		return encryptionGroup;
 	}
 
-	public List<ReturnCodeGenerationOutput> getReturnCodeGenerationOutputs() {
-		return returnCodeGenerationOutputs;
+	public List<ControlComponentCodeShare> getControlComponentCodeShares() {
+		return controlComponentCodeShares;
 	}
 
 	public int getNodeId() {
@@ -148,22 +148,22 @@ public class ReturnCodeGenerationResponsePayload implements SignedPayload {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		ReturnCodeGenerationResponsePayload that = (ReturnCodeGenerationResponsePayload) o;
+		ControlComponentCodeSharesPayload that = (ControlComponentCodeSharesPayload) o;
 		return chunkId == that.chunkId && nodeId == that.nodeId && tenantId.equals(that.tenantId) && electionEventId.equals(that.electionEventId)
 				&& verificationCardSetId.equals(that.verificationCardSetId) && encryptionGroup.equals(that.encryptionGroup)
-				&& returnCodeGenerationOutputs.equals(that.returnCodeGenerationOutputs) && Objects.equals(signature, that.signature);
+				&& controlComponentCodeShares.equals(that.controlComponentCodeShares) && Objects.equals(signature, that.signature);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects
-				.hash(tenantId, electionEventId, verificationCardSetId, chunkId, encryptionGroup, returnCodeGenerationOutputs, nodeId, signature);
+				.hash(tenantId, electionEventId, verificationCardSetId, chunkId, encryptionGroup, controlComponentCodeShares, nodeId, signature);
 	}
 
 	@Override
 	public ImmutableList<Hashable> toHashableForm() {
 		return ImmutableList.of(HashableString.from(tenantId), HashableString.from(electionEventId), HashableString.from(verificationCardSetId),
-				HashableBigInteger.from(BigInteger.valueOf(chunkId)), encryptionGroup, HashableList.from(returnCodeGenerationOutputs),
+				HashableBigInteger.from(BigInteger.valueOf(chunkId)), encryptionGroup, HashableList.from(controlComponentCodeShares),
 				HashableBigInteger.from(BigInteger.valueOf(nodeId)));
 	}
 }

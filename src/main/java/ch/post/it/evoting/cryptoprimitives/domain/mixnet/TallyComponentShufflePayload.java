@@ -39,8 +39,8 @@ import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
  * Value class representing the final result of a mixnet.
  */
 @JsonPropertyOrder({ "encryptionGroup", "verifiableShuffle", "verifiablePlaintextDecryption", "previousRemainingElectionPublicKey" })
-@JsonDeserialize(using = MixnetFinalPayloadDeserializer.class)
-public class MixnetFinalPayload implements SignedPayload {
+@JsonDeserialize(using = TallyComponentShufflePayloadDeserializer.class)
+public class TallyComponentShufflePayload implements SignedPayload {
 
 	@JsonProperty
 	private final GqGroup encryptionGroup;
@@ -59,7 +59,7 @@ public class MixnetFinalPayload implements SignedPayload {
 	private CryptoPrimitivesPayloadSignature signature;
 
 	@JsonCreator
-	public MixnetFinalPayload(
+	public TallyComponentShufflePayload(
 			@JsonProperty(value = "encryptionGroup", required = true)
 			final GqGroup encryptionGroup,
 			@JsonProperty("verifiableShuffle")
@@ -86,7 +86,7 @@ public class MixnetFinalPayload implements SignedPayload {
 	/**
 	 * Constructs an unsigned payload.
 	 */
-	public MixnetFinalPayload(final GqGroup encryptionGroup, final VerifiableShuffle verifiableShuffle,
+	public TallyComponentShufflePayload(final GqGroup encryptionGroup, final VerifiableShuffle verifiableShuffle,
 			final VerifiablePlaintextDecryption verifiablePlaintextDecryption,
 			final ElGamalMultiRecipientPublicKey previousRemainingElectionPublicKey) {
 
@@ -136,7 +136,7 @@ public class MixnetFinalPayload implements SignedPayload {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		final MixnetFinalPayload that = (MixnetFinalPayload) o;
+		final TallyComponentShufflePayload that = (TallyComponentShufflePayload) o;
 		return encryptionGroup.equals(that.encryptionGroup) && Objects.equals(verifiableShuffle, that.verifiableShuffle)
 				&& verifiablePlaintextDecryption.equals(that.verifiablePlaintextDecryption) && previousRemainingElectionPublicKey
 				.equals(that.previousRemainingElectionPublicKey) && signature.equals(that.signature);

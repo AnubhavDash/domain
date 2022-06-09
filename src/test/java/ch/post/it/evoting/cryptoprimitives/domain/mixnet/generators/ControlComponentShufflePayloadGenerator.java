@@ -21,7 +21,7 @@ import java.security.cert.X509Certificate;
 import java.util.Random;
 
 import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
-import ch.post.it.evoting.cryptoprimitives.domain.mixnet.MixnetShufflePayload;
+import ch.post.it.evoting.cryptoprimitives.domain.mixnet.ControlComponentShufflePayload;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
@@ -31,18 +31,18 @@ import ch.post.it.evoting.cryptoprimitives.test.tools.generator.ElGamalGenerator
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecryptionGenerator;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecryptions;
 
-public class MixnetShufflePayloadGenerator {
+public class ControlComponentShufflePayloadGenerator {
 
 	private static final String ELECTION_EVENT_ID = "f8ba3dd3844a4815af39c63570c12006";
 	private static final String BALLOT_BOX_ID = "0d31a1148f95488fae6827391425dc08";
 	private static final Random secureRandom = new SecureRandom();
 	private final GqGroup group;
 
-	public MixnetShufflePayloadGenerator(GqGroup group) {
+	public ControlComponentShufflePayloadGenerator(GqGroup group) {
 		this.group = group;
 	}
 
-	public MixnetShufflePayload genPayload(int numVotes, int voteSize, int nodeId) {
+	public ControlComponentShufflePayload genPayload(int numVotes, int voteSize, int nodeId) {
 
 		final VerifiableShuffle verifiableShuffle =
 				numVotes <= 1 ? null : new VerifiableShuffleGenerator(group).genVerifiableShuffle(numVotes, voteSize);
@@ -61,7 +61,7 @@ public class MixnetShufflePayloadGenerator {
 		// VerifiableDecryptions.
 		final VerifiableDecryptions verifiableDecryptions = new VerifiableDecryptionGenerator(group).genVerifiableDecryption(numVotes, voteSize);
 
-		return new MixnetShufflePayload(ELECTION_EVENT_ID, BALLOT_BOX_ID, group, verifiableDecryptions, verifiableShuffle, remainingElectionPublicKey,
+		return new ControlComponentShufflePayload(ELECTION_EVENT_ID, BALLOT_BOX_ID, group, verifiableDecryptions, verifiableShuffle, remainingElectionPublicKey,
 				previousRemainingElectionPublicKey, nodeElectionPublicKey, nodeId, signature);
 	}
 }
