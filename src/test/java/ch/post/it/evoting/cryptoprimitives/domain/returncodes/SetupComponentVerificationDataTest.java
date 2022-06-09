@@ -33,12 +33,12 @@ import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCipherte
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
-@DisplayName("A ReturnCodeGenerationInput")
-class ReturnCodeGenerationInputTest extends MapperSetUp {
+@DisplayName("A SetupComponentVerificationData")
+class SetupComponentVerificationDataTest extends MapperSetUp {
 
 	private static final String VERIFICATION_CARD_ID = "1234";
 
-	private static ReturnCodeGenerationInput returnCodeGenerationInput;
+	private static SetupComponentVerificationData setupComponentVerificationData;
 	private static ObjectNode rootNode;
 	private static GqGroup gqGroup;
 
@@ -50,7 +50,7 @@ class ReturnCodeGenerationInputTest extends MapperSetUp {
 		final ElGamalMultiRecipientCiphertext encryptedHashedSquaredPartialChoiceReturnCodes = SerializationTestData.getCiphertexts(1).get(0);
 		final ElGamalMultiRecipientPublicKey verificationCardPublicKey = SerializationTestData.getPublicKey();
 
-		returnCodeGenerationInput = new ReturnCodeGenerationInput(VERIFICATION_CARD_ID, encryptedHashedSquaredConfirmationKey,
+		setupComponentVerificationData = new SetupComponentVerificationData(VERIFICATION_CARD_ID, encryptedHashedSquaredConfirmationKey,
 				encryptedHashedSquaredPartialChoiceReturnCodes, verificationCardPublicKey);
 
 		// Create expected json.
@@ -70,7 +70,7 @@ class ReturnCodeGenerationInputTest extends MapperSetUp {
 	@Test
 	@DisplayName("serialized gives expected json")
 	void serializeReturnCodeGenerationInput() throws JsonProcessingException {
-		final String serializedInput = mapper.writeValueAsString(returnCodeGenerationInput);
+		final String serializedInput = mapper.writeValueAsString(setupComponentVerificationData);
 
 		assertEquals(rootNode.toString(), serializedInput);
 	}
@@ -78,19 +78,19 @@ class ReturnCodeGenerationInputTest extends MapperSetUp {
 	@Test
 	@DisplayName("deserialized gives expected input")
 	void deserializeReturnCodeGenerationInput() throws IOException {
-		final ReturnCodeGenerationInput deserializedInput = mapper.reader().withAttribute("group", gqGroup)
-				.readValue(rootNode.toString(), ReturnCodeGenerationInput.class);
+		final SetupComponentVerificationData deserializedInput = mapper.reader().withAttribute("group", gqGroup)
+				.readValue(rootNode.toString(), SetupComponentVerificationData.class);
 
-		assertEquals(returnCodeGenerationInput, deserializedInput);
+		assertEquals(setupComponentVerificationData, deserializedInput);
 	}
 
 	@Test
 	@DisplayName("serialized then deserialized gives original input")
 	void cycle() throws IOException {
-		final ReturnCodeGenerationInput deserializedInput = mapper.reader().withAttribute("group", gqGroup)
-				.readValue(mapper.writeValueAsString(returnCodeGenerationInput), ReturnCodeGenerationInput.class);
+		final SetupComponentVerificationData deserializedInput = mapper.reader().withAttribute("group", gqGroup)
+				.readValue(mapper.writeValueAsString(setupComponentVerificationData), SetupComponentVerificationData.class);
 
-		assertEquals(returnCodeGenerationInput, deserializedInput);
+		assertEquals(setupComponentVerificationData, deserializedInput);
 	}
 
 }

@@ -20,7 +20,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -37,9 +36,9 @@ import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
 @JsonPropertyOrder({ "tenantId", "electionEventId", "verificationCardSetId", "partialChoiceReturnCodesAllowList", "chunkId", "encryptionGroup",
-		"returnCodeGenerationInputs", "combinedCorrectnessInformation", "signature" })
-@JsonDeserialize(using = ReturnCodeGenerationRequestPayloadDeserializer.class)
-public class ReturnCodeGenerationRequestPayload implements SignedPayload {
+		"setupComponentVerificationData", "combinedCorrectnessInformation", "signature" })
+@JsonDeserialize(using = SetupComponentVerificationDataDeserializer.class)
+public class SetupComponentVerificationDataPayload implements SignedPayload {
 
 	@JsonProperty
 	private final String tenantId;
@@ -60,7 +59,7 @@ public class ReturnCodeGenerationRequestPayload implements SignedPayload {
 	private final GqGroup encryptionGroup;
 
 	@JsonProperty
-	private final List<ReturnCodeGenerationInput> returnCodeGenerationInputs;
+	private final List<SetupComponentVerificationData> setupComponentVerificationData;
 
 	@JsonProperty
 	private final CombinedCorrectnessInformation combinedCorrectnessInformation;
@@ -69,7 +68,7 @@ public class ReturnCodeGenerationRequestPayload implements SignedPayload {
 	private CryptoPrimitivesPayloadSignature signature;
 
 	@JsonCreator
-	public ReturnCodeGenerationRequestPayload(
+	public SetupComponentVerificationDataPayload(
 			@JsonProperty("tenantId")
 			final String tenantId,
 			@JsonProperty("electionEventId")
@@ -82,8 +81,8 @@ public class ReturnCodeGenerationRequestPayload implements SignedPayload {
 			final int chunkId,
 			@JsonProperty("encryptionGroup")
 			final GqGroup encryptionGroup,
-			@JsonProperty("returnCodeGenerationInputs")
-			final List<ReturnCodeGenerationInput> returnCodeGenerationInputs,
+			@JsonProperty("setupComponentVerificationData")
+			final List<SetupComponentVerificationData> setupComponentVerificationData,
 			@JsonProperty("combinedCorrectnessInformation")
 			final CombinedCorrectnessInformation combinedCorrectnessInformation,
 			@JsonProperty("signature")
@@ -95,7 +94,7 @@ public class ReturnCodeGenerationRequestPayload implements SignedPayload {
 		this.partialChoiceReturnCodesAllowList = checkNotNull(partialChoiceReturnCodesAllowList);
 		this.chunkId = chunkId;
 		this.encryptionGroup = checkNotNull(encryptionGroup);
-		this.returnCodeGenerationInputs = checkNotNull(returnCodeGenerationInputs);
+		this.setupComponentVerificationData = checkNotNull(setupComponentVerificationData);
 		this.combinedCorrectnessInformation = checkNotNull(combinedCorrectnessInformation);
 		this.signature = checkNotNull(signature);
 	}
@@ -103,9 +102,9 @@ public class ReturnCodeGenerationRequestPayload implements SignedPayload {
 	/**
 	 * Creates an unsigned payload.
 	 */
-	public ReturnCodeGenerationRequestPayload(final String tenantId, final String electionEventId, final String verificationCardSetId,
+	public SetupComponentVerificationDataPayload(final String tenantId, final String electionEventId, final String verificationCardSetId,
 			final List<String> partialChoiceReturnCodesAllowList, final int chunkId, final GqGroup encryptionGroup,
-			final List<ReturnCodeGenerationInput> returnCodeGenerationInputs, final CombinedCorrectnessInformation combinedCorrectnessInformation) {
+			final List<SetupComponentVerificationData> setupComponentVerificationData, final CombinedCorrectnessInformation combinedCorrectnessInformation) {
 
 		this.tenantId = checkNotNull(tenantId);
 		this.electionEventId = checkNotNull(electionEventId);
@@ -113,7 +112,7 @@ public class ReturnCodeGenerationRequestPayload implements SignedPayload {
 		this.partialChoiceReturnCodesAllowList = checkNotNull(partialChoiceReturnCodesAllowList);
 		this.chunkId = chunkId;
 		this.encryptionGroup = checkNotNull(encryptionGroup);
-		this.returnCodeGenerationInputs = checkNotNull(returnCodeGenerationInputs);
+		this.setupComponentVerificationData = checkNotNull(setupComponentVerificationData);
 		this.combinedCorrectnessInformation = checkNotNull(combinedCorrectnessInformation);
 	}
 
@@ -141,8 +140,8 @@ public class ReturnCodeGenerationRequestPayload implements SignedPayload {
 		return encryptionGroup;
 	}
 
-	public List<ReturnCodeGenerationInput> getReturnCodeGenerationInputs() {
-		return returnCodeGenerationInputs;
+	public List<SetupComponentVerificationData> getSetupComponentVerificationData() {
+		return setupComponentVerificationData;
 	}
 
 	public CombinedCorrectnessInformation getCombinedCorrectnessInformation() {
@@ -165,14 +164,14 @@ public class ReturnCodeGenerationRequestPayload implements SignedPayload {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		final ReturnCodeGenerationRequestPayload that = (ReturnCodeGenerationRequestPayload) o;
+		final SetupComponentVerificationDataPayload that = (SetupComponentVerificationDataPayload) o;
 		return chunkId == that.chunkId
 				&& tenantId.equals(that.tenantId)
 				&& electionEventId.equals(that.electionEventId)
 				&& verificationCardSetId.equals(that.verificationCardSetId)
 				&& partialChoiceReturnCodesAllowList.equals(that.partialChoiceReturnCodesAllowList)
 				&& encryptionGroup.equals(that.encryptionGroup)
-				&& returnCodeGenerationInputs.equals(that.returnCodeGenerationInputs)
+				&& setupComponentVerificationData.equals(that.setupComponentVerificationData)
 				&& combinedCorrectnessInformation.equals(that.combinedCorrectnessInformation)
 				&& Objects.equals(signature, that.signature);
 	}
@@ -180,7 +179,7 @@ public class ReturnCodeGenerationRequestPayload implements SignedPayload {
 	@Override
 	public int hashCode() {
 		return Objects.hash(tenantId, electionEventId, verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId, encryptionGroup,
-				returnCodeGenerationInputs, combinedCorrectnessInformation, signature);
+				setupComponentVerificationData, combinedCorrectnessInformation, signature);
 	}
 
 	@Override
@@ -191,6 +190,6 @@ public class ReturnCodeGenerationRequestPayload implements SignedPayload {
 
 		return ImmutableList.of(HashableString.from(tenantId), HashableString.from(electionEventId), HashableString.from(verificationCardSetId),
 				HashableList.from(hashableAllowList), HashableBigInteger.from(BigInteger.valueOf(chunkId)), encryptionGroup,
-				HashableList.from(returnCodeGenerationInputs), combinedCorrectnessInformation);
+				HashableList.from(setupComponentVerificationData), combinedCorrectnessInformation);
 	}
 }
