@@ -32,7 +32,7 @@ import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
 
 @JsonPropertyOrder({ "verificationCardId", "encryptedHashedSquaredConfirmationKey", "encryptedHashedSquaredPartialChoiceReturnCodes",
 		"verificationCardPublicKey" })
-public class ReturnCodeGenerationInput implements HashableList {
+public class SetupComponentVerificationData implements HashableList {
 
 	@JsonProperty
 	private final String verificationCardId;
@@ -55,7 +55,7 @@ public class ReturnCodeGenerationInput implements HashableList {
 	 * @param verificationCardPublicKey                      the verification card public key
 	 */
 	@JsonCreator
-	public ReturnCodeGenerationInput(
+	public SetupComponentVerificationData(
 			@JsonProperty("verificationCardId")
 			final String verificationCardId,
 			@JsonProperty("encryptedHashedSquaredConfirmationKey")
@@ -100,7 +100,7 @@ public class ReturnCodeGenerationInput implements HashableList {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		final ReturnCodeGenerationInput that = (ReturnCodeGenerationInput) o;
+		final SetupComponentVerificationData that = (SetupComponentVerificationData) o;
 		return verificationCardId.equals(that.verificationCardId) &&
 				encryptedHashedSquaredConfirmationKey.equals(that.encryptedHashedSquaredConfirmationKey) &&
 				encryptedHashedSquaredPartialChoiceReturnCodes.equals(that.encryptedHashedSquaredPartialChoiceReturnCodes) &&
