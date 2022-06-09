@@ -37,8 +37,8 @@ import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKe
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
 
-@DisplayName("A MixnetFinalPayload")
-class MixnetFinalPayloadTest extends MapperSetUp {
+@DisplayName("A TallyComponentShufflePayload")
+class TallyComponentShufflePayloadTest extends MapperSetUp {
 
 	private static final SecureRandom secureRandom = new SecureRandom();
 	private static final byte[] randomBytes = new byte[10];
@@ -48,7 +48,7 @@ class MixnetFinalPayloadTest extends MapperSetUp {
 	private static ElGamalMultiRecipientPublicKey previousRemainingPublicKey;
 	private static VerifiablePlaintextDecryption verifiablePlaintextDecryption;
 	private static CryptoPrimitivesPayloadSignature signature;
-	private static MixnetFinalPayload mixnetFinalPayload;
+	private static TallyComponentShufflePayload tallyComponentShufflePayload;
 
 	@BeforeAll
 	static void setUpAll() {
@@ -64,7 +64,7 @@ class MixnetFinalPayloadTest extends MapperSetUp {
 		final X509Certificate certificate = SerializationTestData.generateTestCertificate();
 		signature = new CryptoPrimitivesPayloadSignature(randomBytes, new X509Certificate[] { certificate });
 
-		mixnetFinalPayload = new MixnetFinalPayload(gqGroup, verifiableShuffle, verifiablePlaintextDecryption, previousRemainingPublicKey, signature);
+		tallyComponentShufflePayload = new TallyComponentShufflePayload(gqGroup, verifiableShuffle, verifiablePlaintextDecryption, previousRemainingPublicKey, signature);
 
 		// Create expected json.
 		rootNode = mapper.createObjectNode();
@@ -88,32 +88,32 @@ class MixnetFinalPayloadTest extends MapperSetUp {
 
 	@Test
 	@DisplayName("serialized gives expected json")
-	void serializeMixnetFinalPayload() throws JsonProcessingException {
-		final String serializedMixnetFinalPayload = mapper.writeValueAsString(mixnetFinalPayload);
+	void serializeTallyComponentShufflePayload() throws JsonProcessingException {
+		final String serializedTallyComponentShufflePayload = mapper.writeValueAsString(tallyComponentShufflePayload);
 
-		assertEquals(rootNode.toString(), serializedMixnetFinalPayload);
+		assertEquals(rootNode.toString(), serializedTallyComponentShufflePayload);
 	}
 
 	@Test
-	@DisplayName("deserialized gives expected MixnetFinalPayload")
-	void deserializeMixnetFinalPayload() throws IOException {
-		final MixnetFinalPayload deserializedMixnetFinalPayload = mapper.readValue(rootNode.toString(), MixnetFinalPayload.class);
+	@DisplayName("deserialized gives expected TallyComponentShufflePayload")
+	void deserializeTallyComponentShufflePayload() throws IOException {
+		final TallyComponentShufflePayload deserializedTallyComponentShufflePayload = mapper.readValue(rootNode.toString(), TallyComponentShufflePayload.class);
 
-		assertEquals(mixnetFinalPayload, deserializedMixnetFinalPayload);
+		assertEquals(tallyComponentShufflePayload, deserializedTallyComponentShufflePayload);
 	}
 
 	@Test
-	@DisplayName("serialized then deserialized gives original MixnetFinalPayload")
+	@DisplayName("serialized then deserialized gives original TallyComponentShufflePayload")
 	void cycle() throws IOException {
-		final MixnetFinalPayload result = mapper.readValue(mapper.writeValueAsString(mixnetFinalPayload), MixnetFinalPayload.class);
+		final TallyComponentShufflePayload result = mapper.readValue(mapper.writeValueAsString(tallyComponentShufflePayload), TallyComponentShufflePayload.class);
 
-		assertEquals(mixnetFinalPayload, result);
+		assertEquals(tallyComponentShufflePayload, result);
 	}
 
 	@Test
 	@DisplayName("serialized then deserialized without VerifiableShuffle")
 	void cycleWithoutVerifiableShuffle() throws IOException {
-		final MixnetFinalPayload mixnetFinalPayload = new MixnetFinalPayload(gqGroup, null, verifiablePlaintextDecryption, previousRemainingPublicKey,
+		final TallyComponentShufflePayload tallyComponentShufflePayload = new TallyComponentShufflePayload(gqGroup, null, verifiablePlaintextDecryption, previousRemainingPublicKey,
 				signature);
 
 		// Create expected json.
@@ -132,9 +132,9 @@ class MixnetFinalPayloadTest extends MapperSetUp {
 		final JsonNode signatureNode = SerializationTestData.createSignatureNode(signature);
 		rootNode.set("signature", signatureNode);
 
-		final MixnetFinalPayload result = mapper.readValue(mapper.writeValueAsString(mixnetFinalPayload), MixnetFinalPayload.class);
+		final TallyComponentShufflePayload result = mapper.readValue(mapper.writeValueAsString(tallyComponentShufflePayload), TallyComponentShufflePayload.class);
 
-		assertEquals(mixnetFinalPayload, result);
+		assertEquals(tallyComponentShufflePayload, result);
 	}
 
 }

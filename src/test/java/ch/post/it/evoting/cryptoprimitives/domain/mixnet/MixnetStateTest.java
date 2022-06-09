@@ -70,7 +70,7 @@ class MixnetStateTest extends MapperSetUp {
 	}
 
 	@Nested
-	@DisplayName("with a MixnetInitialPayload")
+	@DisplayName("with a ControlComponentBallotBoxPayload")
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 	class WithInitialPayloadTest {
 
@@ -87,11 +87,11 @@ class MixnetStateTest extends MapperSetUp {
 			final CryptoPrimitivesPayloadSignature signature = new CryptoPrimitivesPayloadSignature(randomBytes,
 					new X509Certificate[] { certificate });
 
-			final MixnetInitialPayload initialPayload = new MixnetInitialPayload(ELECTION_EVENT_ID, BALLOT_BOX_ID, gqGroup, ciphertexts,
+			final ControlComponentBallotBoxPayload initialPayload = new ControlComponentBallotBoxPayload(ELECTION_EVENT_ID, BALLOT_BOX_ID, gqGroup, ciphertexts,
 					electionPublicKey,signature);
 			mixnetState = new MixnetState(initialPayload);
 
-			// Expected MixnetInitialPayload.
+			// Expected ControlComponentBallotBoxPayload.
 			final ObjectNode payloadNode = mapper.createObjectNode();
 
 			final JsonNode electionEventIdNode = mapper.readTree(mapper.writeValueAsString(ELECTION_EVENT_ID));
@@ -171,7 +171,7 @@ class MixnetStateTest extends MapperSetUp {
 	}
 
 	@Nested
-	@DisplayName("with a MixnetShufflePayload")
+	@DisplayName("with a ControlComponentShufflePayload")
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 	class WithShufflePayloadTest {
 
@@ -197,12 +197,12 @@ class MixnetStateTest extends MapperSetUp {
 			final GroupVector<DecryptionProof, ZqGroup> decryptionProofs = SerializationTestData.getDecryptionProofs(ciphertexts.size());
 			final VerifiableDecryptions verifiableDecryptions = new VerifiableDecryptions(GroupVector.from(ciphertexts), decryptionProofs);
 
-			final MixnetShufflePayload mixnetShufflePayload = new MixnetShufflePayload(ELECTION_EVENT_ID, BALLOT_BOX_ID, gqGroup,
+			final ControlComponentShufflePayload controlComponentShufflePayload = new ControlComponentShufflePayload(ELECTION_EVENT_ID, BALLOT_BOX_ID, gqGroup,
 					verifiableDecryptions, verifiableShuffle,
 					remainingElectionPublicKey, previousRemainingElectionPublicKey, nodeElectionPublicKey, 0, signature);
-			mixnetState = new MixnetState(mixnetShufflePayload);
+			mixnetState = new MixnetState(controlComponentShufflePayload);
 
-			// Create expected MixnetShufflePayload.
+			// Create expected ControlComponentShufflePayload.
 			final ObjectNode payloadNode = mapper.createObjectNode();
 
 			final JsonNode electionEventIdNode = mapper.readTree(mapper.writeValueAsString(ELECTION_EVENT_ID));

@@ -52,13 +52,13 @@ class ChoiceCodeGenerationDTOTest extends MapperSetUp {
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 	class WithRequestPayload {
 
-		private ChoiceCodeGenerationDTO<ReturnCodeGenerationRequestPayload> choiceCodeGenerationDTO;
+		private ChoiceCodeGenerationDTO<SetupComponentVerificationDataPayload> choiceCodeGenerationDTO;
 		private ObjectNode rootNode;
 
 		@BeforeAll
 		void setupAll() throws IOException {
 			final Ballot ballot = getBallotFromResourceName();
-			final ReturnCodeGenerationRequestPayload requestPayload = SerializationTestData
+			final SetupComponentVerificationDataPayload requestPayload = SerializationTestData
 					.getRequestPayload(ballot, TENANT_ID, ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID, CHUNK_ID);
 
 			final UUID randomUUID = UUID.randomUUID();
@@ -85,8 +85,8 @@ class ChoiceCodeGenerationDTOTest extends MapperSetUp {
 		@Test
 		@DisplayName("deserialized gives expected dto")
 		void deserializeDTOWithRequestPayload() throws JsonProcessingException {
-			final ChoiceCodeGenerationDTO<ReturnCodeGenerationRequestPayload> deserializedDTO = mapper
-					.readValue(rootNode.toString(), new TypeReference<ChoiceCodeGenerationDTO<ReturnCodeGenerationRequestPayload>>() {
+			final ChoiceCodeGenerationDTO<SetupComponentVerificationDataPayload> deserializedDTO = mapper
+					.readValue(rootNode.toString(), new TypeReference<ChoiceCodeGenerationDTO<SetupComponentVerificationDataPayload>>() {
 					});
 
 			assertEquals(choiceCodeGenerationDTO, deserializedDTO);
@@ -95,9 +95,9 @@ class ChoiceCodeGenerationDTOTest extends MapperSetUp {
 		@Test
 		@DisplayName("serialized then deserialized gives original dto")
 		void cycle() throws JsonProcessingException {
-			final ChoiceCodeGenerationDTO<ReturnCodeGenerationRequestPayload> deserializedDTO = mapper
+			final ChoiceCodeGenerationDTO<SetupComponentVerificationDataPayload> deserializedDTO = mapper
 					.readValue(mapper.writeValueAsString(choiceCodeGenerationDTO),
-							new TypeReference<ChoiceCodeGenerationDTO<ReturnCodeGenerationRequestPayload>>() {
+							new TypeReference<ChoiceCodeGenerationDTO<SetupComponentVerificationDataPayload>>() {
 							});
 
 			assertEquals(choiceCodeGenerationDTO, deserializedDTO);
@@ -109,12 +109,12 @@ class ChoiceCodeGenerationDTOTest extends MapperSetUp {
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 	class WithResponsePayload {
 
-		private ChoiceCodeGenerationDTO<ReturnCodeGenerationResponsePayload> choiceCodeGenerationDTO;
+		private ChoiceCodeGenerationDTO<ControlComponentCodeSharesPayload> choiceCodeGenerationDTO;
 		private ObjectNode rootNode;
 
 		@BeforeAll
 		void setupAll() throws IOException {
-			final ReturnCodeGenerationResponsePayload responsePayload = SerializationTestData
+			final ControlComponentCodeSharesPayload responsePayload = SerializationTestData
 					.getResponsePayload(TENANT_ID, ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID, CHUNK_ID);
 
 			final UUID randomUUID = UUID.randomUUID();
@@ -141,8 +141,8 @@ class ChoiceCodeGenerationDTOTest extends MapperSetUp {
 		@Test
 		@DisplayName("deserialized gives expected dto")
 		void deserializeDTOWithRequestPayload() throws JsonProcessingException {
-			final ChoiceCodeGenerationDTO<ReturnCodeGenerationResponsePayload> deserializedDTO = mapper
-					.readValue(rootNode.toString(), new TypeReference<ChoiceCodeGenerationDTO<ReturnCodeGenerationResponsePayload>>() {
+			final ChoiceCodeGenerationDTO<ControlComponentCodeSharesPayload> deserializedDTO = mapper
+					.readValue(rootNode.toString(), new TypeReference<ChoiceCodeGenerationDTO<ControlComponentCodeSharesPayload>>() {
 					});
 
 			assertEquals(choiceCodeGenerationDTO, deserializedDTO);
@@ -151,9 +151,9 @@ class ChoiceCodeGenerationDTOTest extends MapperSetUp {
 		@Test
 		@DisplayName("serialized then deserialized gives original dto")
 		void cycle() throws JsonProcessingException {
-			final ChoiceCodeGenerationDTO<ReturnCodeGenerationResponsePayload> deserializedDTO = mapper
+			final ChoiceCodeGenerationDTO<ControlComponentCodeSharesPayload> deserializedDTO = mapper
 					.readValue(mapper.writeValueAsString(choiceCodeGenerationDTO),
-							new TypeReference<ChoiceCodeGenerationDTO<ReturnCodeGenerationResponsePayload>>() {
+							new TypeReference<ChoiceCodeGenerationDTO<ControlComponentCodeSharesPayload>>() {
 							});
 
 			assertEquals(choiceCodeGenerationDTO, deserializedDTO);
