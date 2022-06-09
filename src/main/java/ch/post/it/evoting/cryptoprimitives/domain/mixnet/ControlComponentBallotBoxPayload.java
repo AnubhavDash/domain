@@ -46,8 +46,8 @@ import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
  * The payload sent to the first mixing control component.
  */
 @JsonPropertyOrder({ "electionEventId", "ballotBoxId", "encryptionGroup", "ciphertexts", "electionPublicKey", "signature" })
-@JsonDeserialize(as = MixnetInitialPayload.class, using = MixnetInitialPayload.MixnetInitialPayloadDeserializer.class)
-public class MixnetInitialPayload implements MixnetPayload {
+@JsonDeserialize(as = ControlComponentBallotBoxPayload.class, using = ControlComponentBallotBoxPayload.ControlComponentBallotBoxPayloadDeserializer.class)
+public class ControlComponentBallotBoxPayload implements MixnetPayload {
 
 	@JsonProperty(required = true)
 	private final String electionEventId;
@@ -70,7 +70,7 @@ public class MixnetInitialPayload implements MixnetPayload {
 	/**
 	 * Constructs an unsigned payload.  All fields must be non null.
 	 */
-	public MixnetInitialPayload(final String electionEventId, final String ballotBoxId, final GqGroup encryptionGroup,
+	public ControlComponentBallotBoxPayload(final String electionEventId, final String ballotBoxId, final GqGroup encryptionGroup,
 			final List<ElGamalMultiRecipientCiphertext> encryptedVotes,
 			final ElGamalMultiRecipientPublicKey electionPublicKey,
 			final CryptoPrimitivesPayloadSignature signature) {
@@ -83,7 +83,7 @@ public class MixnetInitialPayload implements MixnetPayload {
 		this.signature = checkNotNull(signature);
 	}
 
-	public MixnetInitialPayload(final String electionEventId, final String ballotBoxId, final GqGroup encryptionGroup,
+	public ControlComponentBallotBoxPayload(final String electionEventId, final String ballotBoxId, final GqGroup encryptionGroup,
 			final List<ElGamalMultiRecipientCiphertext> encryptedVotes,
 			final ElGamalMultiRecipientPublicKey electionPublicKey) {
 
@@ -143,7 +143,7 @@ public class MixnetInitialPayload implements MixnetPayload {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		final MixnetInitialPayload that = (MixnetInitialPayload) o;
+		final ControlComponentBallotBoxPayload that = (ControlComponentBallotBoxPayload) o;
 		return Objects.equals(electionEventId, that.electionEventId) && Objects.equals(ballotBoxId, that.ballotBoxId)
 				&& Objects.equals(encryptionGroup, that.encryptionGroup) && Objects.equals(encryptedVotes, that.encryptedVotes)
 				&& Objects.equals(electionPublicKey, that.electionPublicKey) && Objects.equals(signature, that.signature);
@@ -161,13 +161,13 @@ public class MixnetInitialPayload implements MixnetPayload {
 	}
 
 	/**
-	 * Deserializes a json into a {@link MixnetInitialPayload}. This deserializer is needed when deserializing a payload outside of a {@link
+	 * Deserializes a json into a {@link ControlComponentBallotBoxPayload}. This deserializer is needed when deserializing a payload outside of a {@link
 	 * MixnetState}.
 	 */
-	static class MixnetInitialPayloadDeserializer extends JsonDeserializer<MixnetInitialPayload> {
+	static class ControlComponentBallotBoxPayloadDeserializer extends JsonDeserializer<ControlComponentBallotBoxPayload> {
 
 		@Override
-		public MixnetInitialPayload deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
+		public ControlComponentBallotBoxPayload deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
 			final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
 
 			final JsonNode node = mapper.readTree(parser);
@@ -188,7 +188,7 @@ public class MixnetInitialPayload implements MixnetPayload {
 			final CryptoPrimitivesPayloadSignature signature = mapper.reader()
 					.readValue(node.get("signature").toString(), CryptoPrimitivesPayloadSignature.class);
 
-			return new MixnetInitialPayload(electionEventId, ballotBoxId, gqGroup, Arrays.asList(encryptedVotesArray), electionPublicKey, signature);
+			return new ControlComponentBallotBoxPayload(electionEventId, ballotBoxId, gqGroup, Arrays.asList(encryptedVotesArray), electionPublicKey, signature);
 		}
 	}
 

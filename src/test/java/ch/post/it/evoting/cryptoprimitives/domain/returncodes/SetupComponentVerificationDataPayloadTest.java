@@ -28,50 +28,57 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
 import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
+import ch.post.it.evoting.cryptoprimitives.domain.election.Ballot;
 
-@DisplayName("A ReturnCodeGenerationResponsePayload")
-class ReturnCodeGenerationResponsePayloadTest extends MapperSetUp {
+@DisplayName("A SetupComponentVerificationDataPayload")
+class SetupComponentVerificationDataPayloadTest extends MapperSetUp {
 
 	private static final String TENANT_ID = "100";
 	private static final String ELECTION_EVENT_ID = "1234";
 	private static final String VERIFICATION_CARD_SET_ID = "1234";
 	private static final int CHUNK_ID = 1;
+	private static final String BALLOT_JSON = "ballot.json";
 
-	private static ReturnCodeGenerationResponsePayload responsePayload;
+	private static SetupComponentVerificationDataPayload requestPayload;
 	private static ObjectNode rootNode;
 
 	@BeforeAll
-	static void setUpAll() throws JsonProcessingException {
-		responsePayload = SerializationTestData.getResponsePayload(TENANT_ID, ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID, CHUNK_ID);
+	static void setupAll() throws IOException {
+		final Ballot ballot = getBallotFromResourceName();
+		requestPayload = SerializationTestData.getRequestPayload(ballot, TENANT_ID, ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID, CHUNK_ID);
 
 		// Create expected json.
-		rootNode = SerializationTestData.createResponsePayloadNode(responsePayload);
+		rootNode = SerializationTestData.createRequestPayloadNode(requestPayload);
+	}
+
+	private static Ballot getBallotFromResourceName() throws IOException {
+		return mapper.readValue(SetupComponentVerificationDataPayloadTest.class.getClassLoader().getResource(BALLOT_JSON), Ballot.class);
 	}
 
 	@Test
 	@DisplayName("serialized gives expected json")
-	void serializeReturnCodeGenerationResponsePayload() throws JsonProcessingException {
-		final String serializedResponsePayload = mapper.writeValueAsString(responsePayload);
+	void serializeReturnCodeGenerationRequestPayload() throws JsonProcessingException {
+		final String serializedPayload = mapper.writeValueAsString(requestPayload);
 
-		assertEquals(rootNode.toString(), serializedResponsePayload);
+		assertEquals(rootNode.toString(), serializedPayload);
 	}
 
 	@Test
 	@DisplayName("deserialized gives expected payload")
-	void deserializeReturnCodeGenerationResponsePayload() throws IOException {
-		final ReturnCodeGenerationResponsePayload deserializedResponsePayload = mapper
-				.readValue(rootNode.toString(), ReturnCodeGenerationResponsePayload.class);
+	void deserializeReturnCodeGenerationRequestPayload() throws IOException {
+		final SetupComponentVerificationDataPayload deserializedPayload = mapper
+				.readValue(rootNode.toString(), SetupComponentVerificationDataPayload.class);
 
-		assertEquals(responsePayload, deserializedResponsePayload);
+		assertEquals(requestPayload, deserializedPayload);
 	}
 
 	@Test
 	@DisplayName("serialized then deserialized gives original payload")
 	void cycle() throws IOException {
-		final ReturnCodeGenerationResponsePayload deserializedResponsePayload = mapper
-				.readValue(mapper.writeValueAsString(responsePayload), ReturnCodeGenerationResponsePayload.class);
+		final SetupComponentVerificationDataPayload deserializedPayload = mapper
+				.readValue(mapper.writeValueAsString(requestPayload), SetupComponentVerificationDataPayload.class);
 
-		assertEquals(responsePayload, deserializedResponsePayload);
+		assertEquals(requestPayload, deserializedPayload);
 	}
 
 }

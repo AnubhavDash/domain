@@ -45,7 +45,7 @@ import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.DecryptionProof;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecryptions;
 
-class MixnetShufflePayloadTest extends MapperSetUp {
+class ControlComponentShufflePayloadTest extends MapperSetUp {
 
 	private static final String ELECTION_EVENT_ID = "4b7a8f063b564dbf8e24420d3f52f54f";
 	private static final String BALLOT_BOX_ID = "cbf8ac1c1bcf444da0ccf5d7e956153b";
@@ -125,21 +125,21 @@ class MixnetShufflePayloadTest extends MapperSetUp {
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 	class WithVerifiableShuffle {
 
-		private MixnetShufflePayload mixnetShufflePayload;
+		private ControlComponentShufflePayload controlComponentShufflePayload;
 
 		@BeforeAll
 		void setUp() {
 			final VerifiableShuffle verifiableShuffle = new VerifiableShuffle(GroupVector.from(ciphertexts),
 					SerializationTestData.createShuffleArgument());
 
-			mixnetShufflePayload = new MixnetShufflePayload(electionEventId, ballotBoxId, gqGroup, verifiableDecryptions, verifiableShuffle, remainingElectionPublicKey,
+			controlComponentShufflePayload = new ControlComponentShufflePayload(electionEventId, ballotBoxId, gqGroup, verifiableDecryptions, verifiableShuffle, remainingElectionPublicKey,
 					previousRemainingElectionPublicKey, nodeElectionPublicKey, 0, signature);
 		}
 
 		@Test
 		@DisplayName("serialize ShufflePayload gives expected json")
 		void serializeShufflePayload() throws JsonProcessingException {
-			final String serializedShufflePayload = mapper.writeValueAsString(mixnetShufflePayload);
+			final String serializedShufflePayload = mapper.writeValueAsString(controlComponentShufflePayload);
 
 			assertEquals(rootNode.toString(), serializedShufflePayload);
 		}
@@ -147,19 +147,19 @@ class MixnetShufflePayloadTest extends MapperSetUp {
 		@Test
 		@DisplayName("deserialize ShufflePayload gives expected ShufflePayload")
 		void deserializeShufflePayload() throws IOException {
-			final MixnetShufflePayload deserializedPayload = mapper.readValue(rootNode.toString(), MixnetShufflePayload.class);
+			final ControlComponentShufflePayload deserializedPayload = mapper.readValue(rootNode.toString(), ControlComponentShufflePayload.class);
 
-			assertEquals(mixnetShufflePayload, deserializedPayload);
+			assertEquals(controlComponentShufflePayload, deserializedPayload);
 		}
 
 		@Test
 		@DisplayName("serialize then deserialized gives original ShufflePayload")
 		void cycle() throws IOException {
-			final String serializedShufflePayload = mapper.writeValueAsString(mixnetShufflePayload);
+			final String serializedShufflePayload = mapper.writeValueAsString(controlComponentShufflePayload);
 
-			final MixnetShufflePayload deserializedPayload = mapper.readValue(serializedShufflePayload, MixnetShufflePayload.class);
+			final ControlComponentShufflePayload deserializedPayload = mapper.readValue(serializedShufflePayload, ControlComponentShufflePayload.class);
 
-			assertEquals(mixnetShufflePayload, deserializedPayload);
+			assertEquals(controlComponentShufflePayload, deserializedPayload);
 		}
 
 	}
@@ -169,12 +169,12 @@ class MixnetShufflePayloadTest extends MapperSetUp {
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 	class WithoutVerifiableShuffle {
 
-		private MixnetShufflePayload payloadWithoutVerifiableShuffle;
+		private ControlComponentShufflePayload payloadWithoutVerifiableShuffle;
 		private ObjectNode rootNodeCopy;
 
 		@BeforeAll
 		void setUpAll() {
-			payloadWithoutVerifiableShuffle = new MixnetShufflePayload(electionEventId, ballotBoxId, gqGroup, verifiableDecryptions, null, remainingElectionPublicKey,
+			payloadWithoutVerifiableShuffle = new ControlComponentShufflePayload(electionEventId, ballotBoxId, gqGroup, verifiableDecryptions, null, remainingElectionPublicKey,
 					previousRemainingElectionPublicKey, nodeElectionPublicKey, 0, signature);
 
 			rootNodeCopy = rootNode.deepCopy();
@@ -192,7 +192,7 @@ class MixnetShufflePayloadTest extends MapperSetUp {
 		@Test
 		@DisplayName("deserialized gives expected ShufflePayload")
 		void deserializeShufflePayload() throws IOException {
-			final MixnetShufflePayload deserializedPayload = mapper.readValue(rootNodeCopy.toString(), MixnetShufflePayload.class);
+			final ControlComponentShufflePayload deserializedPayload = mapper.readValue(rootNodeCopy.toString(), ControlComponentShufflePayload.class);
 
 			assertEquals(payloadWithoutVerifiableShuffle, deserializedPayload);
 		}
@@ -202,7 +202,7 @@ class MixnetShufflePayloadTest extends MapperSetUp {
 		void cycle() throws IOException {
 			final String serializedShufflePayload = mapper.writeValueAsString(payloadWithoutVerifiableShuffle);
 
-			final MixnetShufflePayload deserializedPayload = mapper.readValue(serializedShufflePayload, MixnetShufflePayload.class);
+			final ControlComponentShufflePayload deserializedPayload = mapper.readValue(serializedShufflePayload, ControlComponentShufflePayload.class);
 
 			assertEquals(payloadWithoutVerifiableShuffle, deserializedPayload);
 		}

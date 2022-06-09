@@ -28,10 +28,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
-public class ReturnCodeGenerationResponsePayloadDeserializer extends JsonDeserializer<ReturnCodeGenerationResponsePayload> {
+public class ControlComponentCodeSharesPayloadDeserializer extends JsonDeserializer<ControlComponentCodeSharesPayload> {
 
 	@Override
-	public ReturnCodeGenerationResponsePayload deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
+	public ControlComponentCodeSharesPayload deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
 		final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
 
 		final JsonNode node = mapper.readTree(parser);
@@ -43,14 +43,14 @@ public class ReturnCodeGenerationResponsePayloadDeserializer extends JsonDeseria
 		final String verificationCardSetId = mapper.readValue(node.get("verificationCardSetId").toString(), String.class);
 		final int chunkId = mapper.readValue(node.get("chunkId").toString(), Integer.class);
 
-		final List<ReturnCodeGenerationOutput> returnCodeGenerationInputs = Arrays.asList(mapper.reader().withAttribute("group", gqGroup)
-				.readValue(node.get("returnCodeGenerationOutputs").toString(), ReturnCodeGenerationOutput[].class));
+		final List<ControlComponentCodeShare> returnCodeGenerationInputs = Arrays.asList(mapper.reader().withAttribute("group", gqGroup)
+				.readValue(node.get("controlComponentCodeShares").toString(), ControlComponentCodeShare[].class));
 
 		final int nodeId = mapper.readValue(node.get("nodeId").toString(), Integer.class);
 
 		final CryptoPrimitivesPayloadSignature signature = mapper.reader().readValue(node.get("signature").toString(), CryptoPrimitivesPayloadSignature.class);
 
-		return new ReturnCodeGenerationResponsePayload(tenantId, electionEventId, verificationCardSetId, chunkId, gqGroup, returnCodeGenerationInputs,
+		return new ControlComponentCodeSharesPayload(tenantId, electionEventId, verificationCardSetId, chunkId, gqGroup, returnCodeGenerationInputs,
 				nodeId, signature);
 	}
 
