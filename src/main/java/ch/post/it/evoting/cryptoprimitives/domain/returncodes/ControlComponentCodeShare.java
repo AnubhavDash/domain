@@ -38,7 +38,7 @@ import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.ExponentiationPro
 @JsonPropertyOrder({ "verificationCardId", "voterChoiceReturnCodeGenerationPublicKey", "voterVoteCastReturnCodeGenerationPublicKey",
 		"exponentiatedEncryptedPartialChoiceReturnCodes", "encryptedPartialChoiceReturnCodeExponentiationProof",
 		"exponentiatedEncryptedConfirmationKey", "encryptedConfirmationKeyExponentiationProof", })
-public class ReturnCodeGenerationOutput implements HashableList {
+public class ControlComponentCodeShare implements HashableList {
 
 	@JsonProperty
 	private final String verificationCardId;
@@ -74,7 +74,7 @@ public class ReturnCodeGenerationOutput implements HashableList {
 	private final ExponentiationProof encryptedConfirmationKeyExponentiationProof;
 
 	@JsonCreator
-	public ReturnCodeGenerationOutput(
+	public ControlComponentCodeShare(
 			@JsonProperty("verificationCardId")
 			final String verificationCardId,
 			@JsonProperty("voterChoiceReturnCodeGenerationPublicKey")
@@ -143,7 +143,7 @@ public class ReturnCodeGenerationOutput implements HashableList {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		final ReturnCodeGenerationOutput that = (ReturnCodeGenerationOutput) o;
+		final ControlComponentCodeShare that = (ControlComponentCodeShare) o;
 		return verificationCardId.equals(that.verificationCardId) && voterChoiceReturnCodeGenerationPublicKey
 				.equals(that.voterChoiceReturnCodeGenerationPublicKey) && voterVoteCastReturnCodeGenerationPublicKey
 				.equals(that.voterVoteCastReturnCodeGenerationPublicKey) && exponentiatedEncryptedPartialChoiceReturnCodes

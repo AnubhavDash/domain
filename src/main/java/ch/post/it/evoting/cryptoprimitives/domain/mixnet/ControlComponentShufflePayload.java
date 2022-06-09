@@ -46,8 +46,8 @@ import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecrypt
  */
 @JsonPropertyOrder({ "electionEventId", "ballotBoxId", "encryptionGroup", "verifiableDecryptions", "verifiableShuffle", "remainingElectionPublicKey",
 		"previousRemainingElectionPublicKey", "nodeElectionPublicKey", "nodeId", "signature", "signingPublicKey" })
-@JsonDeserialize(as = MixnetShufflePayload.class, using = MixnetShufflePayloadDeserializer.class)
-public class MixnetShufflePayload implements MixnetPayload {
+@JsonDeserialize(as = ControlComponentShufflePayload.class, using = ControlComponentShufflePayloadDeserializer.class)
+public class ControlComponentShufflePayload implements MixnetPayload {
 
 	@JsonProperty
 	private final String electionEventId;
@@ -81,7 +81,7 @@ public class MixnetShufflePayload implements MixnetPayload {
 	private CryptoPrimitivesPayloadSignature signature;
 
 	@JsonCreator
-	public MixnetShufflePayload(
+	public ControlComponentShufflePayload(
 			@JsonProperty(value = "electionEventId", required = true)
 			final String electionEventId,
 			@JsonProperty(value = "ballotBoxId", required = true)
@@ -118,7 +118,7 @@ public class MixnetShufflePayload implements MixnetPayload {
 	/**
 	 * Constructs an unsigned payload.
 	 */
-	public MixnetShufflePayload(final String electionEventId, final String ballotBoxId, final GqGroup encryptionGroup,
+	public ControlComponentShufflePayload(final String electionEventId, final String ballotBoxId, final GqGroup encryptionGroup,
 			final VerifiableDecryptions verifiableDecryptions,
 			final VerifiableShuffle verifiableShuffle, final ElGamalMultiRecipientPublicKey remainingElectionPublicKey,
 			final ElGamalMultiRecipientPublicKey previousRemainingElectionPublicKey, final ElGamalMultiRecipientPublicKey nodeElectionPublicKey,
@@ -199,7 +199,7 @@ public class MixnetShufflePayload implements MixnetPayload {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		final MixnetShufflePayload that = (MixnetShufflePayload) o;
+		final ControlComponentShufflePayload that = (ControlComponentShufflePayload) o;
 		return nodeId == that.nodeId && Objects.equals(electionEventId, that.electionEventId) && Objects
 				.equals(ballotBoxId, that.ballotBoxId) && Objects.equals(encryptionGroup, that.encryptionGroup) && Objects
 				.equals(verifiableDecryptions, that.verifiableDecryptions) && Objects.equals(verifiableShuffle, that.verifiableShuffle)

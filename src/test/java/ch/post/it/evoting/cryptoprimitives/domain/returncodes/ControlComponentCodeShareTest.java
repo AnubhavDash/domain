@@ -34,12 +34,12 @@ import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKe
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.ExponentiationProof;
 
-@DisplayName("A ReturnCodeGenerationOutput")
-class ReturnCodeGenerationOutputTest extends MapperSetUp {
+@DisplayName("A ControlComponentCodeShare")
+class ControlComponentCodeShareTest extends MapperSetUp {
 
 	private static final String VERIFICATION_CARD_ID = "1234";
 
-	private static ReturnCodeGenerationOutput returnCodeGenerationOutput;
+	private static ControlComponentCodeShare controlComponentCodeShare;
 	private static ObjectNode rootNode;
 	private static GqGroup gqGroup;
 
@@ -54,7 +54,7 @@ class ReturnCodeGenerationOutputTest extends MapperSetUp {
 		final ElGamalMultiRecipientCiphertext exponentiatedEncryptedConfirmationKey = SerializationTestData.getSinglePhiCiphertext();
 		final ExponentiationProof encryptedConfirmationKeyExponentiationProof = SerializationTestData.createExponentiationProof();
 
-		returnCodeGenerationOutput = new ReturnCodeGenerationOutput(VERIFICATION_CARD_ID, voterChoiceReturnCodeGenerationPublicKey,
+		controlComponentCodeShare = new ControlComponentCodeShare(VERIFICATION_CARD_ID, voterChoiceReturnCodeGenerationPublicKey,
 				voterVoteCastReturnCodeGenerationPublicKey, exponentiatedEncryptedPartialChoiceReturnCodes,
 				encryptedPartialChoiceReturnCodeExponentiationProof, exponentiatedEncryptedConfirmationKey,
 				encryptedConfirmationKeyExponentiationProof);
@@ -86,7 +86,7 @@ class ReturnCodeGenerationOutputTest extends MapperSetUp {
 	@Test
 	@DisplayName("serialized gives expected json")
 	void serializeReturnCodeGenerationOutput() throws JsonProcessingException {
-		final String serializedOutput = mapper.writeValueAsString(returnCodeGenerationOutput);
+		final String serializedOutput = mapper.writeValueAsString(controlComponentCodeShare);
 
 		assertEquals(rootNode.toString(), serializedOutput);
 	}
@@ -94,19 +94,19 @@ class ReturnCodeGenerationOutputTest extends MapperSetUp {
 	@Test
 	@DisplayName("deserialized gives expected output")
 	void deserializeReturnCodeGenerationOutput() throws IOException {
-		final ReturnCodeGenerationOutput deserializedOutput = mapper.reader().withAttribute("group", gqGroup)
-				.readValue(rootNode.toString(), ReturnCodeGenerationOutput.class);
+		final ControlComponentCodeShare deserializedOutput = mapper.reader().withAttribute("group", gqGroup)
+				.readValue(rootNode.toString(), ControlComponentCodeShare.class);
 
-		assertEquals(returnCodeGenerationOutput, deserializedOutput);
+		assertEquals(controlComponentCodeShare, deserializedOutput);
 	}
 
 	@Test
 	@DisplayName("serialized then deserialized gives original output")
 	void cycle() throws IOException {
-		final ReturnCodeGenerationOutput deserializedOutput = mapper.reader().withAttribute("group", gqGroup)
-				.readValue(mapper.writeValueAsString(returnCodeGenerationOutput), ReturnCodeGenerationOutput.class);
+		final ControlComponentCodeShare deserializedOutput = mapper.reader().withAttribute("group", gqGroup)
+				.readValue(mapper.writeValueAsString(controlComponentCodeShare), ControlComponentCodeShare.class);
 
-		assertEquals(returnCodeGenerationOutput, deserializedOutput);
+		assertEquals(controlComponentCodeShare, deserializedOutput);
 	}
 
 }
