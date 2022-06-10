@@ -15,7 +15,7 @@
 		<project.build.outputTimestamp>2022-06-09T11:13:45+02:00</project.build.outputTimestamp>
 
 		<bouncycastle.version>1.70</bouncycastle.version>
-		<crypto-primitives.version>0.14.2.4</crypto-primitives.version>
+		<crypto-primitives.version>0.14.3.0</crypto-primitives.version>
 		<jackson.version>2.13.3</jackson.version>
 		<jacoco.version>0.8.8</jacoco.version>
 		<junit-jupiter.version>5.9.0-M1</junit-jupiter.version>

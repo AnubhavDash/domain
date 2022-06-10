@@ -156,11 +156,11 @@ public class CombinedCorrectnessInformation implements HashableList {
 	 *                                  </ul>
 	 */
 	private static List<CorrectnessInformation> getCorrectnessInformationListFromContest(final Contest contest) {
-		final String contestId = contest.getId();
-		final String template = contest.getTemplate();
-		final List<Question> questions = contest.getQuestions();
-		final List<ElectionAttributes> attributes = contest.getAttributes();
-		final List<ElectionOption> electionOptions = contest.getOptions();
+		final String contestId = contest.id();
+		final String template = contest.template();
+		final List<Question> questions = contest.questions();
+		final List<ElectionAttributes> attributes = contest.attributes();
+		final List<ElectionOption> electionOptions = contest.options();
 
 		checkNotNullAndNotEmpty(questions, "questions", contestId);
 		checkNotNullAndNotEmpty(attributes, "election attributes", contestId);
@@ -198,10 +198,10 @@ public class CombinedCorrectnessInformation implements HashableList {
 
 		return attributes.stream()
 				.filter(ElectionAttributes::isCorrectness)
-				.map(ElectionAttributes::getId)
+				.map(ElectionAttributes::id)
 				.map(correctnessId ->
 						new CorrectnessInformation(correctnessId,
-								getCorrespondingQuestionByAttribute(questions, correctnessId, contestId).getMax(),
+								getCorrespondingQuestionByAttribute(questions, correctnessId, contestId).max(),
 								getNumberOfVotingOptions(attributes, options, correctnessId)))
 				.toList();
 	}
@@ -233,9 +233,9 @@ public class CombinedCorrectnessInformation implements HashableList {
 
 		return questions.stream()
 				.map(question ->
-						new CorrectnessInformation(question.getAttribute(),
-								question.getMax(),
-								getNumberOfVotingOptions(attributes, electionOptions, question.getAttribute())))
+						new CorrectnessInformation(question.attribute(),
+								question.max(),
+								getNumberOfVotingOptions(attributes, electionOptions, question.attribute())))
 				.toList();
 	}
 
@@ -245,9 +245,9 @@ public class CombinedCorrectnessInformation implements HashableList {
 		this.totalNumberOfVotingOptions = computeTotalNumberOfVotingOptions(this.correctnessInformationList);
 
 		this.correctnessIdToListOfSelectionsIndexesMap = getCorrectnessIdToListOfIndexesMap(this.correctnessInformationList,
-				CorrectnessInformation::getNumberOfSelections);
+				CorrectnessInformation::numberOfSelections);
 		this.correctnessIdToListOfVotingOptionsIndexesMap = getCorrectnessIdToListOfIndexesMap(this.correctnessInformationList,
-				CorrectnessInformation::getNumberOfVotingOptions);
+				CorrectnessInformation::numberOfVotingOptions);
 	}
 
 	/**
@@ -269,8 +269,8 @@ public class CombinedCorrectnessInformation implements HashableList {
 
 		// list of the related election attributes ids, ie list of election attributes ids whose field related (an array) contains the value correctnessId.
 		final List<String> relatedElectionAttributesIdsList = attributes.stream()
-				.filter(electionAttributes -> electionAttributes.getRelated() != null && electionAttributes.getRelated().contains(correctnessId))
-				.map(ElectionAttributes::getId).toList();
+				.filter(electionAttributes -> electionAttributes.related() != null && electionAttributes.related().contains(correctnessId))
+				.map(ElectionAttributes::id).toList();
 
 		// the number of voting options is the number of election options which are present in the list of the related election attributes ids.
 		final long numberOfVotingOptions = electionOptions.stream()
@@ -315,7 +315,7 @@ public class CombinedCorrectnessInformation implements HashableList {
 			final int increment = getIncrementFunction.applyAsInt(correctnessInformation);
 			final List<Integer> indexesList = IntStream.rangeClosed(currentIndex + 1, currentIndex + increment).boxed().toList();
 
-			correctnessIdToListOfIndexesMap.put(correctnessInformation.getCorrectnessId(), indexesList);
+			correctnessIdToListOfIndexesMap.put(correctnessInformation.correctnessId(), indexesList);
 
 			currentIndex += increment;
 		}
@@ -324,18 +324,18 @@ public class CombinedCorrectnessInformation implements HashableList {
 	}
 
 	private static Question getCorrespondingQuestionByAttribute(final List<Question> questions, final String attribute, final String contestId) {
-		return questions.stream().filter(question -> question.getAttribute().equals(attribute)).findAny().orElseThrow(
+		return questions.stream().filter(question -> question.attribute().equals(attribute)).findAny().orElseThrow(
 				() -> new IllegalArgumentException(
 						String.format("No corresponding question to attribute found in contest. [contestId: %s, attributeId: %s].", contestId,
 								attribute)));
 	}
 
 	private static Integer computeTotalNumberOfSelections(final List<CorrectnessInformation> correctnessInformationList) {
-		return correctnessInformationList.stream().map(CorrectnessInformation::getNumberOfSelections).reduce(0, Integer::sum);
+		return correctnessInformationList.stream().map(CorrectnessInformation::numberOfSelections).reduce(0, Integer::sum);
 	}
 
 	private static Integer computeTotalNumberOfVotingOptions(final List<CorrectnessInformation> correctnessInformationList) {
-		return correctnessInformationList.stream().map(CorrectnessInformation::getNumberOfVotingOptions).reduce(0, Integer::sum);
+		return correctnessInformationList.stream().map(CorrectnessInformation::numberOfVotingOptions).reduce(0, Integer::sum);
 	}
 
 	@Override
