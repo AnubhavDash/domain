@@ -30,8 +30,6 @@ import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -41,14 +39,11 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-public class CryptoPrimitivesPayloadSignature {
-
-	@JsonProperty
-	private final byte[] signatureContents;
-
-	@JsonSerialize(contentUsing = PemSerializer.class)
-	@JsonDeserialize(contentUsing = PemDeserializer.class)
-	private final X509Certificate[] certificateChain;
+public record CryptoPrimitivesPayloadSignature(
+		byte[] signatureContents,
+		@JsonSerialize(contentUsing = PemSerializer.class)
+		@JsonDeserialize(contentUsing = PemDeserializer.class)
+		X509Certificate[] certificateChain) {
 
 	/**
 	 * Creates the representation of a crypto-primitives signature.
@@ -56,30 +51,8 @@ public class CryptoPrimitivesPayloadSignature {
 	 * @param signatureContents the byte stream containing the signature
 	 * @param certificateChain  the certificate chain to be used when validating the signature. Null if using direct trust.
 	 */
-	@JsonCreator
-	public CryptoPrimitivesPayloadSignature(
-			@JsonProperty(value = "signatureContents", required = true)
-					byte[] signatureContents,
-			@JsonProperty(value = "certificateChain")
-					X509Certificate[] certificateChain) {
-		this.signatureContents = checkNotNull(signatureContents);
-		this.certificateChain = certificateChain;
-	}
-
-	/**
-	 * Gets a certificate chain whose last element is the public key used to validate the signature.
-	 *
-	 * @return the certificate chain
-	 */
-	public X509Certificate[] getCertificateChain() {
-		return certificateChain;
-	}
-
-	/**
-	 * @return the byte array representing the signature
-	 */
-	public byte[] getSignatureContents() {
-		return signatureContents;
+	public CryptoPrimitivesPayloadSignature {
+		checkNotNull(signatureContents);
 	}
 
 	@Override
@@ -99,6 +72,14 @@ public class CryptoPrimitivesPayloadSignature {
 		int result = Arrays.hashCode(signatureContents);
 		result = 31 * result + Arrays.hashCode(certificateChain);
 		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "CryptoPrimitivesPayloadSignature{" +
+				"signatureContents=" + Arrays.toString(signatureContents) +
+				", certificateChain=" + Arrays.toString(certificateChain) +
+				'}';
 	}
 
 	private static class PemSerializer extends JsonSerializer<X509Certificate> {
@@ -125,7 +106,8 @@ public class CryptoPrimitivesPayloadSignature {
 			try (PEMParser parser = new PEMParser(new StringReader(pemString))) {
 				certificateHolder = (X509CertificateHolder) parser.readObject();
 			} catch (IOException e) {
-				throw new UncheckedIOException("Can not convert PEM string " + pemString + " to object of type {@link " + X509CertificateHolder.class + "}", e);
+				throw new UncheckedIOException(
+						"Can not convert PEM string " + pemString + " to object of type {@link " + X509CertificateHolder.class + "}", e);
 			}
 
 			try {

@@ -80,7 +80,7 @@ public record Ballot(String id,
 
 		return contestToOrderedElectionOptions.keySet().stream()
 				.map(contest -> contestToOrderedElectionOptions.get(contest).stream()
-						.map(electionOption -> getAttributeAlias(electionOption.getAttribute(), contest.getAttributes()))
+						.map(electionOption -> getAttributeAlias(electionOption.getAttribute(), contest.attributes()))
 						.toList()
 				).flatMap(Collection::stream)
 				.toList();
@@ -107,48 +107,48 @@ public record Ballot(String id,
 	}
 
 	private List<ElectionOption> getOrderedElectionOptionsFromContest(final Contest contest) {
-		final String contestId = contest.getId();
-		final String template = contest.getTemplate();
-		final List<Question> questions = contest.getQuestions();
-		final List<ElectionAttributes> attributes = contest.getAttributes();
-		final List<ElectionOption> electionOptions = contest.getOptions();
+		final String contestId = contest.id();
+		final String template = contest.template();
+		final List<Question> questions = contest.questions();
+		final List<ElectionAttributes> electionAttributes = contest.attributes();
+		final List<ElectionOption> electionOptions = contest.options();
 
 		checkNotNullAndNotEmpty(questions, "questions", contestId);
-		checkNotNullAndNotEmpty(attributes, "election attributes", contestId);
+		checkNotNullAndNotEmpty(electionAttributes, "election attributes", contestId);
 		checkNotNullAndNotEmpty(electionOptions, "election options", contestId);
 
 		return switch (template) {
-			case Contest.OPTIONS_TEMPLATE -> getOrderedElectionOptionsFromOptionsTemplateContest(attributes, electionOptions);
+			case Contest.OPTIONS_TEMPLATE -> getOrderedElectionOptionsFromOptionsTemplateContest(electionAttributes, electionOptions);
 			case Contest.LISTS_AND_CANDIDATES_TEMPLATE ->
-					getOrderedElectionOptionsFromListsAndCandidatesTemplateContest(questions, attributes, electionOptions, contestId);
+					getOrderedElectionOptionsFromListsAndCandidatesTemplateContest(questions, electionAttributes, electionOptions, contestId);
 			default -> throw new IllegalArgumentException(
-					String.format("Contests with template \"%s\" are not supported. [contestId: %s]", template, contest.getId()));
+					String.format("Contests with template \"%s\" are not supported. [contestId: %s]", template, contest.id()));
 		};
 	}
 
-	private List<ElectionOption> getOrderedElectionOptionsFromOptionsTemplateContest(final List<ElectionAttributes> attributes,
+	private List<ElectionOption> getOrderedElectionOptionsFromOptionsTemplateContest(final List<ElectionAttributes> electionAttributes,
 			final List<ElectionOption> electionOptions) {
 
-		return attributes.stream()
+		return electionAttributes.stream()
 				.filter(ElectionAttributes::isCorrectness)
-				.map(ElectionAttributes::getId)
-				.map(correctnessId -> getOrderedElectionOptions(correctnessId, attributes, electionOptions))
+				.map(ElectionAttributes::id)
+				.map(correctnessId -> getOrderedElectionOptions(correctnessId, electionAttributes, electionOptions))
 				.flatMap(Collection::stream)
 				.toList();
 	}
 
 	private List<ElectionOption> getOrderedElectionOptionsFromListsAndCandidatesTemplateContest(final List<Question> questions,
-			final List<ElectionAttributes> attributes, final List<ElectionOption> electionOptions, final String contestId) {
+			final List<ElectionAttributes> electionAttributes, final List<ElectionOption> electionOptions, final String contestId) {
 
 		checkQuestionsSizeOfListsAndCandidatesContest(contestId, questions);
 
-		if (Contest.isSwappingOfQuestionsNeeded(questions, attributes)) {
+		if (Contest.isSwappingOfQuestionsNeeded(questions, electionAttributes)) {
 			Collections.swap(questions, 0, 1);
 		}
 
 		return questions.stream()
-				.map(Question::getAttribute)
-				.map(correctnessId -> getOrderedElectionOptions(correctnessId, attributes, electionOptions))
+				.map(Question::attribute)
+				.map(correctnessId -> getOrderedElectionOptions(correctnessId, electionAttributes, electionOptions))
 				.flatMap(Collection::stream)
 				.toList();
 	}
@@ -156,15 +156,15 @@ public record Ballot(String id,
 	/**
 	 * Returns the attribute's alias (which corresponds to the identifier of the actual voting option) for a given attribute id
 	 *
-	 * @param attributeId the attribute id.
-	 * @param attributes  the attributes list to look into.
+	 * @param attributeId        the attribute id.
+	 * @param electionAttributes the attributes list to look into.
 	 */
 	@VisibleForTesting
-	static String getAttributeAlias(final String attributeId, final List<ElectionAttributes> attributes) {
+	static String getAttributeAlias(final String attributeId, final List<ElectionAttributes> electionAttributes) {
 
-		return attributes.stream()
-				.filter(element -> attributeId.equals(element.getId()))
-				.map(ElectionAttributes::getAlias)
+		return electionAttributes.stream()
+				.filter(electionAttribute -> attributeId.equals(electionAttribute.id()))
+				.map(ElectionAttributes::alias)
 				.collect(MoreCollectors.onlyElement());
 	}
 
@@ -177,21 +177,21 @@ public record Ballot(String id,
 	 *     <li>List the options that have the corresponding election attributes id.</li>
 	 * </ul>
 	 *
-	 * @param correctnessId   the correctness id to filter the related election attributes ids. Must be non-null.
-	 * @param attributes      the list of {@link ElectionAttributes} of the {@link Contest}. Must be non-null.
-	 * @param electionOptions the list {@link ElectionOption} of the {@link Contest}. Must be non-null.
+	 * @param correctnessId      the correctness id to filter the related election attributes ids. Must be non-null.
+	 * @param electionAttributes the list of {@link ElectionAttributes} of the {@link Contest}. Must be non-null.
+	 * @param electionOptions    the list {@link ElectionOption} of the {@link Contest}. Must be non-null.
 	 * @return the ordered list of {@link ElectionOption}s.
 	 * @throws NullPointerException if any of the inputs is null.
 	 */
-	private static List<ElectionOption> getOrderedElectionOptions(final String correctnessId, final List<ElectionAttributes> attributes,
+	private static List<ElectionOption> getOrderedElectionOptions(final String correctnessId, final List<ElectionAttributes> electionAttributes,
 			final List<ElectionOption> electionOptions) {
 		checkNotNull(correctnessId);
-		checkNotNull(attributes);
+		checkNotNull(electionAttributes);
 		checkNotNull(electionOptions);
 
-		return attributes.stream()
-				.filter(ea -> ea.getRelated() != null && ea.getRelated().contains(correctnessId))
-				.map(ElectionAttributes::getId)
+		return electionAttributes.stream()
+				.filter(electionAttribute -> electionAttribute.related() != null && electionAttribute.related().contains(correctnessId))
+				.map(ElectionAttributes::id)
 				.map(electionAttributesId -> electionOptions.stream()
 						.filter(electionOption -> electionAttributesId.equals(electionOption.getAttribute()))
 						.toList())
