@@ -297,7 +297,7 @@ public class SerializationTestData {
 	public static ObjectNode createVerifiableShuffleNode(final VerifiableShuffle verifiableShuffle) {
 		final ObjectNode rootNode = mapper.createObjectNode();
 
-		final ArrayNode shuffledCiphertextsNode = SerializationTestData.createCiphertextsNode(verifiableShuffle.getShuffledCiphertexts());
+		final ArrayNode shuffledCiphertextsNode = SerializationTestData.createCiphertextsNode(verifiableShuffle.shuffledCiphertexts());
 		rootNode.set("shuffledCiphertexts", shuffledCiphertextsNode);
 
 		final JsonNode shuffleArgumentNode = createShuffleArgumentNode();
