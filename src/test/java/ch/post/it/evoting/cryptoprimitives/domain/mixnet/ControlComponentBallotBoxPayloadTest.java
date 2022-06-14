@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -33,7 +32,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
 import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
-import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
+import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
@@ -59,11 +58,10 @@ class ControlComponentBallotBoxPayloadTest extends MapperSetUp {
 
 		// Generate random bytes for signature content and create payload signature.
 		secureRandom.nextBytes(randomBytes);
-		final X509Certificate certificate = SerializationTestData.generateTestCertificate();
-		final CryptoPrimitivesPayloadSignature signature = new CryptoPrimitivesPayloadSignature(randomBytes, new X509Certificate[] { certificate });
+		final CryptoPrimitivesSignature signature = new CryptoPrimitivesSignature(randomBytes);
 
 		initialPayload = new ControlComponentBallotBoxPayload(ELECTION_EVENT_ID, BALLOT_BOX_ID, gqGroup, ciphertexts,
-				electionPublicKey,signature);
+				electionPublicKey, signature);
 
 		// Create expected Json.
 		rootNode = mapper.createObjectNode();
@@ -106,7 +104,8 @@ class ControlComponentBallotBoxPayloadTest extends MapperSetUp {
 	@Test
 	@DisplayName("serialized and deserialized gives original payload")
 	void cycle() throws IOException {
-		final ControlComponentBallotBoxPayload result = mapper.readValue(mapper.writeValueAsString(initialPayload), ControlComponentBallotBoxPayload.class);
+		final ControlComponentBallotBoxPayload result = mapper.readValue(mapper.writeValueAsString(initialPayload),
+				ControlComponentBallotBoxPayload.class);
 
 		assertEquals(initialPayload, result);
 	}

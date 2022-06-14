@@ -16,13 +16,13 @@
 
 package ch.post.it.evoting.cryptoprimitives.domain.returncodes;
 
-import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
+import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
 
 public interface SignedPayload extends HashableList {
 
-	CryptoPrimitivesPayloadSignature getSignature();
+	CryptoPrimitivesSignature getSignature();
 
-	void setSignature(final CryptoPrimitivesPayloadSignature signature);
+	void setSignature(final CryptoPrimitivesSignature signature);
 
 }
