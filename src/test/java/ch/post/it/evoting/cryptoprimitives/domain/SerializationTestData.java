@@ -18,26 +18,12 @@ package ch.post.it.evoting.cryptoprimitives.domain;
 import static ch.post.it.evoting.cryptoprimitives.domain.mixnet.ConversionUtils.bigIntegerToHex;
 import static ch.post.it.evoting.cryptoprimitives.math.GqElement.GqElementFactory;
 
-import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
-import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
-import org.bouncycastle.cert.X509v3CertificateBuilder;
-import org.bouncycastle.operator.ContentSigner;
-import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -52,10 +38,10 @@ import ch.post.it.evoting.cryptoprimitives.domain.election.CombinedCorrectnessIn
 import ch.post.it.evoting.cryptoprimitives.domain.mapper.DomainObjectMapper;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.VerifiablePlaintextDecryption;
 import ch.post.it.evoting.cryptoprimitives.domain.returncodes.ControlComponentCodeShare;
+import ch.post.it.evoting.cryptoprimitives.domain.returncodes.ControlComponentCodeSharesPayload;
 import ch.post.it.evoting.cryptoprimitives.domain.returncodes.SetupComponentVerificationData;
 import ch.post.it.evoting.cryptoprimitives.domain.returncodes.SetupComponentVerificationDataPayload;
-import ch.post.it.evoting.cryptoprimitives.domain.returncodes.ControlComponentCodeSharesPayload;
-import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
+import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientMessage;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPrivateKey;
@@ -395,36 +381,11 @@ public class SerializationTestData {
 		return "{\"c_A\":[\"0x9\",\"0x5\"],\"c_B\":[\"0x9\",\"0x5\"],\"productArgument\":{\"c_b\":\"0x4\",\"hadamardArgument\":{\"c_b\":[\"0x9\",\"0x5\"],\"zeroArgument\":{\"c_A_0\":\"0x9\",\"c_B_m\":\"0x5\",\"c_d\":[\"0x5\",\"0x9\",\"0x4\",\"0x1\",\"0x4\"],\"a_prime\":[\"0x3\",\"0x2\"],\"b_prime\":[\"0x4\",\"0x3\"],\"r_prime\":\"0x1\",\"s_prime\":\"0x3\",\"t_prime\":\"0x1\"}},\"singleValueProductArgument\":{\"c_d\":\"0x4\",\"c_delta\":\"0x4\",\"c_Delta\":\"0x5\",\"a_tilde\":[\"0x2\",\"0x1\"],\"b_tilde\":[\"0x2\",\"0x3\"],\"r_tilde\":\"0x1\",\"s_tilde\":\"0x0\"}},\"multiExponentiationArgument\":{\"c_A_0\":\"0x3\",\"c_B\":[\"0x1\",\"0x9\",\"0x1\",\"0x1\"],\"E\":[{\"gamma\":\"0x5\",\"phis\":[\"0x5\",\"0x1\"]},{\"gamma\":\"0x4\",\"phis\":[\"0x1\",\"0x5\"]},{\"gamma\":\"0x5\",\"phis\":[\"0x5\",\"0x5\"]},{\"gamma\":\"0x5\",\"phis\":[\"0x3\",\"0x9\"]}],\"a\":[\"0x4\",\"0x4\"],\"r\":\"0x0\",\"b\":\"0x4\",\"s\":\"0x4\",\"tau\":\"0x0\"}}";
 	}
 
-	public static JsonNode createSignatureNode(final CryptoPrimitivesPayloadSignature signature) {
+	public static JsonNode createSignatureNode(final CryptoPrimitivesSignature signature) {
 		try {
 			return mapper.readTree(mapper.writeValueAsString(signature));
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException("Failed to serialize signature.");
-		}
-	}
-
-	public static X509Certificate generateTestCertificate() {
-		try {
-			final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-			final KeyPair keyPair = keyPairGenerator.generateKeyPair();
-
-			final X500Name x500Name = new X500Name("CN=test.com, OU=test, O=test., L=test, ST=test, C=CA");
-			final Date start = new Date();
-			final Date until = Date.from(LocalDate.now().plus(365, ChronoUnit.DAYS).atStartOfDay().toInstant(ZoneOffset.UTC));
-			final SubjectPublicKeyInfo subjectPublicKeyInfo = SubjectPublicKeyInfo.getInstance(keyPair.getPublic().getEncoded());
-
-			final X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(x500Name, new BigInteger(10, new SecureRandom()), start,
-					until, x500Name, subjectPublicKeyInfo);
-
-			final JcaContentSignerBuilder contentSignerBuilder = new JcaContentSignerBuilder("SHA256withRSA");
-			final ContentSigner signer = contentSignerBuilder.build(keyPair.getPrivate());
-			final byte[] certificateBytes = certificateBuilder.build(signer).getEncoded();
-
-			final CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-
-			return (X509Certificate) certificateFactory.generateCertificate(new ByteArrayInputStream(certificateBytes));
-		} catch (Exception e) {
-			throw new RuntimeException("Failed to generate X509Certificate.", e);
 		}
 	}
 
@@ -440,8 +401,7 @@ public class SerializationTestData {
 		// Generate random bytes for signature content and create payload signature.
 		final byte[] randomBytes = new byte[10];
 		new SecureRandom().nextBytes(randomBytes);
-		final X509Certificate certificate = generateTestCertificate();
-		final CryptoPrimitivesPayloadSignature signature = new CryptoPrimitivesPayloadSignature(randomBytes, new X509Certificate[] { certificate });
+		final CryptoPrimitivesSignature signature = new CryptoPrimitivesSignature(randomBytes);
 		responsePayload.setSignature(signature);
 
 		return responsePayload;
@@ -502,8 +462,7 @@ public class SerializationTestData {
 		// Generate random bytes for signature content and create payload signature.
 		final byte[] randomBytes = new byte[10];
 		new SecureRandom().nextBytes(randomBytes);
-		final X509Certificate certificate = generateTestCertificate();
-		final CryptoPrimitivesPayloadSignature signature = new CryptoPrimitivesPayloadSignature(randomBytes, new X509Certificate[] { certificate });
+		final CryptoPrimitivesSignature signature = new CryptoPrimitivesSignature(randomBytes);
 		requestPayload.setSignature(signature);
 
 		return requestPayload;
