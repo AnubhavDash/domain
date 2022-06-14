@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
+import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
@@ -64,7 +64,7 @@ public class ControlComponentBallotBoxPayload implements MixnetPayload {
 	private final ElGamalMultiRecipientPublicKey electionPublicKey;
 
 	@JsonProperty(required = true)
-	private CryptoPrimitivesPayloadSignature signature;
+	private CryptoPrimitivesSignature signature;
 
 	/**
 	 * Constructs an unsigned payload.  All fields must be non null.
@@ -72,7 +72,7 @@ public class ControlComponentBallotBoxPayload implements MixnetPayload {
 	public ControlComponentBallotBoxPayload(final String electionEventId, final String ballotBoxId, final GqGroup encryptionGroup,
 			final List<ElGamalMultiRecipientCiphertext> encryptedVotes,
 			final ElGamalMultiRecipientPublicKey electionPublicKey,
-			final CryptoPrimitivesPayloadSignature signature) {
+			final CryptoPrimitivesSignature signature) {
 
 		this.electionEventId = validateUUID(electionEventId);
 		this.ballotBoxId = validateUUID(ballotBoxId);
@@ -123,12 +123,12 @@ public class ControlComponentBallotBoxPayload implements MixnetPayload {
 	}
 
 	@Override
-	public CryptoPrimitivesPayloadSignature getSignature() {
+	public CryptoPrimitivesSignature getSignature() {
 		return signature;
 	}
 
 	@Override
-	public void setSignature(final CryptoPrimitivesPayloadSignature signature) {
+	public void setSignature(final CryptoPrimitivesSignature signature) {
 		this.signature = checkNotNull(signature);
 
 	}
@@ -182,8 +182,8 @@ public class ControlComponentBallotBoxPayload implements MixnetPayload {
 			final ElGamalMultiRecipientPublicKey electionPublicKey = mapper.reader().withAttribute(groupAttribute, gqGroup)
 					.readValue(node.get("electionPublicKey").toString(), ElGamalMultiRecipientPublicKey.class);
 
-			final CryptoPrimitivesPayloadSignature signature = mapper.reader()
-					.readValue(node.get("signature").toString(), CryptoPrimitivesPayloadSignature.class);
+			final CryptoPrimitivesSignature signature = mapper.reader()
+					.readValue(node.get("signature").toString(), CryptoPrimitivesSignature.class);
 
 			return new ControlComponentBallotBoxPayload(electionEventId, ballotBoxId, gqGroup, Arrays.asList(encryptedVotesArray), electionPublicKey,
 					signature);

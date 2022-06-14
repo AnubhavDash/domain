@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
+import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
 public class ControlComponentCodeSharesPayloadDeserializer extends JsonDeserializer<ControlComponentCodeSharesPayload> {
@@ -48,7 +48,7 @@ public class ControlComponentCodeSharesPayloadDeserializer extends JsonDeseriali
 
 		final int nodeId = mapper.readValue(node.get("nodeId").toString(), Integer.class);
 
-		final CryptoPrimitivesPayloadSignature signature = mapper.reader().readValue(node.get("signature").toString(), CryptoPrimitivesPayloadSignature.class);
+		final CryptoPrimitivesSignature signature = mapper.reader().readValue(node.get("signature").toString(), CryptoPrimitivesSignature.class);
 
 		return new ControlComponentCodeSharesPayload(tenantId, electionEventId, verificationCardSetId, chunkId, gqGroup, returnCodeGenerationInputs,
 				nodeId, signature);

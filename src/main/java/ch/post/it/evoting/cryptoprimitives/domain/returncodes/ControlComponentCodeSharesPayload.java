@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
+import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableBigInteger;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
@@ -60,7 +60,7 @@ public class ControlComponentCodeSharesPayload implements SignedPayload {
 	private final int nodeId;
 
 	@JsonProperty
-	private CryptoPrimitivesPayloadSignature signature;
+	private CryptoPrimitivesSignature signature;
 
 	@JsonCreator
 	public ControlComponentCodeSharesPayload(
@@ -79,7 +79,7 @@ public class ControlComponentCodeSharesPayload implements SignedPayload {
 			@JsonProperty("nodeId")
 			final int nodeId,
 			@JsonProperty("signature")
-			final CryptoPrimitivesPayloadSignature signature) {
+			final CryptoPrimitivesSignature signature) {
 
 		this.tenantId = checkNotNull(tenantId);
 		this.electionEventId = checkNotNull(electionEventId);
@@ -131,11 +131,11 @@ public class ControlComponentCodeSharesPayload implements SignedPayload {
 		return nodeId;
 	}
 
-	public CryptoPrimitivesPayloadSignature getSignature() {
+	public CryptoPrimitivesSignature getSignature() {
 		return signature;
 	}
 
-	public void setSignature(CryptoPrimitivesPayloadSignature signature) {
+	public void setSignature(CryptoPrimitivesSignature signature) {
 		this.signature = signature;
 	}
 
