@@ -24,14 +24,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
-import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecryptions;
 
 /**
- * Deserializes a json into a {@link ControlComponentShufflePayload}. This deserializer is needed when deserializing a payload outside of a {@link
- * MixnetState}.
+ * Deserializes a json into a {@link ControlComponentShufflePayload}.
  */
 class ControlComponentShufflePayloadDeserializer extends JsonDeserializer<ControlComponentShufflePayload> {
 
@@ -52,26 +50,15 @@ class ControlComponentShufflePayloadDeserializer extends JsonDeserializer<Contro
 				.withAttribute(groupAttribute, gqGroup)
 				.readValue(node.get("verifiableDecryptions").toString(), VerifiableDecryptions.class);
 
-		VerifiableShuffle verifiableShuffle = null;
-		if (!node.path("verifiableShuffle").isMissingNode()) {
-			verifiableShuffle = mapper.reader().withAttribute(groupAttribute, gqGroup)
-					.readValue(node.get("verifiableShuffle").toString(), VerifiableShuffle.class);
-		}
-
-		final ElGamalMultiRecipientPublicKey remainingElectionPublicKey = mapper.reader().withAttribute(groupAttribute, gqGroup)
-				.readValue(node.get("remainingElectionPublicKey").toString(), ElGamalMultiRecipientPublicKey.class);
-
-		final ElGamalMultiRecipientPublicKey previousRemainingElectionPublicKey = mapper.reader().withAttribute(groupAttribute, gqGroup)
-				.readValue(node.get("previousRemainingElectionPublicKey").toString(), ElGamalMultiRecipientPublicKey.class);
-
-		final ElGamalMultiRecipientPublicKey nodeElectionPublicKey = mapper.reader().withAttribute(groupAttribute, gqGroup)
-				.readValue(node.get("nodeElectionPublicKey").toString(), ElGamalMultiRecipientPublicKey.class);
+		final VerifiableShuffle verifiableShuffle = mapper.reader()
+				.withAttribute(groupAttribute, gqGroup)
+				.readValue(node.get("verifiableShuffle").toString(), VerifiableShuffle.class);
 
 		final int nodeId = mapper.readValue(node.get("nodeId").toString(), Integer.class);
 
-		final CryptoPrimitivesPayloadSignature signature = mapper.reader().readValue(node.get("signature").toString(), CryptoPrimitivesPayloadSignature.class);
+		final CryptoPrimitivesPayloadSignature signature = mapper.reader()
+				.readValue(node.get("signature").toString(), CryptoPrimitivesPayloadSignature.class);
 
-		return new ControlComponentShufflePayload(electionEventId, ballotBoxId, gqGroup, verifiableDecryptions, verifiableShuffle, remainingElectionPublicKey,
-				previousRemainingElectionPublicKey, nodeElectionPublicKey, nodeId, signature);
+		return new ControlComponentShufflePayload(gqGroup, electionEventId, ballotBoxId, nodeId, verifiableDecryptions, verifiableShuffle, signature);
 	}
 }
