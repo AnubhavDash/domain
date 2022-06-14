@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.post.it.evoting.cryptoprimitives.domain.election.CombinedCorrectnessInformation;
-import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
+import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
 public class SetupComponentVerificationDataDeserializer extends JsonDeserializer<SetupComponentVerificationDataPayload> {
@@ -53,8 +53,8 @@ public class SetupComponentVerificationDataDeserializer extends JsonDeserializer
 		final CombinedCorrectnessInformation combinedCorrectnessInformation = mapper.reader().withAttribute("group", gqGroup)
 				.readValue(node.get("combinedCorrectnessInformation").toString(), CombinedCorrectnessInformation.class);
 
-		final CryptoPrimitivesPayloadSignature signature = mapper.reader()
-				.readValue(node.get("signature").toString(), CryptoPrimitivesPayloadSignature.class);
+		final CryptoPrimitivesSignature signature = mapper.reader()
+				.readValue(node.get("signature").toString(), CryptoPrimitivesSignature.class);
 
 		return new SetupComponentVerificationDataPayload(tenantId, electionEventId, verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId,
 				gqGroup, setupComponentVerificationData, combinedCorrectnessInformation, signature);
