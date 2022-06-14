@@ -17,20 +17,18 @@ package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.common.collect.ImmutableList;
 
 import ch.post.it.evoting.cryptoprimitives.domain.returncodes.SignedPayload;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
-import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
@@ -38,7 +36,7 @@ import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
 /**
  * Value class representing the final result of a mixnet.
  */
-@JsonPropertyOrder({ "encryptionGroup", "verifiableShuffle", "verifiablePlaintextDecryption", "previousRemainingElectionPublicKey" })
+@JsonPropertyOrder({ "encryptionGroup", "verifiableShuffle", "verifiablePlaintextDecryption", "signature" })
 @JsonDeserialize(using = TallyComponentShufflePayloadDeserializer.class)
 public class TallyComponentShufflePayload implements SignedPayload {
 
@@ -46,14 +44,10 @@ public class TallyComponentShufflePayload implements SignedPayload {
 	private final GqGroup encryptionGroup;
 
 	@JsonProperty
-	@JsonInclude(JsonInclude.Include.NON_ABSENT)
 	private final VerifiableShuffle verifiableShuffle;
 
 	@JsonProperty
 	private final VerifiablePlaintextDecryption verifiablePlaintextDecryption;
-
-	@JsonProperty
-	private final ElGamalMultiRecipientPublicKey previousRemainingElectionPublicKey;
 
 	@JsonProperty
 	private CryptoPrimitivesPayloadSignature signature;
@@ -62,42 +56,28 @@ public class TallyComponentShufflePayload implements SignedPayload {
 	public TallyComponentShufflePayload(
 			@JsonProperty(value = "encryptionGroup", required = true)
 			final GqGroup encryptionGroup,
-			@JsonProperty("verifiableShuffle")
+			@JsonProperty(value = "verifiableShuffle", required = true)
 			final VerifiableShuffle verifiableShuffle,
 			@JsonProperty(value = "verifiablePlaintextDecryption", required = true)
 			final VerifiablePlaintextDecryption verifiablePlaintextDecryption,
-			@JsonProperty(value = "previousRemainingElectionPublicKey", required = true)
-			final ElGamalMultiRecipientPublicKey previousRemainingElectionPublicKey,
 			@JsonProperty(value = "signature", required = true)
 			final CryptoPrimitivesPayloadSignature signature) {
 
-		checkNotNull(encryptionGroup);
-		checkNotNull(verifiablePlaintextDecryption);
-		checkNotNull(previousRemainingElectionPublicKey);
-		checkNotNull(signature);
-
-		this.encryptionGroup = encryptionGroup;
-		this.verifiableShuffle = verifiableShuffle;
-		this.verifiablePlaintextDecryption = verifiablePlaintextDecryption;
-		this.previousRemainingElectionPublicKey = previousRemainingElectionPublicKey;
-		this.signature = signature;
+		this.encryptionGroup = checkNotNull(encryptionGroup);
+		this.verifiableShuffle = checkNotNull(verifiableShuffle);
+		this.verifiablePlaintextDecryption = checkNotNull(verifiablePlaintextDecryption);
+		this.signature = checkNotNull(signature);
 	}
 
 	/**
 	 * Constructs an unsigned payload.
 	 */
 	public TallyComponentShufflePayload(final GqGroup encryptionGroup, final VerifiableShuffle verifiableShuffle,
-			final VerifiablePlaintextDecryption verifiablePlaintextDecryption,
-			final ElGamalMultiRecipientPublicKey previousRemainingElectionPublicKey) {
+			final VerifiablePlaintextDecryption verifiablePlaintextDecryption) {
 
-		checkNotNull(encryptionGroup);
-		checkNotNull(verifiablePlaintextDecryption);
-		checkNotNull(previousRemainingElectionPublicKey);
-
-		this.encryptionGroup = encryptionGroup;
-		this.verifiableShuffle = verifiableShuffle;
-		this.verifiablePlaintextDecryption = verifiablePlaintextDecryption;
-		this.previousRemainingElectionPublicKey = previousRemainingElectionPublicKey;
+		this.encryptionGroup = checkNotNull(encryptionGroup);
+		this.verifiableShuffle = checkNotNull(verifiableShuffle);
+		this.verifiablePlaintextDecryption = checkNotNull(verifiablePlaintextDecryption);
 	}
 
 	public GqGroup getEncryptionGroup() {
@@ -113,17 +93,10 @@ public class TallyComponentShufflePayload implements SignedPayload {
 		return verifiablePlaintextDecryption;
 	}
 
-	public ElGamalMultiRecipientPublicKey getPreviousRemainingElectionPublicKey() {
-		return previousRemainingElectionPublicKey;
-	}
-
 	public CryptoPrimitivesPayloadSignature getSignature() {
 		return signature;
 	}
 
-	/**
-	 * @param signature must be not null
-	 */
 	public void setSignature(final CryptoPrimitivesPayloadSignature signature) {
 		this.signature = checkNotNull(signature);
 	}
@@ -137,24 +110,19 @@ public class TallyComponentShufflePayload implements SignedPayload {
 			return false;
 		}
 		final TallyComponentShufflePayload that = (TallyComponentShufflePayload) o;
-		return encryptionGroup.equals(that.encryptionGroup) && Objects.equals(verifiableShuffle, that.verifiableShuffle)
-				&& verifiablePlaintextDecryption.equals(that.verifiablePlaintextDecryption) && previousRemainingElectionPublicKey
-				.equals(that.previousRemainingElectionPublicKey) && signature.equals(that.signature);
+		return encryptionGroup.equals(that.encryptionGroup) && verifiableShuffle.equals(that.verifiableShuffle)
+				&& verifiablePlaintextDecryption.equals(
+				that.verifiablePlaintextDecryption) && Objects.equals(signature, that.signature);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(encryptionGroup, verifiableShuffle, verifiablePlaintextDecryption, previousRemainingElectionPublicKey, signature);
+		return Objects.hash(encryptionGroup, verifiableShuffle, verifiablePlaintextDecryption, signature);
 	}
 
 	@Override
-	public ImmutableList<? extends Hashable> toHashableForm() {
-		if (this.verifiableShuffle != null) {
-			return ImmutableList.of(this.encryptionGroup, this.verifiableShuffle, this.verifiablePlaintextDecryption.getDecryptedVotes(),
-					this.verifiablePlaintextDecryption.getDecryptionProofs(), this.previousRemainingElectionPublicKey);
-		} else {
-			return ImmutableList.of(this.encryptionGroup, this.verifiablePlaintextDecryption.getDecryptedVotes(),
-					this.verifiablePlaintextDecryption.getDecryptionProofs(), this.previousRemainingElectionPublicKey);
-		}
+	public List<? extends Hashable> toHashableForm() {
+		return List.of(this.encryptionGroup, this.verifiableShuffle, this.verifiablePlaintextDecryption.getDecryptedVotes(),
+				this.verifiablePlaintextDecryption.getDecryptionProofs());
 	}
 }

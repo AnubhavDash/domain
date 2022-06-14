@@ -17,7 +17,7 @@ package ch.post.it.evoting.cryptoprimitives.domain.returncodes;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.google.common.collect.ImmutableList;
+import java.util.List;
 
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
@@ -49,9 +49,9 @@ public record SetupComponentVerificationData(
 	}
 
 	@Override
-	public ImmutableList<Hashable> toHashableForm() {
-		return ImmutableList.of(HashableString.from(verificationCardId), encryptedHashedSquaredConfirmationKey,
-				encryptedHashedSquaredPartialChoiceReturnCodes, verificationCardPublicKey);
+	public List<Hashable> toHashableForm() {
+		return List.of(HashableString.from(verificationCardId), encryptedHashedSquaredConfirmationKey, encryptedHashedSquaredPartialChoiceReturnCodes,
+				verificationCardPublicKey);
 	}
 
 }

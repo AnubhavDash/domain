@@ -19,8 +19,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigInteger;
-
-import com.google.common.collect.ImmutableList;
+import java.util.List;
 
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableBigInteger;
@@ -57,8 +56,8 @@ public record CorrectnessInformation(
 	}
 
 	@Override
-	public ImmutableList<Hashable> toHashableForm() {
-		return ImmutableList.of(
+	public List<Hashable> toHashableForm() {
+		return List.of(
 				HashableString.from(correctnessId),
 				HashableBigInteger.from(BigInteger.valueOf(numberOfSelections)),
 				HashableBigInteger.from(BigInteger.valueOf(numberOfVotingOptions)));

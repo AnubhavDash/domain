@@ -25,7 +25,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.common.collect.ImmutableList;
 
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
@@ -161,8 +160,8 @@ public class ControlComponentCodeSharesPayload implements SignedPayload {
 	}
 
 	@Override
-	public ImmutableList<Hashable> toHashableForm() {
-		return ImmutableList.of(HashableString.from(tenantId), HashableString.from(electionEventId), HashableString.from(verificationCardSetId),
+	public List<Hashable> toHashableForm() {
+		return List.of(HashableString.from(tenantId), HashableString.from(electionEventId), HashableString.from(verificationCardSetId),
 				HashableBigInteger.from(BigInteger.valueOf(chunkId)), encryptionGroup, HashableList.from(controlComponentCodeShares),
 				HashableBigInteger.from(BigInteger.valueOf(nodeId)));
 	}
