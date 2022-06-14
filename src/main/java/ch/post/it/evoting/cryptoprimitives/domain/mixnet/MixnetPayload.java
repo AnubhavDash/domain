@@ -20,9 +20,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import ch.post.it.evoting.cryptoprimitives.domain.returncodes.SignedPayload;
-import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
-import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
 /**
@@ -31,17 +29,12 @@ import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 @JsonDeserialize(using = MixnetPayloadDeserializer.class)
 public interface MixnetPayload extends SignedPayload {
 
-	List<ElGamalMultiRecipientCiphertext> getEncryptedVotes();
-
-	ElGamalMultiRecipientPublicKey getRemainingElectionPublicKey();
-
-	CryptoPrimitivesPayloadSignature getSignature();
-
-	void setSignature(final CryptoPrimitivesPayloadSignature signature);
-
-	GqGroup getEncryptionGroup();
+	String getElectionEventId();
 
 	String getBallotBoxId();
 
-	String getElectionEventId();
+	GqGroup getEncryptionGroup();
+
+	List<ElGamalMultiRecipientCiphertext> getEncryptedVotes();
+
 }

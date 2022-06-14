@@ -24,10 +24,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
-import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
-
 
 /**
  * Deserializes a json into a {@link TallyComponentShufflePayload}.
@@ -43,20 +41,17 @@ class TallyComponentShufflePayloadDeserializer extends JsonDeserializer<TallyCom
 		final GqGroup gqGroup = mapper.readValue(encryptionGroupNode.toString(), GqGroup.class);
 		final String groupAttribute = "group";
 
-		VerifiableShuffle verifiableShuffle = null;
-		if (!node.path("verifiableShuffle").isMissingNode()) {
-			verifiableShuffle = mapper.reader().withAttribute(groupAttribute, gqGroup)
-					.readValue(node.get("verifiableShuffle").toString(), VerifiableShuffle.class);
-		}
+		final VerifiableShuffle verifiableShuffle = mapper.reader()
+				.withAttribute(groupAttribute, gqGroup)
+				.readValue(node.get("verifiableShuffle").toString(), VerifiableShuffle.class);
 
-		final VerifiablePlaintextDecryption verifiablePlaintextDecryption = mapper.reader().withAttribute(groupAttribute, gqGroup)
+		final VerifiablePlaintextDecryption verifiablePlaintextDecryption = mapper.reader()
+				.withAttribute(groupAttribute, gqGroup)
 				.readValue(node.get("verifiablePlaintextDecryption").toString(), VerifiablePlaintextDecryption.class);
 
-		final ElGamalMultiRecipientPublicKey previousRemainingElectionPublicKey = mapper.reader().withAttribute(groupAttribute, gqGroup)
-				.readValue(node.get("previousRemainingElectionPublicKey").toString(), ElGamalMultiRecipientPublicKey.class);
+		final CryptoPrimitivesPayloadSignature signature = mapper.reader()
+				.readValue(node.get("signature").toString(), CryptoPrimitivesPayloadSignature.class);
 
-		final CryptoPrimitivesPayloadSignature signature = mapper.reader().readValue(node.get("signature").toString(), CryptoPrimitivesPayloadSignature.class);
-
-		return new TallyComponentShufflePayload(gqGroup, verifiableShuffle, verifiablePlaintextDecryption, previousRemainingElectionPublicKey, signature);
+		return new TallyComponentShufflePayload(gqGroup, verifiableShuffle, verifiablePlaintextDecryption, signature);
 	}
 }

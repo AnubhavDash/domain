@@ -32,7 +32,6 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.common.collect.ImmutableList;
 
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
@@ -114,7 +113,6 @@ public class ControlComponentBallotBoxPayload implements MixnetPayload {
 		return encryptedVotes;
 	}
 
-	@Override
 	@JsonIgnore
 	public ElGamalMultiRecipientPublicKey getRemainingElectionPublicKey() {
 		return getElectionPublicKey();
@@ -155,14 +153,13 @@ public class ControlComponentBallotBoxPayload implements MixnetPayload {
 	}
 
 	@Override
-	public ImmutableList<? extends Hashable> toHashableForm() {
-		return ImmutableList.of(HashableString.from(this.electionEventId), HashableString.from(this.ballotBoxId), this.encryptionGroup,
+	public List<? extends Hashable> toHashableForm() {
+		return List.of(HashableString.from(this.electionEventId), HashableString.from(this.ballotBoxId), this.encryptionGroup,
 				HashableList.from(this.encryptedVotes), this.electionPublicKey);
 	}
 
 	/**
-	 * Deserializes a json into a {@link ControlComponentBallotBoxPayload}. This deserializer is needed when deserializing a payload outside of a {@link
-	 * MixnetState}.
+	 * Deserializes a json into a {@link ControlComponentBallotBoxPayload}.
 	 */
 	static class ControlComponentBallotBoxPayloadDeserializer extends JsonDeserializer<ControlComponentBallotBoxPayload> {
 
@@ -188,7 +185,8 @@ public class ControlComponentBallotBoxPayload implements MixnetPayload {
 			final CryptoPrimitivesPayloadSignature signature = mapper.reader()
 					.readValue(node.get("signature").toString(), CryptoPrimitivesPayloadSignature.class);
 
-			return new ControlComponentBallotBoxPayload(electionEventId, ballotBoxId, gqGroup, Arrays.asList(encryptedVotesArray), electionPublicKey, signature);
+			return new ControlComponentBallotBoxPayload(electionEventId, ballotBoxId, gqGroup, Arrays.asList(encryptedVotesArray), electionPublicKey,
+					signature);
 		}
 	}
 
