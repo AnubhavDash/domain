@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
+import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableBigInteger;
@@ -63,7 +63,7 @@ public class ControlComponentShufflePayload implements MixnetPayload {
 	private final VerifiableShuffle verifiableShuffle;
 
 	@JsonProperty
-	private CryptoPrimitivesPayloadSignature signature;
+	private CryptoPrimitivesSignature signature;
 
 	@JsonCreator
 	public ControlComponentShufflePayload(
@@ -80,7 +80,7 @@ public class ControlComponentShufflePayload implements MixnetPayload {
 			@JsonProperty(value = "verifiableShuffle", required = true)
 			final VerifiableShuffle verifiableShuffle,
 			@JsonProperty(value = "signature", required = true)
-			final CryptoPrimitivesPayloadSignature signature) {
+			final CryptoPrimitivesSignature signature) {
 
 		this.encryptionGroup = checkNotNull(encryptionGroup);
 		this.electionEventId = validateUUID(electionEventId);
@@ -139,12 +139,12 @@ public class ControlComponentShufflePayload implements MixnetPayload {
 	}
 
 	@Override
-	public CryptoPrimitivesPayloadSignature getSignature() {
+	public CryptoPrimitivesSignature getSignature() {
 		return signature;
 	}
 
 	@Override
-	public void setSignature(final CryptoPrimitivesPayloadSignature signature) {
+	public void setSignature(final CryptoPrimitivesSignature signature) {
 		this.signature = checkNotNull(signature);
 	}
 

@@ -23,7 +23,8 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
+import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
+import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
 
@@ -49,8 +50,8 @@ class TallyComponentShufflePayloadDeserializer extends JsonDeserializer<TallyCom
 				.withAttribute(groupAttribute, gqGroup)
 				.readValue(node.get("verifiablePlaintextDecryption").toString(), VerifiablePlaintextDecryption.class);
 
-		final CryptoPrimitivesPayloadSignature signature = mapper.reader()
-				.readValue(node.get("signature").toString(), CryptoPrimitivesPayloadSignature.class);
+		final CryptoPrimitivesSignature signature = mapper.reader()
+				.readValue(node.get("signature").toString(), CryptoPrimitivesSignature.class);
 
 		return new TallyComponentShufflePayload(gqGroup, verifiableShuffle, verifiablePlaintextDecryption, signature);
 	}

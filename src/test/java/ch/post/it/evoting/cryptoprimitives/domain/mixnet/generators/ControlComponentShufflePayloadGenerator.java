@@ -17,12 +17,10 @@
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet.generators;
 
 import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
 import java.util.Random;
 
-import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.ControlComponentShufflePayload;
-import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
+import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffleGenerator;
@@ -47,13 +45,11 @@ public class ControlComponentShufflePayloadGenerator {
 		// Generate random bytes for signature content and create payload signature.
 		final byte[] randomBytes = new byte[10];
 		secureRandom.nextBytes(randomBytes);
-		final X509Certificate certificate = SerializationTestData.generateTestCertificate();
-		final CryptoPrimitivesPayloadSignature signature = new CryptoPrimitivesPayloadSignature(randomBytes, new X509Certificate[] { certificate });
+		final CryptoPrimitivesSignature signature = new CryptoPrimitivesSignature(randomBytes);
 
 		// VerifiableDecryptions.
 		final VerifiableDecryptions verifiableDecryptions = new VerifiableDecryptionGenerator(group).genVerifiableDecryption(numVotes, voteSize);
 
-		return new ControlComponentShufflePayload(group, ELECTION_EVENT_ID, BALLOT_BOX_ID, nodeId, verifiableDecryptions, verifiableShuffle,
-				signature);
+		return new ControlComponentShufflePayload(group, ELECTION_EVENT_ID, BALLOT_BOX_ID, nodeId, verifiableDecryptions, verifiableShuffle, signature);
 	}
 }

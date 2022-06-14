@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
+import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecryptions;
@@ -56,8 +56,8 @@ class ControlComponentShufflePayloadDeserializer extends JsonDeserializer<Contro
 
 		final int nodeId = mapper.readValue(node.get("nodeId").toString(), Integer.class);
 
-		final CryptoPrimitivesPayloadSignature signature = mapper.reader()
-				.readValue(node.get("signature").toString(), CryptoPrimitivesPayloadSignature.class);
+		final CryptoPrimitivesSignature signature = mapper.reader()
+				.readValue(node.get("signature").toString(), CryptoPrimitivesSignature.class);
 
 		return new ControlComponentShufflePayload(gqGroup, electionEventId, ballotBoxId, nodeId, verifiableDecryptions, verifiableShuffle, signature);
 	}

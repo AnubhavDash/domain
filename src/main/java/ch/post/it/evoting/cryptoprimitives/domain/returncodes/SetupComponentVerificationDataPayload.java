@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import ch.post.it.evoting.cryptoprimitives.domain.election.CombinedCorrectnessInformation;
-import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
+import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableBigInteger;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
@@ -64,7 +64,7 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 	private final CombinedCorrectnessInformation combinedCorrectnessInformation;
 
 	@JsonProperty
-	private CryptoPrimitivesPayloadSignature signature;
+	private CryptoPrimitivesSignature signature;
 
 	@JsonCreator
 	public SetupComponentVerificationDataPayload(
@@ -85,7 +85,7 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 			@JsonProperty("combinedCorrectnessInformation")
 			final CombinedCorrectnessInformation combinedCorrectnessInformation,
 			@JsonProperty("signature")
-			final CryptoPrimitivesPayloadSignature signature) {
+			final CryptoPrimitivesSignature signature) {
 
 		this.tenantId = checkNotNull(tenantId);
 		this.electionEventId = checkNotNull(electionEventId);
@@ -147,11 +147,11 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 		return combinedCorrectnessInformation;
 	}
 
-	public CryptoPrimitivesPayloadSignature getSignature() {
+	public CryptoPrimitivesSignature getSignature() {
 		return signature;
 	}
 
-	public void setSignature(CryptoPrimitivesPayloadSignature signature) {
+	public void setSignature(CryptoPrimitivesSignature signature) {
 		this.signature = checkNotNull(signature);
 	}
 

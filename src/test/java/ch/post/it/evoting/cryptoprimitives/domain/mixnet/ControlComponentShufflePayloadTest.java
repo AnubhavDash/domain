@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -33,7 +32,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
 import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
-import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
+import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
@@ -67,8 +66,7 @@ class ControlComponentShufflePayloadTest extends MapperSetUp {
 
 		// Generate random bytes for signature content and create payload signature.
 		secureRandom.nextBytes(randomBytes);
-		final X509Certificate certificate = SerializationTestData.generateTestCertificate();
-		final CryptoPrimitivesPayloadSignature signature = new CryptoPrimitivesPayloadSignature(randomBytes, new X509Certificate[] { certificate });
+		final CryptoPrimitivesSignature signature = new CryptoPrimitivesSignature(randomBytes);
 
 		final VerifiableShuffle verifiableShuffle = new VerifiableShuffle(GroupVector.from(ciphertexts),
 				SerializationTestData.createShuffleArgument());
