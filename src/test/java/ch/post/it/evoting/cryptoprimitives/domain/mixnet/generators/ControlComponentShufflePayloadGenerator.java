@@ -23,11 +23,9 @@ import java.util.Random;
 import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.ControlComponentShufflePayload;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
-import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffleGenerator;
-import ch.post.it.evoting.cryptoprimitives.test.tools.generator.ElGamalGenerator;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecryptionGenerator;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecryptions;
 
@@ -44,13 +42,7 @@ public class ControlComponentShufflePayloadGenerator {
 
 	public ControlComponentShufflePayload genPayload(int numVotes, int voteSize, int nodeId) {
 
-		final VerifiableShuffle verifiableShuffle =
-				numVotes <= 1 ? null : new VerifiableShuffleGenerator(group).genVerifiableShuffle(numVotes, voteSize);
-
-		ElGamalGenerator generator = new ElGamalGenerator(group);
-		final ElGamalMultiRecipientPublicKey remainingElectionPublicKey = generator.genRandomPublicKey(voteSize);
-		final ElGamalMultiRecipientPublicKey previousRemainingElectionPublicKey = generator.genRandomPublicKey(voteSize);
-		final ElGamalMultiRecipientPublicKey nodeElectionPublicKey = generator.genRandomPublicKey(voteSize);
+		final VerifiableShuffle verifiableShuffle = new VerifiableShuffleGenerator(group).genVerifiableShuffle(numVotes, voteSize);
 
 		// Generate random bytes for signature content and create payload signature.
 		final byte[] randomBytes = new byte[10];
@@ -61,7 +53,7 @@ public class ControlComponentShufflePayloadGenerator {
 		// VerifiableDecryptions.
 		final VerifiableDecryptions verifiableDecryptions = new VerifiableDecryptionGenerator(group).genVerifiableDecryption(numVotes, voteSize);
 
-		return new ControlComponentShufflePayload(ELECTION_EVENT_ID, BALLOT_BOX_ID, group, verifiableDecryptions, verifiableShuffle, remainingElectionPublicKey,
-				previousRemainingElectionPublicKey, nodeElectionPublicKey, nodeId, signature);
+		return new ControlComponentShufflePayload(group, ELECTION_EVENT_ID, BALLOT_BOX_ID, nodeId, verifiableDecryptions, verifiableShuffle,
+				signature);
 	}
 }

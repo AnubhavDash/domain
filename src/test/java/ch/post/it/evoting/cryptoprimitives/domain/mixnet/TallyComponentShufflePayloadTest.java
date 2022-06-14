@@ -27,13 +27,11 @@ import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
 import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
-import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
 
@@ -44,27 +42,22 @@ class TallyComponentShufflePayloadTest extends MapperSetUp {
 	private static final byte[] randomBytes = new byte[10];
 
 	private static ObjectNode rootNode;
-	private static GqGroup gqGroup;
-	private static ElGamalMultiRecipientPublicKey previousRemainingPublicKey;
-	private static VerifiablePlaintextDecryption verifiablePlaintextDecryption;
-	private static CryptoPrimitivesPayloadSignature signature;
 	private static TallyComponentShufflePayload tallyComponentShufflePayload;
 
 	@BeforeAll
 	static void setUpAll() {
 		final int nbrMessage = 4;
-		gqGroup = SerializationTestData.getGqGroup();
+		final GqGroup gqGroup = SerializationTestData.getGqGroup();
 
 		final VerifiableShuffle verifiableShuffle = SerializationTestData.getVerifiableShuffle(nbrMessage);
-		previousRemainingPublicKey = SerializationTestData.getPublicKey();
-		verifiablePlaintextDecryption = SerializationTestData.getVerifiablePlaintextDecryption(nbrMessage);
+		final VerifiablePlaintextDecryption verifiablePlaintextDecryption = SerializationTestData.getVerifiablePlaintextDecryption(nbrMessage);
 
 		// Generate random bytes for signature content and create payload signature.
 		secureRandom.nextBytes(randomBytes);
 		final X509Certificate certificate = SerializationTestData.generateTestCertificate();
-		signature = new CryptoPrimitivesPayloadSignature(randomBytes, new X509Certificate[] { certificate });
+		final CryptoPrimitivesPayloadSignature signature = new CryptoPrimitivesPayloadSignature(randomBytes, new X509Certificate[] { certificate });
 
-		tallyComponentShufflePayload = new TallyComponentShufflePayload(gqGroup, verifiableShuffle, verifiablePlaintextDecryption, previousRemainingPublicKey, signature);
+		tallyComponentShufflePayload = new TallyComponentShufflePayload(gqGroup, verifiableShuffle, verifiablePlaintextDecryption, signature);
 
 		// Create expected json.
 		rootNode = mapper.createObjectNode();
@@ -78,9 +71,6 @@ class TallyComponentShufflePayloadTest extends MapperSetUp {
 		final ObjectNode verifiablePlaintextDecryptionNode = SerializationTestData
 				.createVerifiablePlaintextDecryptionNode(verifiablePlaintextDecryption);
 		rootNode.set("verifiablePlaintextDecryption", verifiablePlaintextDecryptionNode);
-
-		final ArrayNode previousRemainingPublicKeyNode = SerializationTestData.createPublicKeyNode(previousRemainingPublicKey);
-		rootNode.set("previousRemainingElectionPublicKey", previousRemainingPublicKeyNode);
 
 		final JsonNode signatureNode = SerializationTestData.createSignatureNode(signature);
 		rootNode.set("signature", signatureNode);
@@ -97,7 +87,8 @@ class TallyComponentShufflePayloadTest extends MapperSetUp {
 	@Test
 	@DisplayName("deserialized gives expected TallyComponentShufflePayload")
 	void deserializeTallyComponentShufflePayload() throws IOException {
-		final TallyComponentShufflePayload deserializedTallyComponentShufflePayload = mapper.readValue(rootNode.toString(), TallyComponentShufflePayload.class);
+		final TallyComponentShufflePayload deserializedTallyComponentShufflePayload = mapper.readValue(rootNode.toString(),
+				TallyComponentShufflePayload.class);
 
 		assertEquals(tallyComponentShufflePayload, deserializedTallyComponentShufflePayload);
 	}
@@ -105,34 +96,8 @@ class TallyComponentShufflePayloadTest extends MapperSetUp {
 	@Test
 	@DisplayName("serialized then deserialized gives original TallyComponentShufflePayload")
 	void cycle() throws IOException {
-		final TallyComponentShufflePayload result = mapper.readValue(mapper.writeValueAsString(tallyComponentShufflePayload), TallyComponentShufflePayload.class);
-
-		assertEquals(tallyComponentShufflePayload, result);
-	}
-
-	@Test
-	@DisplayName("serialized then deserialized without VerifiableShuffle")
-	void cycleWithoutVerifiableShuffle() throws IOException {
-		final TallyComponentShufflePayload tallyComponentShufflePayload = new TallyComponentShufflePayload(gqGroup, null, verifiablePlaintextDecryption, previousRemainingPublicKey,
-				signature);
-
-		// Create expected json.
-		final ObjectNode rootNode = mapper.createObjectNode();
-
-		final JsonNode encryptionGroupNode = SerializationTestData.createEncryptionGroupNode(gqGroup);
-		rootNode.set("encryptionGroup", encryptionGroupNode);
-
-		final ObjectNode verifiablePlaintextDecryptionNode = SerializationTestData
-				.createVerifiablePlaintextDecryptionNode(verifiablePlaintextDecryption);
-		rootNode.set("verifiablePlaintextDecryption", verifiablePlaintextDecryptionNode);
-
-		final ArrayNode previousRemainingPublicKeyNode = SerializationTestData.createPublicKeyNode(previousRemainingPublicKey);
-		rootNode.set("previousRemainingElectionPublicKey", previousRemainingPublicKeyNode);
-
-		final JsonNode signatureNode = SerializationTestData.createSignatureNode(signature);
-		rootNode.set("signature", signatureNode);
-
-		final TallyComponentShufflePayload result = mapper.readValue(mapper.writeValueAsString(tallyComponentShufflePayload), TallyComponentShufflePayload.class);
+		final TallyComponentShufflePayload result = mapper.readValue(mapper.writeValueAsString(tallyComponentShufflePayload),
+				TallyComponentShufflePayload.class);
 
 		assertEquals(tallyComponentShufflePayload, result);
 	}
