@@ -28,7 +28,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import ch.post.it.evoting.cryptoprimitives.domain.returncodes.SignedPayload;
-import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
+import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
+import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
@@ -50,7 +51,7 @@ public class TallyComponentShufflePayload implements SignedPayload {
 	private final VerifiablePlaintextDecryption verifiablePlaintextDecryption;
 
 	@JsonProperty
-	private CryptoPrimitivesPayloadSignature signature;
+	private CryptoPrimitivesSignature signature;
 
 	@JsonCreator
 	public TallyComponentShufflePayload(
@@ -61,7 +62,7 @@ public class TallyComponentShufflePayload implements SignedPayload {
 			@JsonProperty(value = "verifiablePlaintextDecryption", required = true)
 			final VerifiablePlaintextDecryption verifiablePlaintextDecryption,
 			@JsonProperty(value = "signature", required = true)
-			final CryptoPrimitivesPayloadSignature signature) {
+			final CryptoPrimitivesSignature signature) {
 
 		this.encryptionGroup = checkNotNull(encryptionGroup);
 		this.verifiableShuffle = checkNotNull(verifiableShuffle);
@@ -93,11 +94,11 @@ public class TallyComponentShufflePayload implements SignedPayload {
 		return verifiablePlaintextDecryption;
 	}
 
-	public CryptoPrimitivesPayloadSignature getSignature() {
+	public CryptoPrimitivesSignature getSignature() {
 		return signature;
 	}
 
-	public void setSignature(final CryptoPrimitivesPayloadSignature signature) {
+	public void setSignature(final CryptoPrimitivesSignature signature) {
 		this.signature = checkNotNull(signature);
 	}
 
