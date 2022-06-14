@@ -25,7 +25,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.common.collect.ImmutableList;
 
 import ch.post.it.evoting.cryptoprimitives.domain.election.CombinedCorrectnessInformation;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesPayloadSignature;
@@ -183,12 +182,12 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 	}
 
 	@Override
-	public ImmutableList<? extends Hashable> toHashableForm() {
+	public List<? extends Hashable> toHashableForm() {
 		final List<HashableString> hashableAllowList = partialChoiceReturnCodesAllowList.stream()
 				.map(HashableString::from)
 				.toList();
 
-		return ImmutableList.of(HashableString.from(tenantId), HashableString.from(electionEventId), HashableString.from(verificationCardSetId),
+		return List.of(HashableString.from(tenantId), HashableString.from(electionEventId), HashableString.from(verificationCardSetId),
 				HashableList.from(hashableAllowList), HashableBigInteger.from(BigInteger.valueOf(chunkId)), encryptionGroup,
 				HashableList.from(setupComponentVerificationData), combinedCorrectnessInformation);
 	}
