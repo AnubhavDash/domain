@@ -23,7 +23,7 @@ import ch.post.it.evoting.cryptoprimitives.domain.mixnet.ControlComponentShuffle
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
-import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffleGenerator;
+import ch.post.it.evoting.cryptoprimitives.test.tools.generator.VerifiableShuffleGenerator;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecryptionGenerator;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecryptions;
 

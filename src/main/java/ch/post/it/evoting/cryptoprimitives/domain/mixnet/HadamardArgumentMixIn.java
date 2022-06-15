@@ -15,18 +15,20 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.math.GqElement;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
+import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.mixnet.ZeroArgument;
 
 @SuppressWarnings({ "java:S116", "java:S117", "unused" })
 @JsonPropertyOrder({ "c_b", "zeroArgument" })
+@JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 public abstract class HadamardArgumentMixIn {
 
 	@JsonProperty

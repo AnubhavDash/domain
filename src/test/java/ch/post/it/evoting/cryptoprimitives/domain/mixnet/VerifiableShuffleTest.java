@@ -27,11 +27,11 @@ import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
 import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
+import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.mixnet.ShuffleArgument;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
 
