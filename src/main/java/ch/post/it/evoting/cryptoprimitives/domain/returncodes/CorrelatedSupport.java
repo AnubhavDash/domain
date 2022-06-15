@@ -18,7 +18,10 @@ package ch.post.it.evoting.cryptoprimitives.domain.returncodes;
 import java.util.Objects;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CorrelatedSupport  {
+	@JsonProperty
 	private UUID correlationId;
 
 	/**

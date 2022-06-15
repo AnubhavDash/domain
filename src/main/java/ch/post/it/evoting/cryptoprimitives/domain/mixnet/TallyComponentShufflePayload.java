@@ -29,7 +29,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import ch.post.it.evoting.cryptoprimitives.domain.returncodes.SignedPayload;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
-import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
