@@ -33,14 +33,15 @@ import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.domain.mapper.DomainObjectMapper;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientKeyPair;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
-import ch.post.it.evoting.cryptoprimitives.math.RandomService;
+import ch.post.it.evoting.cryptoprimitives.math.Random;
+import ch.post.it.evoting.cryptoprimitives.math.RandomFactory;
 import ch.post.it.evoting.cryptoprimitives.test.tools.data.GroupTestData;
 
 @DisplayName("An ElGamalMultiRecipientKeyPair")
 class ElGamalMultiRecipientKeyPairMixInTest {
 
 	private static final ObjectMapper mapper = DomainObjectMapper.getNewInstance();
-	private static final RandomService randomService = new RandomService();
+	private static final Random randomService = RandomFactory.createRandom();
 	private static final SecureRandom secureRandom = new SecureRandom();
 
 	private static ObjectNode rootNode;

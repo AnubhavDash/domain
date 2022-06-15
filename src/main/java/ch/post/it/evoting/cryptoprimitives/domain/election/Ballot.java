@@ -18,7 +18,6 @@ package ch.post.it.evoting.cryptoprimitives.domain.election;
 import static ch.post.it.evoting.cryptoprimitives.domain.election.BallotValidations.checkContestsNotNullAndNotEmpty;
 import static ch.post.it.evoting.cryptoprimitives.domain.election.BallotValidations.checkNotNullAndNotEmpty;
 import static ch.post.it.evoting.cryptoprimitives.domain.election.BallotValidations.checkQuestionsSizeOfListsAndCandidatesContest;
-import static ch.post.it.evoting.cryptoprimitives.utils.ConversionService.stringToInteger;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigInteger;
@@ -33,6 +32,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.MoreCollectors;
+
+import ch.post.it.evoting.cryptoprimitives.utils.Conversions;
 
 /**
  * Encapsulates the information contained within a ballot.
@@ -57,7 +58,7 @@ public record Ballot(String id,
 	@JsonIgnore
 	public List<BigInteger> getEncodedVotingOptions() {
 		return getOrderedElectionOptions().stream()
-				.map(electionOption -> stringToInteger(electionOption.getRepresentation()))
+				.map(electionOption -> Conversions.stringToInteger(electionOption.getRepresentation()))
 				.toList();
 	}
 
