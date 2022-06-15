@@ -32,7 +32,7 @@ public record CryptoPrimitivesSignature(byte[] signatureContents) {
 
 	@Override
 	public String toString() {
-		return "CryptoPrimitivesPayloadSignature{" +
+		return "CryptoPrimitivesSignature{" +
 				"signatureContents=" + Arrays.toString(signatureContents) +
 				'}';
 	}

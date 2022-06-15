@@ -17,6 +17,7 @@ package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -37,6 +38,7 @@ import ch.post.it.evoting.cryptoprimitives.mixnet.SingleValueProductArgument;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "c_b", "hadamardArgument", "singleValueProductArgument" })
 @JsonDeserialize(using = ProductArgumentMixIn.ProductArgumentDeserializer.class)
+@JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 public abstract class ProductArgumentMixIn {
 
 	@JsonProperty

@@ -15,15 +15,16 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
-import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.math.GqElement;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
+import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.math.ZqElement;
 import ch.post.it.evoting.cryptoprimitives.math.ZqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.MultiExponentiationArgument;
@@ -31,6 +32,7 @@ import ch.post.it.evoting.cryptoprimitives.mixnet.MultiExponentiationArgument;
 @SuppressWarnings({ "java:S100", "java:S116", "java:S117", "unused" })
 @JsonPropertyOrder({ "c_A_0", "c_B", "E", "a", "r", "b", "s", "tau" })
 @JsonDeserialize(builder = MultiExponentiationArgument.Builder.class)
+@JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 public abstract class MultiExponentiationArgumentMixIn {
 
 	@JsonProperty

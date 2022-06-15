@@ -15,15 +15,15 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
-import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.math.GqElement;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
+import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.mixnet.MultiExponentiationArgument;
 import ch.post.it.evoting.cryptoprimitives.mixnet.ProductArgument;
 import ch.post.it.evoting.cryptoprimitives.mixnet.ShuffleArgument;
@@ -31,6 +31,7 @@ import ch.post.it.evoting.cryptoprimitives.mixnet.ShuffleArgument;
 @SuppressWarnings({ "java:S100", "java:S116", "java:S117", "unused" })
 @JsonPropertyOrder({ "c_A", "c_B", "productArgument", "multiExponentiationArgument" })
 @JsonDeserialize(builder = ShuffleArgument.Builder.class)
+@JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
 public abstract class ShuffleArgumentMixIn {
 
 	@JsonProperty
@@ -44,9 +45,6 @@ public abstract class ShuffleArgumentMixIn {
 
 	@JsonProperty
 	MultiExponentiationArgument multiExponentiationArgument;
-
-	@JsonIgnore
-	GqGroup group;
 
 	@JsonPOJOBuilder(withPrefix = "with_")
 	public interface ShuffleArgumentBuilderMixin {
