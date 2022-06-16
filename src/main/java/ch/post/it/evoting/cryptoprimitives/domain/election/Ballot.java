@@ -79,7 +79,7 @@ public record Ballot(String id,
 		final Map<Contest, List<ElectionOption>> contestToOrderedElectionOptions = checkContestsNotNullAndNotEmpty(this.contests, this.id).stream()
 				.collect(Collectors.toMap(Function.identity(), this::getOrderedElectionOptionsFromContest));
 
-		return contestToOrderedElectionOptions.keySet().stream()
+		return contests.stream()
 				.map(contest -> contestToOrderedElectionOptions.get(contest).stream()
 						.map(electionOption -> getAttributeAlias(electionOption.getAttribute(), contest.attributes()))
 						.toList()
