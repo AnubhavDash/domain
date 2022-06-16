@@ -23,13 +23,12 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import ch.post.it.evoting.cryptoprimitives.domain.returncodes.SignedPayload;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
-import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableBigInteger;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
@@ -41,8 +40,8 @@ import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecrypt
  * Encapsulates the output of a mixing / decryption operation.
  */
 @JsonPropertyOrder({ "encryptionGroup", "electionEventId", "ballotBoxId", "nodeId", "verifiableDecryptions", "verifiableShuffle", "signature" })
-@JsonDeserialize(as = ControlComponentShufflePayload.class, using = ControlComponentShufflePayloadDeserializer.class)
-public class ControlComponentShufflePayload implements MixnetPayload {
+@JsonDeserialize(using = ControlComponentShufflePayloadDeserializer.class)
+public class ControlComponentShufflePayload implements SignedPayload {
 
 	@JsonProperty
 	private final GqGroup encryptionGroup;
@@ -105,17 +104,14 @@ public class ControlComponentShufflePayload implements MixnetPayload {
 		this.verifiableShuffle = checkNotNull(verifiableShuffle);
 	}
 
-	@Override
 	public GqGroup getEncryptionGroup() {
 		return encryptionGroup;
 	}
 
-	@Override
 	public String getElectionEventId() {
 		return electionEventId;
 	}
 
-	@Override
 	public String getBallotBoxId() {
 		return ballotBoxId;
 	}
@@ -133,12 +129,6 @@ public class ControlComponentShufflePayload implements MixnetPayload {
 	}
 
 	@Override
-	@JsonIgnore
-	public List<ElGamalMultiRecipientCiphertext> getEncryptedVotes() {
-		return verifiableDecryptions.getCiphertexts();
-	}
-
-	@Override
 	public CryptoPrimitivesSignature getSignature() {
 		return signature;
 	}
@@ -146,6 +136,12 @@ public class ControlComponentShufflePayload implements MixnetPayload {
 	@Override
 	public void setSignature(final CryptoPrimitivesSignature signature) {
 		this.signature = checkNotNull(signature);
+	}
+
+	@Override
+	public List<? extends Hashable> toHashableForm() {
+		return List.of(this.encryptionGroup, HashableString.from(this.electionEventId), HashableString.from(this.ballotBoxId),
+				HashableBigInteger.from(BigInteger.valueOf(this.nodeId)), this.verifiableDecryptions, this.verifiableShuffle);
 	}
 
 	@Override
@@ -167,9 +163,4 @@ public class ControlComponentShufflePayload implements MixnetPayload {
 		return Objects.hash(encryptionGroup, electionEventId, ballotBoxId, nodeId, verifiableDecryptions, verifiableShuffle, signature);
 	}
 
-	@Override
-	public List<? extends Hashable> toHashableForm() {
-		return List.of(this.encryptionGroup, HashableString.from(this.electionEventId), HashableString.from(this.ballotBoxId),
-				HashableBigInteger.from(BigInteger.valueOf(this.nodeId)), this.verifiableDecryptions, this.verifiableShuffle);
-	}
 }
