@@ -18,6 +18,7 @@ package ch.post.it.evoting.cryptoprimitives.domain.mapper;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.DecryptionProofMixIn;
@@ -106,7 +107,8 @@ public class DomainObjectMapper {
 				.addMixIn(ZeroArgument.Builder.class, ZeroArgumentMixIn.ZeroArgumentBuilderMixIn.class)
 				.disable(MapperFeature.USE_GETTERS_AS_SETTERS)
 				.addModule(new JavaTimeModule())
-				.build();
+				.build()
+				.registerModule(new Jdk8Module());
 	}
 
 }
