@@ -15,7 +15,7 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
-import static ch.post.it.evoting.cryptoprimitives.domain.validations.UUIDValidations.validateUUID;
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigInteger;
