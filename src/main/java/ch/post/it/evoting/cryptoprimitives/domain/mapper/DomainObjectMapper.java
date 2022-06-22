@@ -33,6 +33,7 @@ import ch.post.it.evoting.cryptoprimitives.domain.mixnet.GqGroupMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.HadamardArgumentMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.MultiExponentiationArgumentMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.PlaintextEqualityProofMixIn;
+import ch.post.it.evoting.cryptoprimitives.domain.mixnet.PrimeGqElementMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.ProductArgumentMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.SchnorrProofMixIn;
 import ch.post.it.evoting.cryptoprimitives.domain.mixnet.ShuffleArgumentMixIn;
@@ -48,6 +49,7 @@ import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPrivateK
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.math.GqElement;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
+import ch.post.it.evoting.cryptoprimitives.math.PrimeGqElement;
 import ch.post.it.evoting.cryptoprimitives.math.ZqElement;
 import ch.post.it.evoting.cryptoprimitives.mixnet.HadamardArgument;
 import ch.post.it.evoting.cryptoprimitives.mixnet.MultiExponentiationArgument;
@@ -78,7 +80,9 @@ public class DomainObjectMapper {
 	public static ObjectMapper getNewInstance() {
 		return JsonMapper.builder()
 				// Primitive elements.
-				.addMixIn(GqElement.class, GqElementMixIn.class).addMixIn(ZqElement.class, ZqElementMixIn.class)
+				.addMixIn(GqElement.class, GqElementMixIn.class)
+				.addMixIn(ZqElement.class, ZqElementMixIn.class)
+				.addMixIn(PrimeGqElement.class, PrimeGqElementMixIn.class)
 				.addMixIn(GqGroup.class, GqGroupMixIn.class)
 				// ElGamal objects.
 				.addMixIn(ElGamalMultiRecipientCiphertext.class, ElGamalMultiRecipientCiphertextMixIn.class)
