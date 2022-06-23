@@ -23,6 +23,7 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -60,6 +61,7 @@ import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
 import ch.post.it.evoting.cryptoprimitives.mixnet.ZeroArgument;
 import ch.post.it.evoting.cryptoprimitives.securitylevel.SecurityLevel;
 import ch.post.it.evoting.cryptoprimitives.securitylevel.SecurityLevelConfig;
+import ch.post.it.evoting.cryptoprimitives.test.tools.generator.GqGroupGenerator;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.DecryptionProof;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.ExponentiationProof;
 
@@ -69,7 +71,6 @@ public class SerializationTestData {
 
 	private static final GqGroup gqGroup = getGqGroup();
 	private static final ZqGroup zqGroup = ZqGroup.sameOrderAs(gqGroup);
-
 	private static final BigInteger ZERO = BigInteger.valueOf(0);
 	private static final BigInteger ONE = BigInteger.valueOf(1);
 	private static final BigInteger TWO = BigInteger.valueOf(2);
@@ -77,18 +78,16 @@ public class SerializationTestData {
 	private static final BigInteger FOUR = BigInteger.valueOf(4);
 	private static final BigInteger FIVE = BigInteger.valueOf(5);
 	private static final BigInteger NINE = BigInteger.valueOf(9);
-
-	private static final GqElement gOne = GqElementFactory.fromValue(ONE, gqGroup);
-	private static final GqElement gThree = GqElementFactory.fromValue(THREE, gqGroup);
-	private static final GqElement gFour = GqElementFactory.fromValue(FOUR, gqGroup);
-	private static final GqElement gFive = GqElementFactory.fromValue(FIVE, gqGroup);
-	private static final GqElement gNine = GqElementFactory.fromValue(NINE, gqGroup);
-
 	private static final ZqElement zZero = ZqElement.create(ZERO, zqGroup);
 	private static final ZqElement zOne = ZqElement.create(ONE, zqGroup);
 	private static final ZqElement zTwo = ZqElement.create(TWO, zqGroup);
 	private static final ZqElement zThree = ZqElement.create(THREE, zqGroup);
 	private static final ZqElement zFour = ZqElement.create(FOUR, zqGroup);
+	private static final GqElement gOne = GqElementFactory.fromValue(ONE, gqGroup);
+	private static final GqElement gThree = GqElementFactory.fromValue(THREE, gqGroup);
+	private static final GqElement gFour = GqElementFactory.fromValue(FOUR, gqGroup);
+	private static final GqElement gFive = GqElementFactory.fromValue(FIVE, gqGroup);
+	private static final GqElement gNine = GqElementFactory.fromValue(NINE, gqGroup);
 
 	private SerializationTestData() {
 		// Intentionally left blank.
@@ -144,6 +143,11 @@ public class SerializationTestData {
 	public static ElGamalMultiRecipientPublicKey getPublicKey() {
 		final List<GqElement> keyElements = Arrays
 				.asList(GqElementFactory.fromValue(BigInteger.valueOf(4), gqGroup), GqElementFactory.fromValue(BigInteger.valueOf(9), gqGroup));
+		return new ElGamalMultiRecipientPublicKey(keyElements);
+	}
+
+	public static ElGamalMultiRecipientPublicKey getSingleElementPublicKey() {
+		final List<GqElement> keyElements = List.of(GqElementFactory.fromValue(BigInteger.valueOf(4), gqGroup));
 		return new ElGamalMultiRecipientPublicKey(keyElements);
 	}
 
@@ -393,7 +397,8 @@ public class SerializationTestData {
 			final String verificationCardSetId, final int chunkId) {
 
 		final List<ControlComponentCodeShare> controlComponentCodeShares = Arrays
-				.asList(getReturnCodeGenerationOutput("1"), getReturnCodeGenerationOutput("2"));
+				.asList(getReturnCodeGenerationOutput("1ecb40f5bab5400e8166b63a04a0708d"),
+						getReturnCodeGenerationOutput("2ecb40f5bab5400e8166b63a04a0708d"));
 
 		final ControlComponentCodeSharesPayload responsePayload = new ControlComponentCodeSharesPayload(tenantId, electionEventId,
 				verificationCardSetId, chunkId, gqGroup, controlComponentCodeShares, 1);
@@ -429,8 +434,8 @@ public class SerializationTestData {
 	}
 
 	public static ControlComponentCodeShare getReturnCodeGenerationOutput(final String verificationCardId) {
-		final ElGamalMultiRecipientPublicKey voterChoiceReturnCodeGenerationPublicKey = SerializationTestData.getPublicKey();
-		final ElGamalMultiRecipientPublicKey voterVoteCastReturnCodeGenerationPublicKey = SerializationTestData.getPublicKey();
+		final ElGamalMultiRecipientPublicKey voterChoiceReturnCodeGenerationPublicKey = SerializationTestData.getSingleElementPublicKey();
+		final ElGamalMultiRecipientPublicKey voterVoteCastReturnCodeGenerationPublicKey = SerializationTestData.getSingleElementPublicKey();
 		final ElGamalMultiRecipientCiphertext exponentiatedEncryptedPartialChoiceReturnCodes = SerializationTestData.getCiphertexts(1).get(0);
 		final ExponentiationProof encryptedPartialChoiceReturnCodeExponentiationProof = SerializationTestData.createExponentiationProof();
 		final ElGamalMultiRecipientCiphertext exponentiatedEncryptedConfirmationKey = SerializationTestData.getSinglePhiCiphertext();
@@ -445,15 +450,23 @@ public class SerializationTestData {
 	public static SetupComponentVerificationDataPayload getRequestPayload(final Ballot ballot, final String tenantId, final String electionEventId,
 			final String verificationCardSetId, final int chunkId) {
 
-		final List<String> partialChoiceReturnCodesAllowList = Arrays.asList("a", "b", "c", "d");
-
-		final List<ElGamalMultiRecipientCiphertext> ciphertexts = getCiphertexts(2);
-		final ElGamalMultiRecipientPublicKey verificationCardPublicKey = getPublicKey();
-		final List<SetupComponentVerificationData> setupComponentVerificationData = Arrays
-				.asList(new SetupComponentVerificationData("1", ciphertexts.get(0), ciphertexts.get(1), verificationCardPublicKey),
-						new SetupComponentVerificationData("2", ciphertexts.get(0), ciphertexts.get(1), verificationCardPublicKey));
-
 		final CombinedCorrectnessInformation combinedCorrectnessInformation = new CombinedCorrectnessInformation(ballot);
+
+		final ElGamalMultiRecipientCiphertext confirmationKey = getSinglePhiCiphertext();
+		final GqGroupGenerator gqGroupGenerator = new GqGroupGenerator(confirmationKey.getGroup());
+		final ElGamalMultiRecipientCiphertext partialChoiceReturnCodes = ElGamalMultiRecipientCiphertext.create(confirmationKey.getGamma(),
+				gqGroupGenerator.genRandomGqElementVector(combinedCorrectnessInformation.getTotalNumberOfVotingOptions()));
+		final ElGamalMultiRecipientPublicKey verificationCardPublicKey = getSingleElementPublicKey();
+		final List<SetupComponentVerificationData> setupComponentVerificationData = Arrays
+				.asList(new SetupComponentVerificationData("1ecb40f5bab5400e8166b63a04a0708d", confirmationKey, partialChoiceReturnCodes,
+								verificationCardPublicKey),
+						new SetupComponentVerificationData("2ecb40f5bab5400e8166b63a04a0708d", confirmationKey, partialChoiceReturnCodes,
+								verificationCardPublicKey));
+
+		final List<String> partialChoiceReturnCodesAllowList = IntStream.range(0,
+						setupComponentVerificationData.size() * combinedCorrectnessInformation.getTotalNumberOfVotingOptions())
+				.mapToObj(String::valueOf)
+				.toList();
 
 		final SetupComponentVerificationDataPayload requestPayload = new SetupComponentVerificationDataPayload(tenantId, electionEventId,
 				verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId, gqGroup, setupComponentVerificationData,
@@ -483,7 +496,8 @@ public class SerializationTestData {
 		final JsonNode encryptionGroupNode = SerializationTestData.createEncryptionGroupNode(gqGroup);
 		rootNode.set("encryptionGroup", encryptionGroupNode);
 
-		final JsonNode returnCodeGenerationInputsNode = mapper.readTree(mapper.writeValueAsString(requestPayload.getSetupComponentVerificationData()));
+		final JsonNode returnCodeGenerationInputsNode = mapper.readTree(
+				mapper.writeValueAsString(requestPayload.getSetupComponentVerificationData()));
 		rootNode.set("setupComponentVerificationData", returnCodeGenerationInputsNode);
 
 		final JsonNode combinedCorrectnessInformationNode = mapper

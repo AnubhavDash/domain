@@ -50,6 +50,6 @@ public abstract class ElGamalMultiRecipientCiphertextMixIn {
 	}
 
 	@JsonIgnore
-	abstract GroupVector<GqElement, GqGroup> getPhi();
+	abstract GroupVector<GqElement, GqGroup> getPhis();
 
 }
