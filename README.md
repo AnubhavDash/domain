@@ -20,22 +20,30 @@ We strive for excellent code quality to minimize the risk of bugs and vulnerabil
 
 ### SonarQube Analysis
 
-We parametrize SonarQube with the built-in Sonar way quality profile. The SonarQube analysis of the crypto-primitives-domain code reveals 0 bugs, 0 vulnerabilities, 0 security hotspots, and 2 code smells.
+We parametrize SonarQube with the built-in Sonar way quality profile. The SonarQube analysis of the crypto-primitives-domain code reveals 0 bugs, 0 vulnerabilities, 0 security hotspots, and 3 code smells.
 
 ![SonarQube](SonarQube.jpg)
 
-Out of the 4 code smells:
+Out of the 3 code smells:
 
-* 2 code smells concern duplicated blocks in the Return Code Generation classes. We left the code blocks as is since removing them reduces the code's readability.
-* 2 code smells concern too many parameters in constructor classes. We left the constructor classes as is to ensure a better alignment to the specification.
+* 2 code smells concern duplicated blocks. We left the code blocks as is since removing them reduces the code's readability.
+* 1 code smell concerns a constructor that has more than 7 input arguments. We prefer to keep the current constructor to better align with the system specification.
 
 ### Fortify Analysis
 
-The Fortify analysis showed 0 critical, 0 high, 0 medium, and 2 low criticality issues. We manually reviewed the 2 low-criticality issues and assessed them as false positives.
+The Fortify analysis showed 0 critical, 0 high, 0 medium, and 4 low criticality issues. We manually reviewed the 4 low-criticality issues and assessed them as false positives.
 
 ### JFrog X-Ray Analysis
 
 The X-Ray analysis indicates that none of the crypto-primitives-domain' 3rd party dependencies contains known vulnerabilities or non-compliant open source software licenses. As a general principle, we try to minimize external dependencies in cryptographic libraries and only rely on well-tested and widely used 3rd party components.
+
+## Change Log Release 0.15
+
+The following functionalities and improvements are included in release 0.15
+
+* Added new mixnet objects
+* Added additional validations on domain objects
+* Upgraded library to Java 17
 
 ## Change Log Release 0.14
 
