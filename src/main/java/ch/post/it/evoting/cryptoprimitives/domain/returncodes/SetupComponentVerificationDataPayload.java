@@ -23,7 +23,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -39,6 +38,7 @@ import ch.post.it.evoting.cryptoprimitives.hashing.HashableBigInteger;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
+import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 
 @JsonPropertyOrder({ "tenantId", "electionEventId", "verificationCardSetId", "partialChoiceReturnCodesAllowList", "chunkId", "encryptionGroup",
 		"setupComponentVerificationData", "combinedCorrectnessInformation", "signature" })
@@ -136,7 +136,7 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 
 		checkArgument(allEqual(this.setupComponentVerificationData.stream()
 						.map(SetupComponentVerificationData::encryptedHashedSquaredPartialChoiceReturnCodes)
-						.map(ElGamalMultiRecipientCiphertext::getPhis), Function.identity()),
+						.map(ElGamalMultiRecipientCiphertext::getPhis), GroupVector::size),
 				"All encrypted hashed squared Partial Choice Return Codes must have the same size.");
 
 		checkArgument(this.setupComponentVerificationData.stream()
@@ -149,7 +149,7 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 						.map(SetupComponentVerificationData::encryptedHashedSquaredPartialChoiceReturnCodes)
 						.map(ElGamalMultiRecipientCiphertext::size)
 						.allMatch(size -> Objects.equals(size, this.combinedCorrectnessInformation.getTotalNumberOfVotingOptions())),
-				"The size of the encrypted hashed squared Partial Choice Return Codes must correpsond to the total number of voting options.");
+				"The size of the encrypted hashed squared Partial Choice Return Codes must correspond to the total number of voting options.");
 	}
 
 	public String getTenantId() {
