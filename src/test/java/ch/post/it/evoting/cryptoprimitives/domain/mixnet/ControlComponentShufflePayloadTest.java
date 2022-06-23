@@ -15,21 +15,30 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Throwables;
 
+import ch.post.it.evoting.cryptoprimitives.domain.ControlComponentConstants;
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
 import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
@@ -38,6 +47,7 @@ import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.math.ZqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
+import ch.post.it.evoting.cryptoprimitives.test.tools.data.GroupTestData;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.DecryptionProof;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.VerifiableDecryptions;
 
@@ -71,7 +81,7 @@ class ControlComponentShufflePayloadTest extends MapperSetUp {
 		final VerifiableShuffle verifiableShuffle = new VerifiableShuffle(GroupVector.from(ciphertexts),
 				SerializationTestData.createShuffleArgument());
 
-		controlComponentShufflePayload = new ControlComponentShufflePayload(gqGroup, electionEventId, ballotBoxId, 0, verifiableDecryptions,
+		controlComponentShufflePayload = new ControlComponentShufflePayload(gqGroup, electionEventId, ballotBoxId, 1, verifiableDecryptions,
 				verifiableShuffle, signature);
 
 		// Create expected json.
@@ -86,7 +96,7 @@ class ControlComponentShufflePayloadTest extends MapperSetUp {
 		final JsonNode ballotBoxIdNode = mapper.readTree(mapper.writeValueAsString(ballotBoxId));
 		rootNode.set("ballotBoxId", ballotBoxIdNode);
 
-		rootNode.put("nodeId", 0);
+		rootNode.put("nodeId", 1);
 
 		final JsonNode verifiableDecryptionNode = mapper.readTree(mapper.writeValueAsString(verifiableDecryptions));
 		rootNode.set("verifiableDecryptions", verifiableDecryptionNode);
@@ -128,4 +138,106 @@ class ControlComponentShufflePayloadTest extends MapperSetUp {
 		assertEquals(controlComponentShufflePayload, deserializedPayload);
 	}
 
+	@Nested
+	@DisplayName("Constructing a ControlComponentShufflePayload with")
+	class ControlComponentShufflePayloadConsistencyCheckTest {
+
+		private GqGroup encryptionGroup;
+		private String electionEventId;
+		private String ballotBoxId;
+		private int nodeId;
+		private VerifiableDecryptions verifiableDecryptions;
+		private VerifiableShuffle verifiableShuffle;
+
+		@BeforeEach
+		void setup() {
+			encryptionGroup = SerializationTestData.getGqGroup();
+			electionEventId = ELECTION_EVENT_ID;
+			ballotBoxId = BALLOT_BOX_ID;
+			nodeId = secureRandom.nextInt(4) + 1;
+			final List<ElGamalMultiRecipientCiphertext> ciphertexts = SerializationTestData.getCiphertexts(NBR_CIPHERTEXT);
+
+			final GroupVector<DecryptionProof, ZqGroup> decryptionProofs = SerializationTestData.getDecryptionProofs(ciphertexts.size());
+			verifiableDecryptions = new VerifiableDecryptions(GroupVector.from(ciphertexts), decryptionProofs);
+
+			verifiableShuffle = new VerifiableShuffle(GroupVector.from(ciphertexts),
+					SerializationTestData.createShuffleArgument());
+		}
+
+		@Test
+		@DisplayName("null parameters throws NullPointerException")
+		void constructWithNullParameters() {
+			assertAll(
+					() -> assertThrows(NullPointerException.class,
+							() -> new ControlComponentShufflePayload(null, electionEventId, ballotBoxId, nodeId, verifiableDecryptions,
+									verifiableShuffle)),
+					() -> assertThrows(NullPointerException.class,
+							() -> new ControlComponentShufflePayload(encryptionGroup, null, ballotBoxId, nodeId, verifiableDecryptions,
+									verifiableShuffle)),
+					() -> assertThrows(NullPointerException.class,
+							() -> new ControlComponentShufflePayload(encryptionGroup, electionEventId, null, nodeId, verifiableDecryptions,
+									verifiableShuffle)),
+					() -> assertThrows(NullPointerException.class,
+							() -> new ControlComponentShufflePayload(encryptionGroup, electionEventId, ballotBoxId, nodeId, null, verifiableShuffle)),
+					() -> assertThrows(NullPointerException.class,
+							() -> new ControlComponentShufflePayload(encryptionGroup, electionEventId, ballotBoxId, nodeId, verifiableDecryptions,
+									null))
+			);
+		}
+
+		@Test
+		@DisplayName("nodeId out of range throws IllegalArgumentException")
+		void constructWithBadNodeId() {
+			final IllegalArgumentException exception1 = assertThrows(IllegalArgumentException.class,
+					() -> new ControlComponentShufflePayload(encryptionGroup, electionEventId, ballotBoxId, 0, verifiableDecryptions,
+							verifiableShuffle));
+			assertEquals(String.format("The node id must be part of the known node ids. [nodeId: %s]", 0),
+					Throwables.getRootCause(exception1).getMessage());
+
+			final IllegalArgumentException exception2 = assertThrows(IllegalArgumentException.class,
+					() -> new ControlComponentShufflePayload(encryptionGroup, electionEventId, ballotBoxId, 5, verifiableDecryptions,
+							verifiableShuffle));
+			assertEquals(String.format("The node id must be part of the known node ids. [nodeId: %s]", 5),
+					Throwables.getRootCause(exception2).getMessage());
+		}
+
+		@Test
+		@DisplayName("encryption group being different from VerifiableDecryptions' or VerifiableShuffle's group throws IllegalArgumentException")
+		void constructWithInconsistentGroups() {
+			final VerifiableDecryptions otherVerifiableDecryptions = spy(verifiableDecryptions);
+			final GqGroup otherEncryptionGroup = GroupTestData.getDifferentGqGroup(encryptionGroup);
+			doReturn(otherEncryptionGroup).when(otherVerifiableDecryptions).getGroup();
+			final IllegalArgumentException exception1 = assertThrows(IllegalArgumentException.class,
+					() -> new ControlComponentShufflePayload(encryptionGroup, electionEventId, ballotBoxId, nodeId, otherVerifiableDecryptions,
+							verifiableShuffle));
+			assertEquals("The verifiable decryptions' group should be equal to the encryption group.", Throwables.getRootCause(exception1).getMessage());
+
+			final IllegalArgumentException exception2 = assertThrows(IllegalArgumentException.class,
+					() -> new ControlComponentShufflePayload(otherEncryptionGroup, electionEventId, ballotBoxId, nodeId, otherVerifiableDecryptions,
+							verifiableShuffle));
+			assertEquals("The verifiable shuffle's group should be equal to the encryption group.", Throwables.getRootCause(exception2).getMessage());
+		}
+
+		@Test
+		@DisplayName("VerifiableDecryptions' and VerifiableShuffle's number of ciphertexts being different throws IllegalArgumentException")
+		void constructWithInconsistentNumberCiphertexts() {
+			final VerifiableDecryptions otherVerifiableDecryptions = spy(verifiableDecryptions);
+			doReturn(verifiableDecryptions.get_N() + 1).when(otherVerifiableDecryptions).get_N();
+			final IllegalArgumentException exception1 = assertThrows(IllegalArgumentException.class,
+					() -> new ControlComponentShufflePayload(encryptionGroup, electionEventId, ballotBoxId, nodeId, otherVerifiableDecryptions,
+							verifiableShuffle));
+			assertEquals("The verifiable decryptions and the verifiable shuffle must have the same number of ciphertexts.", Throwables.getRootCause(exception1).getMessage());
+		}
+
+		@Test
+		@DisplayName("VerifiableDecryptions' and VerifiableShuffle's number of ciphertext elements being different throws IllegalArgumentException")
+		void constructWithInconsistentNumberCiphertextElements() {
+			final VerifiableDecryptions otherVerifiableDecryptions = spy(verifiableDecryptions);
+			doReturn(verifiableDecryptions.get_l() + 1).when(otherVerifiableDecryptions).get_l();
+			final IllegalArgumentException exception1 = assertThrows(IllegalArgumentException.class,
+					() -> new ControlComponentShufflePayload(encryptionGroup, electionEventId, ballotBoxId, nodeId, otherVerifiableDecryptions,
+							verifiableShuffle));
+			assertEquals("The verifiable decryptions' and the verifiable shuffle's ciphertexts must have the same element size.", Throwables.getRootCause(exception1).getMessage());
+		}
+	}
 }

@@ -38,8 +38,8 @@ import ch.post.it.evoting.cryptoprimitives.domain.election.Ballot;
 class ChoiceCodeGenerationDTOTest extends MapperSetUp {
 
 	private static final String TENANT_ID = "100";
-	private static final String ELECTION_EVENT_ID = "1234";
-	private static final String VERIFICATION_CARD_SET_ID = "5678";
+	private static final String ELECTION_EVENT_ID = "4b7a8f063b564dbf8e24420d3f52f54f";
+	private static final String VERIFICATION_CARD_SET_ID = "cbf8ac1c1bcf444da0ccf5d7e956153b";
 	private static final int CHUNK_ID = 1;
 	private static final String BALLOT_JSON = "ballot.json";
 

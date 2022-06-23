@@ -15,6 +15,8 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.returncodes;
 
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
@@ -37,20 +39,28 @@ public record SetupComponentVerificationData(
 	 * @param verificationCardId                             the verification card identifier.
 	 * @param encryptedHashedSquaredConfirmationKey          the encrypted hashed squared confirmation key.
 	 * @param encryptedHashedSquaredPartialChoiceReturnCodes the encrypted hashed squared partial choice return codes.
-	 * @param verificationCardPublicKey                      the verification card public key
+	 * @param verificationCardPublicKey                      the verification card public key.
 	 */
 	public SetupComponentVerificationData {
 
-		checkNotNull(verificationCardId);
+		validateUUID(verificationCardId);
 		checkNotNull(encryptedHashedSquaredConfirmationKey);
 		checkNotNull(encryptedHashedSquaredPartialChoiceReturnCodes);
 		checkNotNull(verificationCardPublicKey);
 
+		checkArgument(encryptedHashedSquaredConfirmationKey.getGroup().equals(encryptedHashedSquaredPartialChoiceReturnCodes.getGroup()),
+				"The encrypted hashed squared confirmation key and the encrypted hashed squared Partial Choice Return Codes must have the same group.");
+		checkArgument(encryptedHashedSquaredConfirmationKey.getGroup().equals(verificationCardPublicKey.getGroup()),
+				"The encrypted hashed squared confirmation key and the verification card public key must have the same group.");
+		checkArgument(encryptedHashedSquaredConfirmationKey.size() == 1, "The encrypted hashed squared confirmation key must be of size 1.");
+		checkArgument(verificationCardPublicKey.size() == 1, "The verification card public key must be of size 1.");
 	}
 
 	@Override
 	public List<Hashable> toHashableForm() {
-		return List.of(HashableString.from(verificationCardId), encryptedHashedSquaredConfirmationKey, encryptedHashedSquaredPartialChoiceReturnCodes,
+		return List.of(HashableString.from(verificationCardId),
+				encryptedHashedSquaredConfirmationKey,
+				encryptedHashedSquaredPartialChoiceReturnCodes,
 				verificationCardPublicKey);
 	}
 
