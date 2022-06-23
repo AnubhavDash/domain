@@ -15,15 +15,20 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.returncodes;
 
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
+import ch.post.it.evoting.cryptoprimitives.utils.Validations;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.ExponentiationProof;
 
 /**
@@ -56,13 +61,25 @@ public record ControlComponentCodeShare(
 		ExponentiationProof encryptedConfirmationKeyExponentiationProof) implements HashableList {
 
 	public ControlComponentCodeShare {
-		checkNotNull(verificationCardId);
+		validateUUID(verificationCardId);
 		checkNotNull(voterChoiceReturnCodeGenerationPublicKey);
 		checkNotNull(voterVoteCastReturnCodeGenerationPublicKey);
 		checkNotNull(exponentiatedEncryptedPartialChoiceReturnCodes);
 		checkNotNull(encryptedPartialChoiceReturnCodeExponentiationProof);
 		checkNotNull(exponentiatedEncryptedConfirmationKey);
 		checkNotNull(encryptedConfirmationKeyExponentiationProof);
+
+		checkArgument(Validations.allEqual(Stream.of(voterChoiceReturnCodeGenerationPublicKey.getGroup(),
+						voterVoteCastReturnCodeGenerationPublicKey.getGroup(), exponentiatedEncryptedPartialChoiceReturnCodes.getGroup(),
+						exponentiatedEncryptedConfirmationKey.getGroup()), Function.identity()),
+				"The keys and partial choice return codes must have the same group.");
+		checkArgument(
+				encryptedPartialChoiceReturnCodeExponentiationProof.getGroup().hasSameOrderAs(exponentiatedEncryptedConfirmationKey.getGroup()),
+				"The Encrypted Partial Choice Return Code Exponentiation Proofs must have the same group order as the keys.");
+		checkArgument(voterChoiceReturnCodeGenerationPublicKey.size() == 1, "The voter Choice Return Code Generation Public Key must be of size 1.");
+		checkArgument(voterVoteCastReturnCodeGenerationPublicKey.size() == 1,
+				"The voter Vote Cast Return Code Generation Public Key must be of size 1.");
+		checkArgument(exponentiatedEncryptedConfirmationKey.size() == 1, "The exponentiated Encrypted Confirmation Key must be of size 1.");
 	}
 
 	@Override

@@ -15,6 +15,8 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
@@ -30,18 +32,25 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import ch.post.it.evoting.cryptoprimitives.domain.returncodes.SignedPayload;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
+import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
 
 /**
  * Value class representing the final result of a mixnet.
  */
-@JsonPropertyOrder({ "encryptionGroup", "verifiableShuffle", "verifiablePlaintextDecryption", "signature" })
+@JsonPropertyOrder({ "encryptionGroup", "electionEventId", "ballotBoxId", "verifiableShuffle", "verifiablePlaintextDecryption", "signature" })
 @JsonDeserialize(using = TallyComponentShufflePayloadDeserializer.class)
 public class TallyComponentShufflePayload implements SignedPayload {
 
 	@JsonProperty
 	private final GqGroup encryptionGroup;
+
+	@JsonProperty
+	private final String electionEventId;
+
+	@JsonProperty
+	private final String ballotBoxId;
 
 	@JsonProperty
 	private final VerifiableShuffle verifiableShuffle;
@@ -56,6 +65,10 @@ public class TallyComponentShufflePayload implements SignedPayload {
 	public TallyComponentShufflePayload(
 			@JsonProperty(value = "encryptionGroup", required = true)
 			final GqGroup encryptionGroup,
+			@JsonProperty(value = "electionEventId", required = true)
+			final String electionEventId,
+			@JsonProperty(value = "ballotBoxId", required = true)
+			final String ballotBoxId,
 			@JsonProperty(value = "verifiableShuffle", required = true)
 			final VerifiableShuffle verifiableShuffle,
 			@JsonProperty(value = "verifiablePlaintextDecryption", required = true)
@@ -63,25 +76,36 @@ public class TallyComponentShufflePayload implements SignedPayload {
 			@JsonProperty(value = "signature", required = true)
 			final CryptoPrimitivesSignature signature) {
 
-		this.encryptionGroup = checkNotNull(encryptionGroup);
-		this.verifiableShuffle = checkNotNull(verifiableShuffle);
-		this.verifiablePlaintextDecryption = checkNotNull(verifiablePlaintextDecryption);
+		this(encryptionGroup, electionEventId, ballotBoxId, verifiableShuffle, verifiablePlaintextDecryption);
 		this.signature = checkNotNull(signature);
 	}
 
 	/**
 	 * Constructs an unsigned payload.
 	 */
-	public TallyComponentShufflePayload(final GqGroup encryptionGroup, final VerifiableShuffle verifiableShuffle,
+	public TallyComponentShufflePayload(final GqGroup encryptionGroup, final String electionEventId, final String ballotBoxId,
+			final VerifiableShuffle verifiableShuffle,
 			final VerifiablePlaintextDecryption verifiablePlaintextDecryption) {
 
-		this.encryptionGroup = checkNotNull(encryptionGroup);
-		this.verifiableShuffle = checkNotNull(verifiableShuffle);
-		this.verifiablePlaintextDecryption = checkNotNull(verifiablePlaintextDecryption);
+		checkConsistency(encryptionGroup, verifiableShuffle, verifiablePlaintextDecryption);
+
+		this.encryptionGroup = encryptionGroup;
+		this.electionEventId = validateUUID(electionEventId);
+		this.ballotBoxId = validateUUID(ballotBoxId);
+		this.verifiableShuffle = verifiableShuffle;
+		this.verifiablePlaintextDecryption = verifiablePlaintextDecryption;
 	}
 
 	public GqGroup getEncryptionGroup() {
 		return encryptionGroup;
+	}
+
+	public String getElectionEventId() {
+		return electionEventId;
+	}
+
+	public String getBallotBoxId() {
+		return ballotBoxId;
 	}
 
 	@JsonIgnore
@@ -121,8 +145,24 @@ public class TallyComponentShufflePayload implements SignedPayload {
 	}
 
 	@Override
-	public List<? extends Hashable> toHashableForm() {
-		return List.of(this.encryptionGroup, this.verifiableShuffle, this.verifiablePlaintextDecryption.getDecryptedVotes(),
+	public List<Hashable> toHashableForm() {
+		return List.of(this.encryptionGroup, HashableString.from(this.electionEventId), HashableString.from(this.ballotBoxId), this.verifiableShuffle, this.verifiablePlaintextDecryption.getDecryptedVotes(),
 				this.verifiablePlaintextDecryption.getDecryptionProofs());
+	}
+
+	private void checkConsistency(final GqGroup encryptionGroup, final VerifiableShuffle verifiableShuffle,
+			final VerifiablePlaintextDecryption verifiablePlaintextDecryption) {
+		checkNotNull(encryptionGroup);
+		checkNotNull(verifiableShuffle);
+		checkNotNull(verifiablePlaintextDecryption);
+
+		checkArgument(encryptionGroup.equals(verifiableShuffle.shuffleArgument().getGroup()),
+				"The verifiable shuffle's group should be equal to the encryption group.");
+		checkArgument(encryptionGroup.equals(verifiablePlaintextDecryption.getGroup()),
+				"The verifiable plaintext decryption's group should be equal to the encryption group.");
+		checkArgument(verifiablePlaintextDecryption.getDecryptedVotes().size() == verifiableShuffle.shuffledCiphertexts().size(),
+				"The verifiable plaintext decryption and the verifiable shuffle must have the same number of ciphertexts.");
+		checkArgument(verifiablePlaintextDecryption.getDecryptedVotes().getElementSize() == verifiableShuffle.shuffledCiphertexts().getElementSize(),
+				"The verifiable decryptions' and the verifiable shuffle's ciphertexts must have the same element size.");
 	}
 }

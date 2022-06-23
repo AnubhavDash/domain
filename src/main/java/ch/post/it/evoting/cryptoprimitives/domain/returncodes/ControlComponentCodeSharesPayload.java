@@ -15,18 +15,24 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.returncodes;
 
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
+import static ch.post.it.evoting.cryptoprimitives.utils.Validations.allEqual;
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import ch.post.it.evoting.cryptoprimitives.domain.ControlComponentConstants;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
+import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableBigInteger;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
@@ -81,25 +87,22 @@ public class ControlComponentCodeSharesPayload implements SignedPayload {
 			@JsonProperty("signature")
 			final CryptoPrimitivesSignature signature) {
 
-		this.tenantId = checkNotNull(tenantId);
-		this.electionEventId = checkNotNull(electionEventId);
-		this.verificationCardSetId = checkNotNull(verificationCardSetId);
-		this.chunkId = chunkId;
-		this.encryptionGroup = checkNotNull(encryptionGroup);
-		this.controlComponentCodeShares = checkNotNull(controlComponentCodeShares);
-		this.nodeId = nodeId;
+		this(tenantId, electionEventId, verificationCardSetId, chunkId, encryptionGroup, controlComponentCodeShares, nodeId);
 		this.signature = checkNotNull(signature);
 	}
 
 	public ControlComponentCodeSharesPayload(final String tenantId, final String electionEventId, final String verificationCardSetId,
 			final int chunkId, final GqGroup encryptionGroup, final List<ControlComponentCodeShare> controlComponentCodeShares, final int nodeId) {
 
+		checkConsistency(encryptionGroup, controlComponentCodeShares, nodeId);
+
 		this.tenantId = checkNotNull(tenantId);
-		this.electionEventId = checkNotNull(electionEventId);
-		this.verificationCardSetId = checkNotNull(verificationCardSetId);
+		this.electionEventId = validateUUID(electionEventId);
+		this.verificationCardSetId = validateUUID(verificationCardSetId);
+		checkArgument(chunkId >= 0, "The chunk id must be non-negative.");
 		this.chunkId = chunkId;
-		this.encryptionGroup = checkNotNull(encryptionGroup);
-		this.controlComponentCodeShares = checkNotNull(controlComponentCodeShares);
+		this.encryptionGroup = encryptionGroup;
+		this.controlComponentCodeShares = controlComponentCodeShares;
 		this.nodeId = nodeId;
 	}
 
@@ -164,5 +167,30 @@ public class ControlComponentCodeSharesPayload implements SignedPayload {
 		return List.of(HashableString.from(tenantId), HashableString.from(electionEventId), HashableString.from(verificationCardSetId),
 				HashableBigInteger.from(BigInteger.valueOf(chunkId)), encryptionGroup, HashableList.from(controlComponentCodeShares),
 				HashableBigInteger.from(BigInteger.valueOf(nodeId)));
+	}
+
+	private void checkConsistency(final GqGroup encryptionGroup, final List<ControlComponentCodeShare> controlComponentCodeShares, final int nodeId) {
+		checkNotNull(encryptionGroup);
+		checkNotNull(controlComponentCodeShares);
+
+		checkArgument(!controlComponentCodeShares.isEmpty(), "The list of control component code shares must not be empty.");
+		checkArgument(controlComponentCodeShares.stream().allMatch(Objects::nonNull),
+				"The list of control component code shares must not contain null elements.");
+		checkArgument(ControlComponentConstants.NODE_IDS.contains(nodeId),
+				"The node id must be part of the known node ids. [nodeId: %s]", nodeId);
+
+		checkArgument(allEqual(controlComponentCodeShares.stream()
+						.map(ControlComponentCodeShare::exponentiatedEncryptedPartialChoiceReturnCodes)
+						.map(ElGamalMultiRecipientCiphertext::getPhi), Function.identity()),
+				"All exponentiated encrypted Partial Choice Return Codes must have the same size.");
+
+		checkArgument(controlComponentCodeShares.stream()
+						.map(ControlComponentCodeShare::exponentiatedEncryptedConfirmationKey)
+						.map(ElGamalMultiRecipientCiphertext::getGroup)
+						.allMatch(group -> group.equals(encryptionGroup)),
+				"The groups of the ControlComponentCodeShares must correspond to the encryption group.");
+		checkArgument(controlComponentCodeShares.stream()
+				.map(ControlComponentCodeShare::verificationCardId)
+				.distinct().toList().size() == controlComponentCodeShares.size(), "The verification card IDs must all be distinct.");
 	}
 }

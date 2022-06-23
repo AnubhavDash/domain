@@ -16,6 +16,7 @@
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigInteger;
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import ch.post.it.evoting.cryptoprimitives.domain.ControlComponentConstants;
 import ch.post.it.evoting.cryptoprimitives.domain.returncodes.SignedPayload;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
@@ -81,12 +83,7 @@ public class ControlComponentShufflePayload implements SignedPayload {
 			@JsonProperty(value = "signature", required = true)
 			final CryptoPrimitivesSignature signature) {
 
-		this.encryptionGroup = checkNotNull(encryptionGroup);
-		this.electionEventId = validateUUID(electionEventId);
-		this.ballotBoxId = validateUUID(ballotBoxId);
-		this.nodeId = nodeId;
-		this.verifiableDecryptions = checkNotNull(verifiableDecryptions);
-		this.verifiableShuffle = checkNotNull(verifiableShuffle);
+		this(encryptionGroup, electionEventId, ballotBoxId, nodeId, verifiableDecryptions, verifiableShuffle);
 		this.signature = checkNotNull(signature);
 	}
 
@@ -96,12 +93,14 @@ public class ControlComponentShufflePayload implements SignedPayload {
 	public ControlComponentShufflePayload(final GqGroup encryptionGroup, final String electionEventId, final String ballotBoxId, final int nodeId,
 			final VerifiableDecryptions verifiableDecryptions, final VerifiableShuffle verifiableShuffle) {
 
-		this.encryptionGroup = checkNotNull(encryptionGroup);
+		checkConsistency(encryptionGroup, nodeId, verifiableDecryptions, verifiableShuffle);
+
+		this.encryptionGroup = encryptionGroup;
 		this.electionEventId = validateUUID(electionEventId);
 		this.ballotBoxId = validateUUID(ballotBoxId);
 		this.nodeId = nodeId;
-		this.verifiableDecryptions = checkNotNull(verifiableDecryptions);
-		this.verifiableShuffle = checkNotNull(verifiableShuffle);
+		this.verifiableDecryptions = verifiableDecryptions;
+		this.verifiableShuffle = verifiableShuffle;
 	}
 
 	public GqGroup getEncryptionGroup() {
@@ -139,7 +138,7 @@ public class ControlComponentShufflePayload implements SignedPayload {
 	}
 
 	@Override
-	public List<? extends Hashable> toHashableForm() {
+	public List<Hashable> toHashableForm() {
 		return List.of(this.encryptionGroup, HashableString.from(this.electionEventId), HashableString.from(this.ballotBoxId),
 				HashableBigInteger.from(BigInteger.valueOf(this.nodeId)), this.verifiableDecryptions, this.verifiableShuffle);
 	}
@@ -163,4 +162,21 @@ public class ControlComponentShufflePayload implements SignedPayload {
 		return Objects.hash(encryptionGroup, electionEventId, ballotBoxId, nodeId, verifiableDecryptions, verifiableShuffle, signature);
 	}
 
+	private void checkConsistency(final GqGroup encryptionGroup, final int nodeId, final VerifiableDecryptions verifiableDecryptions,
+			final VerifiableShuffle verifiableShuffle) {
+		checkNotNull(encryptionGroup);
+		checkNotNull(verifiableDecryptions);
+		checkNotNull(verifiableShuffle);
+
+		checkArgument(ControlComponentConstants.NODE_IDS.contains(nodeId),
+				"The node id must be part of the known node ids. [nodeId: %s]", nodeId);
+		checkArgument(encryptionGroup.equals(verifiableDecryptions.getGroup()),
+				"The verifiable decryptions' group should be equal to the encryption group.");
+		checkArgument(encryptionGroup.equals(verifiableShuffle.shuffleArgument().getGroup()),
+				"The verifiable shuffle's group should be equal to the encryption group.");
+		checkArgument(verifiableDecryptions.get_N() == verifiableShuffle.shuffledCiphertexts().size(),
+				"The verifiable decryptions and the verifiable shuffle must have the same number of ciphertexts.");
+		checkArgument(verifiableDecryptions.get_l() == verifiableShuffle.shuffledCiphertexts().getElementSize(),
+				"The verifiable decryptions' and the verifiable shuffle's ciphertexts must have the same element size.");
+	}
 }
