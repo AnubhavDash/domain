@@ -15,15 +15,19 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.returncodes;
 
+import static ch.post.it.evoting.cryptoprimitives.domain.ControlComponentConstants.NODE_IDS;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
 import static ch.post.it.evoting.cryptoprimitives.utils.Validations.allEqual;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigInteger;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -72,18 +76,25 @@ public class ControlComponentCodeSharesPayload implements SignedPayload {
 	public ControlComponentCodeSharesPayload(
 			@JsonProperty("tenantId")
 			final String tenantId,
+
 			@JsonProperty("electionEventId")
 			final String electionEventId,
+
 			@JsonProperty("verificationCardSetId")
 			final String verificationCardSetId,
+
 			@JsonProperty("chunkId")
 			final int chunkId,
+
 			@JsonProperty("encryptionGroup")
 			final GqGroup encryptionGroup,
+
 			@JsonProperty("controlComponentCodeShares")
 			final List<ControlComponentCodeShare> controlComponentCodeShares,
+
 			@JsonProperty("nodeId")
 			final int nodeId,
+
 			@JsonProperty("signature")
 			final CryptoPrimitivesSignature signature) {
 
@@ -94,16 +105,39 @@ public class ControlComponentCodeSharesPayload implements SignedPayload {
 	public ControlComponentCodeSharesPayload(final String tenantId, final String electionEventId, final String verificationCardSetId,
 			final int chunkId, final GqGroup encryptionGroup, final List<ControlComponentCodeShare> controlComponentCodeShares, final int nodeId) {
 
-		checkConsistency(encryptionGroup, controlComponentCodeShares, nodeId);
-
 		this.tenantId = checkNotNull(tenantId);
 		this.electionEventId = validateUUID(electionEventId);
 		this.verificationCardSetId = validateUUID(verificationCardSetId);
-		checkArgument(chunkId >= 0, "The chunk id must be non-negative.");
 		this.chunkId = chunkId;
-		this.encryptionGroup = encryptionGroup;
-		this.controlComponentCodeShares = controlComponentCodeShares;
+		checkArgument(chunkId >= 0, "The chunk id must be non-negative.");
+		checkArgument(NODE_IDS.contains(nodeId), "The node id must be part of the known node ids. [nodeId: %s]", nodeId);
 		this.nodeId = nodeId;
+		this.encryptionGroup = checkNotNull(encryptionGroup);
+		this.controlComponentCodeShares = List.copyOf(checkNotNull(controlComponentCodeShares));
+
+		checkArgument(!this.controlComponentCodeShares.isEmpty(), "The list of control component code shares must not be empty.");
+		checkArgument(ControlComponentConstants.NODE_IDS.contains(nodeId),
+				"The node id must be part of the known node ids. [nodeId: %s]", nodeId);
+
+		checkArgument(allEqual(this.controlComponentCodeShares.stream()
+						.map(ControlComponentCodeShare::exponentiatedEncryptedPartialChoiceReturnCodes)
+						.map(ElGamalMultiRecipientCiphertext::getPhis), Function.identity()),
+				"All exponentiated encrypted Partial Choice Return Codes must have the same size.");
+
+		checkArgument(this.controlComponentCodeShares.stream()
+						.map(ControlComponentCodeShare::exponentiatedEncryptedConfirmationKey)
+						.map(ElGamalMultiRecipientCiphertext::getGroup)
+						.allMatch(group -> group.equals(encryptionGroup)),
+				"The groups of the ControlComponentCodeShares must correspond to the encryption group.");
+		checkArgument(this.controlComponentCodeShares.stream()
+				.map(ControlComponentCodeShare::verificationCardId)
+				.distinct().toList().size() == this.controlComponentCodeShares.size(), "The verification card IDs must all be distinct.");
+
+		final Set<String> duplicatedVerificationCardIds = new HashSet<>();
+		checkArgument(this.controlComponentCodeShares.stream()
+				.map(ControlComponentCodeShare::verificationCardId)
+				.filter(verificationCardId -> !duplicatedVerificationCardIds.add(verificationCardId))
+				.collect(Collectors.toSet()).isEmpty(), "All control component shares must have a different verification card id.");
 	}
 
 	public String getTenantId() {
@@ -138,8 +172,8 @@ public class ControlComponentCodeSharesPayload implements SignedPayload {
 		return signature;
 	}
 
-	public void setSignature(CryptoPrimitivesSignature signature) {
-		this.signature = signature;
+	public void setSignature(final CryptoPrimitivesSignature signature) {
+		this.signature = checkNotNull(signature);
 	}
 
 	@Override
@@ -150,47 +184,31 @@ public class ControlComponentCodeSharesPayload implements SignedPayload {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		ControlComponentCodeSharesPayload that = (ControlComponentCodeSharesPayload) o;
-		return chunkId == that.chunkId && nodeId == that.nodeId && tenantId.equals(that.tenantId) && electionEventId.equals(that.electionEventId)
-				&& verificationCardSetId.equals(that.verificationCardSetId) && encryptionGroup.equals(that.encryptionGroup)
-				&& controlComponentCodeShares.equals(that.controlComponentCodeShares) && Objects.equals(signature, that.signature);
+		final ControlComponentCodeSharesPayload that = (ControlComponentCodeSharesPayload) o;
+		return chunkId == that.chunkId &&
+				nodeId == that.nodeId &&
+				tenantId.equals(that.tenantId) &&
+				electionEventId.equals(that.electionEventId) &&
+				verificationCardSetId.equals(that.verificationCardSetId) &&
+				encryptionGroup.equals(that.encryptionGroup) &&
+				controlComponentCodeShares.equals(that.controlComponentCodeShares) &&
+				Objects.equals(signature, that.signature);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects
-				.hash(tenantId, electionEventId, verificationCardSetId, chunkId, encryptionGroup, controlComponentCodeShares, nodeId, signature);
+		return Objects.hash(tenantId, electionEventId, verificationCardSetId, chunkId, encryptionGroup, controlComponentCodeShares, nodeId,
+				signature);
 	}
 
 	@Override
 	public List<Hashable> toHashableForm() {
-		return List.of(HashableString.from(tenantId), HashableString.from(electionEventId), HashableString.from(verificationCardSetId),
-				HashableBigInteger.from(BigInteger.valueOf(chunkId)), encryptionGroup, HashableList.from(controlComponentCodeShares),
+		return List.of(HashableString.from(tenantId),
+				HashableString.from(electionEventId),
+				HashableString.from(verificationCardSetId),
+				HashableBigInteger.from(BigInteger.valueOf(chunkId)),
+				encryptionGroup,
+				HashableList.from(controlComponentCodeShares),
 				HashableBigInteger.from(BigInteger.valueOf(nodeId)));
-	}
-
-	private void checkConsistency(final GqGroup encryptionGroup, final List<ControlComponentCodeShare> controlComponentCodeShares, final int nodeId) {
-		checkNotNull(encryptionGroup);
-		checkNotNull(controlComponentCodeShares);
-
-		checkArgument(!controlComponentCodeShares.isEmpty(), "The list of control component code shares must not be empty.");
-		checkArgument(controlComponentCodeShares.stream().allMatch(Objects::nonNull),
-				"The list of control component code shares must not contain null elements.");
-		checkArgument(ControlComponentConstants.NODE_IDS.contains(nodeId),
-				"The node id must be part of the known node ids. [nodeId: %s]", nodeId);
-
-		checkArgument(allEqual(controlComponentCodeShares.stream()
-						.map(ControlComponentCodeShare::exponentiatedEncryptedPartialChoiceReturnCodes)
-						.map(ElGamalMultiRecipientCiphertext::getPhi), Function.identity()),
-				"All exponentiated encrypted Partial Choice Return Codes must have the same size.");
-
-		checkArgument(controlComponentCodeShares.stream()
-						.map(ControlComponentCodeShare::exponentiatedEncryptedConfirmationKey)
-						.map(ElGamalMultiRecipientCiphertext::getGroup)
-						.allMatch(group -> group.equals(encryptionGroup)),
-				"The groups of the ControlComponentCodeShares must correspond to the encryption group.");
-		checkArgument(controlComponentCodeShares.stream()
-				.map(ControlComponentCodeShare::verificationCardId)
-				.distinct().toList().size() == controlComponentCodeShares.size(), "The verification card IDs must all be distinct.");
 	}
 }

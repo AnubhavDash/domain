@@ -84,9 +84,14 @@ public record ControlComponentCodeShare(
 
 	@Override
 	public List<Hashable> toHashableForm() {
-		return List.of(HashableString.from(verificationCardId), voterChoiceReturnCodeGenerationPublicKey, voterVoteCastReturnCodeGenerationPublicKey,
-				exponentiatedEncryptedPartialChoiceReturnCodes, encryptedPartialChoiceReturnCodeExponentiationProof,
-				exponentiatedEncryptedConfirmationKey, encryptedConfirmationKeyExponentiationProof);
+		return List.of(
+				HashableString.from(verificationCardId),
+				voterChoiceReturnCodeGenerationPublicKey,
+				voterVoteCastReturnCodeGenerationPublicKey,
+				exponentiatedEncryptedPartialChoiceReturnCodes,
+				encryptedPartialChoiceReturnCodeExponentiationProof,
+				exponentiatedEncryptedConfirmationKey,
+				encryptedConfirmationKeyExponentiationProof);
 	}
 
 }

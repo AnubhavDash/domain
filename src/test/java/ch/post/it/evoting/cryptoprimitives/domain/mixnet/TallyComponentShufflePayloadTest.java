@@ -147,8 +147,8 @@ class TallyComponentShufflePayloadTest extends MapperSetUp {
 			final List<ElGamalMultiRecipientCiphertext> ciphertexts = SerializationTestData.getCiphertexts(NBR_MESSAGES);
 
 			final GroupVector<ElGamalMultiRecipientMessage, GqGroup> messages = GroupVector.from(ciphertexts.stream()
-					.map(ElGamalMultiRecipientCiphertext::getPhi)
-					.map(phis -> new ElGamalMultiRecipientMessage(phis))
+					.map(ElGamalMultiRecipientCiphertext::getPhis)
+					.map(ElGamalMultiRecipientMessage::new)
 					.toList());
 			final GroupVector<DecryptionProof, ZqGroup> decryptionProofs = SerializationTestData.getDecryptionProofs(NBR_MESSAGES);
 			verifiablePlaintextDecryption = new VerifiablePlaintextDecryption(messages, decryptionProofs);

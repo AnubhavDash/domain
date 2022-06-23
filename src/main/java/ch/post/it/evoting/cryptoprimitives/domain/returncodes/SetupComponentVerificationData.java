@@ -39,7 +39,7 @@ public record SetupComponentVerificationData(
 	 * @param verificationCardId                             the verification card identifier.
 	 * @param encryptedHashedSquaredConfirmationKey          the encrypted hashed squared confirmation key.
 	 * @param encryptedHashedSquaredPartialChoiceReturnCodes the encrypted hashed squared partial choice return codes.
-	 * @param verificationCardPublicKey                      the verification card public key
+	 * @param verificationCardPublicKey                      the verification card public key.
 	 */
 	public SetupComponentVerificationData {
 
@@ -58,7 +58,9 @@ public record SetupComponentVerificationData(
 
 	@Override
 	public List<Hashable> toHashableForm() {
-		return List.of(HashableString.from(verificationCardId), encryptedHashedSquaredConfirmationKey, encryptedHashedSquaredPartialChoiceReturnCodes,
+		return List.of(HashableString.from(verificationCardId),
+				encryptedHashedSquaredConfirmationKey,
+				encryptedHashedSquaredPartialChoiceReturnCodes,
 				verificationCardPublicKey);
 	}
 

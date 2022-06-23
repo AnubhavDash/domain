@@ -63,17 +63,22 @@ public class TallyComponentShufflePayload implements SignedPayload {
 
 	@JsonCreator
 	public TallyComponentShufflePayload(
-			@JsonProperty(value = "encryptionGroup", required = true)
+			@JsonProperty(value = "encryptionGroup")
 			final GqGroup encryptionGroup,
-			@JsonProperty(value = "electionEventId", required = true)
+
+			@JsonProperty(value = "electionEventId")
 			final String electionEventId,
-			@JsonProperty(value = "ballotBoxId", required = true)
+
+			@JsonProperty(value = "ballotBoxId")
 			final String ballotBoxId,
-			@JsonProperty(value = "verifiableShuffle", required = true)
+
+			@JsonProperty(value = "verifiableShuffle")
 			final VerifiableShuffle verifiableShuffle,
-			@JsonProperty(value = "verifiablePlaintextDecryption", required = true)
+
+			@JsonProperty(value = "verifiablePlaintextDecryption")
 			final VerifiablePlaintextDecryption verifiablePlaintextDecryption,
-			@JsonProperty(value = "signature", required = true)
+
+			@JsonProperty(value = "signature")
 			final CryptoPrimitivesSignature signature) {
 
 		this(encryptionGroup, electionEventId, ballotBoxId, verifiableShuffle, verifiablePlaintextDecryption);
@@ -84,16 +89,22 @@ public class TallyComponentShufflePayload implements SignedPayload {
 	 * Constructs an unsigned payload.
 	 */
 	public TallyComponentShufflePayload(final GqGroup encryptionGroup, final String electionEventId, final String ballotBoxId,
-			final VerifiableShuffle verifiableShuffle,
-			final VerifiablePlaintextDecryption verifiablePlaintextDecryption) {
+			final VerifiableShuffle verifiableShuffle, final VerifiablePlaintextDecryption verifiablePlaintextDecryption) {
 
-		checkConsistency(encryptionGroup, verifiableShuffle, verifiablePlaintextDecryption);
-
-		this.encryptionGroup = encryptionGroup;
+		this.encryptionGroup = checkNotNull(encryptionGroup);
 		this.electionEventId = validateUUID(electionEventId);
 		this.ballotBoxId = validateUUID(ballotBoxId);
-		this.verifiableShuffle = verifiableShuffle;
-		this.verifiablePlaintextDecryption = verifiablePlaintextDecryption;
+		this.verifiableShuffle = checkNotNull(verifiableShuffle);
+		this.verifiablePlaintextDecryption = checkNotNull(verifiablePlaintextDecryption);
+
+		checkArgument(encryptionGroup.equals(verifiableShuffle.shuffleArgument().getGroup()),
+				"The verifiable shuffle's group should be equal to the encryption group.");
+		checkArgument(encryptionGroup.equals(verifiablePlaintextDecryption.getGroup()),
+				"The verifiable plaintext decryption's group should be equal to the encryption group.");
+		checkArgument(verifiablePlaintextDecryption.getDecryptedVotes().size() == verifiableShuffle.shuffledCiphertexts().size(),
+				"The verifiable plaintext decryption and the verifiable shuffle must have the same number of ciphertexts.");
+		checkArgument(verifiablePlaintextDecryption.getDecryptedVotes().getElementSize() == verifiableShuffle.shuffledCiphertexts().getElementSize(),
+				"The verifiable decryptions' and the verifiable shuffle's ciphertexts must have the same element size.");
 	}
 
 	public GqGroup getEncryptionGroup() {
@@ -134,9 +145,10 @@ public class TallyComponentShufflePayload implements SignedPayload {
 			return false;
 		}
 		final TallyComponentShufflePayload that = (TallyComponentShufflePayload) o;
-		return encryptionGroup.equals(that.encryptionGroup) && verifiableShuffle.equals(that.verifiableShuffle)
-				&& verifiablePlaintextDecryption.equals(
-				that.verifiablePlaintextDecryption) && Objects.equals(signature, that.signature);
+		return encryptionGroup.equals(that.encryptionGroup) &&
+				verifiableShuffle.equals(that.verifiableShuffle) &&
+				verifiablePlaintextDecryption.equals(that.verifiablePlaintextDecryption) &&
+				Objects.equals(signature, that.signature);
 	}
 
 	@Override
@@ -146,23 +158,12 @@ public class TallyComponentShufflePayload implements SignedPayload {
 
 	@Override
 	public List<Hashable> toHashableForm() {
-		return List.of(this.encryptionGroup, HashableString.from(this.electionEventId), HashableString.from(this.ballotBoxId), this.verifiableShuffle, this.verifiablePlaintextDecryption.getDecryptedVotes(),
+		return List.of(this.encryptionGroup,
+				HashableString.from(this.electionEventId),
+				HashableString.from(this.ballotBoxId),
+				this.verifiableShuffle,
+				this.verifiablePlaintextDecryption.getDecryptedVotes(),
 				this.verifiablePlaintextDecryption.getDecryptionProofs());
 	}
 
-	private void checkConsistency(final GqGroup encryptionGroup, final VerifiableShuffle verifiableShuffle,
-			final VerifiablePlaintextDecryption verifiablePlaintextDecryption) {
-		checkNotNull(encryptionGroup);
-		checkNotNull(verifiableShuffle);
-		checkNotNull(verifiablePlaintextDecryption);
-
-		checkArgument(encryptionGroup.equals(verifiableShuffle.shuffleArgument().getGroup()),
-				"The verifiable shuffle's group should be equal to the encryption group.");
-		checkArgument(encryptionGroup.equals(verifiablePlaintextDecryption.getGroup()),
-				"The verifiable plaintext decryption's group should be equal to the encryption group.");
-		checkArgument(verifiablePlaintextDecryption.getDecryptedVotes().size() == verifiableShuffle.shuffledCiphertexts().size(),
-				"The verifiable plaintext decryption and the verifiable shuffle must have the same number of ciphertexts.");
-		checkArgument(verifiablePlaintextDecryption.getDecryptedVotes().getElementSize() == verifiableShuffle.shuffledCiphertexts().getElementSize(),
-				"The verifiable decryptions' and the verifiable shuffle's ciphertexts must have the same element size.");
-	}
 }

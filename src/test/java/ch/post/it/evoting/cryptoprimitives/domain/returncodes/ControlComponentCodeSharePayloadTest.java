@@ -34,7 +34,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Throwables;
 
-import ch.post.it.evoting.cryptoprimitives.domain.ControlComponentConstants;
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
 import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
@@ -106,7 +105,8 @@ class ControlComponentCodeSharePayloadTest extends MapperSetUp {
 			verificationCardSetId = VERIFICATION_CARD_SET_ID;
 			encryptionGroup = SerializationTestData.getGqGroup();
 			controlComponentCodeShares = Arrays
-					.asList(SerializationTestData.getReturnCodeGenerationOutput("1ecb40f5bab5400e8166b63a04a0708d"), SerializationTestData.getReturnCodeGenerationOutput("2ecb40f5bab5400e8166b63a04a0708d"));
+					.asList(SerializationTestData.getReturnCodeGenerationOutput("1ecb40f5bab5400e8166b63a04a0708d"),
+							SerializationTestData.getReturnCodeGenerationOutput("2ecb40f5bab5400e8166b63a04a0708d"));
 			chunkId = secureRandom.nextInt(5);
 			nodeId = secureRandom.nextInt(4) + 1;
 		}
@@ -160,15 +160,14 @@ class ControlComponentCodeSharePayloadTest extends MapperSetUp {
 		}
 
 		@Test
-		@DisplayName("list of ControlComponentCodeShares containing null elements throws IllegalArgumentException")
+		@DisplayName("list of ControlComponentCodeShares containing null elements throws NullPointerException")
 		void constructWithControlComponentCodeSharesListContainingNull() {
 			final List<ControlComponentCodeShare> controlComponentCodeSharesWithNull = Arrays
-					.asList(SerializationTestData.getReturnCodeGenerationOutput("1ecb40f5bab5400e8166b63a04a0708d"), SerializationTestData.getReturnCodeGenerationOutput("2ecb40f5bab5400e8166b63a04a0708d"), null);
-			final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+					.asList(SerializationTestData.getReturnCodeGenerationOutput("1ecb40f5bab5400e8166b63a04a0708d"),
+							SerializationTestData.getReturnCodeGenerationOutput("2ecb40f5bab5400e8166b63a04a0708d"), null);
+			assertThrows(NullPointerException.class,
 					() -> new ControlComponentCodeSharesPayload(tenantId, electionEventId, verificationCardSetId, chunkId, encryptionGroup,
 							controlComponentCodeSharesWithNull, nodeId));
-			assertEquals("The list of control component code shares must not contain null elements.",
-					Throwables.getRootCause(exception).getMessage());
 		}
 
 		@Test
@@ -186,7 +185,9 @@ class ControlComponentCodeSharePayloadTest extends MapperSetUp {
 		@DisplayName("the ControlComponentCodeShares' having the same verification card IDs throws IllegalArgumentException")
 		void constructWithIndistinctVerificationCardIds() {
 			final List<ControlComponentCodeShare> controlComponentCodeSharesWithDuplicate = Arrays
-					.asList(SerializationTestData.getReturnCodeGenerationOutput("1ecb40f5bab5400e8166b63a04a0708d"), SerializationTestData.getReturnCodeGenerationOutput("2ecb40f5bab5400e8166b63a04a0708d"), SerializationTestData.getReturnCodeGenerationOutput("2ecb40f5bab5400e8166b63a04a0708d"));
+					.asList(SerializationTestData.getReturnCodeGenerationOutput("1ecb40f5bab5400e8166b63a04a0708d"),
+							SerializationTestData.getReturnCodeGenerationOutput("2ecb40f5bab5400e8166b63a04a0708d"),
+							SerializationTestData.getReturnCodeGenerationOutput("2ecb40f5bab5400e8166b63a04a0708d"));
 			final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
 					() -> new ControlComponentCodeSharesPayload(tenantId, electionEventId, verificationCardSetId, chunkId, encryptionGroup,
 							controlComponentCodeSharesWithDuplicate, nodeId));

@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -146,14 +145,13 @@ class SetupComponentVerificationDataPayloadTest extends MapperSetUp {
 		}
 
 		@Test
-		@DisplayName("partialChoiceReturnCodesAllowList containing null elements throws IllegalArgumentException")
+		@DisplayName("partialChoiceReturnCodesAllowList containing null elements throws NullPointerException")
 		void constructWithPartialChoiceReturnCodesAllowListContainingNull() {
 			final List<String> partialChoiceReturnCodesAllowListWithNull = Collections.singletonList(null);
-			final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+			assertThrows(NullPointerException.class,
 					() -> new SetupComponentVerificationDataPayload(TENANT_ID, ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID,
 							partialChoiceReturnCodesAllowListWithNull, CHUNK_ID, encryptionGroup, setupComponentVerificationData,
 							combinedCorrectnessInformation));
-			assertEquals("The partial Choice Return Codes Allow List must not contain null elements.", Throwables.getRootCause(exception).getMessage());
 		}
 	}
 }

@@ -76,45 +76,80 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 	public SetupComponentVerificationDataPayload(
 			@JsonProperty("tenantId")
 			final String tenantId,
+
 			@JsonProperty("electionEventId")
 			final String electionEventId,
+
 			@JsonProperty("verificationCardSetId")
 			final String verificationCardSetId,
+
 			@JsonProperty("partialChoiceReturnCodesAllowList")
 			final List<String> partialChoiceReturnCodesAllowList,
+
 			@JsonProperty("chunkId")
 			final int chunkId,
+
 			@JsonProperty("encryptionGroup")
 			final GqGroup encryptionGroup,
+
 			@JsonProperty("setupComponentVerificationData")
 			final List<SetupComponentVerificationData> setupComponentVerificationData,
+
 			@JsonProperty("combinedCorrectnessInformation")
 			final CombinedCorrectnessInformation combinedCorrectnessInformation,
+
 			@JsonProperty("signature")
 			final CryptoPrimitivesSignature signature) {
 
-		this(tenantId, electionEventId, verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId, encryptionGroup, setupComponentVerificationData, combinedCorrectnessInformation);
+		this(tenantId, electionEventId, verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId, encryptionGroup,
+				setupComponentVerificationData, combinedCorrectnessInformation);
 		this.signature = checkNotNull(signature);
 	}
 
-	/**
-	 * Creates an unsigned payload.
-	 */
 	public SetupComponentVerificationDataPayload(final String tenantId, final String electionEventId, final String verificationCardSetId,
 			final List<String> partialChoiceReturnCodesAllowList, final int chunkId, final GqGroup encryptionGroup,
 			final List<SetupComponentVerificationData> setupComponentVerificationData,
 			final CombinedCorrectnessInformation combinedCorrectnessInformation) {
 
-		checkConsistency(partialChoiceReturnCodesAllowList, encryptionGroup, setupComponentVerificationData, combinedCorrectnessInformation);
-
 		this.tenantId = checkNotNull(tenantId);
 		this.electionEventId = validateUUID(electionEventId);
 		this.verificationCardSetId = validateUUID(verificationCardSetId);
-		this.partialChoiceReturnCodesAllowList = checkNotNull(partialChoiceReturnCodesAllowList);
+		this.partialChoiceReturnCodesAllowList = List.copyOf(checkNotNull(partialChoiceReturnCodesAllowList));
 		this.chunkId = chunkId;
 		this.encryptionGroup = checkNotNull(encryptionGroup);
 		this.setupComponentVerificationData = checkNotNull(setupComponentVerificationData);
 		this.combinedCorrectnessInformation = checkNotNull(combinedCorrectnessInformation);
+
+		checkNotNull(this.partialChoiceReturnCodesAllowList);
+
+		checkArgument(!this.partialChoiceReturnCodesAllowList.isEmpty(), "The partial Choice Return Codes Allow List must not be empty.");
+		checkArgument(this.partialChoiceReturnCodesAllowList.stream().allMatch(Objects::nonNull),
+				"The partial Choice Return Codes Allow List must not contain null elements.");
+		checkArgument(!this.setupComponentVerificationData.isEmpty(), "The setup component verification data must not be empty.");
+		checkArgument(this.setupComponentVerificationData.stream().allMatch(Objects::nonNull),
+				"The setup component verification data list must not contain null elements.");
+
+		checkArgument(allEqual(this.setupComponentVerificationData.stream().map(SetupComponentVerificationData::verificationCardPublicKey),
+				ElGamalMultiRecipientPublicKey::getGroup), "All setup verification data must have the same group.");
+		checkArgument(this.encryptionGroup.equals(this.setupComponentVerificationData.get(0).verificationCardPublicKey().getGroup()),
+				"The groups of the setup component verification data must be equal to the encryption group.");
+
+		checkArgument(allEqual(this.setupComponentVerificationData.stream()
+						.map(SetupComponentVerificationData::encryptedHashedSquaredPartialChoiceReturnCodes)
+						.map(ElGamalMultiRecipientCiphertext::getPhis), Function.identity()),
+				"All encrypted hashed squared Partial Choice Return Codes must have the same size.");
+
+		checkArgument(this.setupComponentVerificationData.stream()
+				.map(SetupComponentVerificationData::verificationCardId)
+				.distinct().toList().size() == this.setupComponentVerificationData.size(), "The verification card IDs must all be distinct.");
+		checkArgument(this.partialChoiceReturnCodesAllowList.size() ==
+						this.setupComponentVerificationData.size() * this.combinedCorrectnessInformation.getTotalNumberOfVotingOptions(),
+				"The number of elements in the partial Choice Return Codes Allow List must correspond to the size of the SetupComponentVerificationData multiplied with the total number of voting options.");
+		checkArgument(this.setupComponentVerificationData.stream()
+						.map(SetupComponentVerificationData::encryptedHashedSquaredPartialChoiceReturnCodes)
+						.map(ElGamalMultiRecipientCiphertext::size)
+						.allMatch(size -> Objects.equals(size, this.combinedCorrectnessInformation.getTotalNumberOfVotingOptions())),
+				"The size of the encrypted hashed squared Partial Choice Return Codes must correpsond to the total number of voting options.");
 	}
 
 	public String getTenantId() {
@@ -142,7 +177,7 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 	}
 
 	public List<SetupComponentVerificationData> getSetupComponentVerificationData() {
-		return setupComponentVerificationData;
+		return List.copyOf(setupComponentVerificationData);
 	}
 
 	public CombinedCorrectnessInformation getCombinedCorrectnessInformation() {
@@ -166,15 +201,15 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 			return false;
 		}
 		final SetupComponentVerificationDataPayload that = (SetupComponentVerificationDataPayload) o;
-		return chunkId == that.chunkId
-				&& tenantId.equals(that.tenantId)
-				&& electionEventId.equals(that.electionEventId)
-				&& verificationCardSetId.equals(that.verificationCardSetId)
-				&& partialChoiceReturnCodesAllowList.equals(that.partialChoiceReturnCodesAllowList)
-				&& encryptionGroup.equals(that.encryptionGroup)
-				&& setupComponentVerificationData.equals(that.setupComponentVerificationData)
-				&& combinedCorrectnessInformation.equals(that.combinedCorrectnessInformation)
-				&& Objects.equals(signature, that.signature);
+		return chunkId == that.chunkId &&
+				tenantId.equals(that.tenantId) &&
+				electionEventId.equals(that.electionEventId) &&
+				verificationCardSetId.equals(that.verificationCardSetId) &&
+				partialChoiceReturnCodesAllowList.equals(that.partialChoiceReturnCodesAllowList) &&
+				encryptionGroup.equals(that.encryptionGroup) &&
+				setupComponentVerificationData.equals(that.setupComponentVerificationData) &&
+				combinedCorrectnessInformation.equals(that.combinedCorrectnessInformation) &&
+				Objects.equals(signature, that.signature);
 	}
 
 	@Override
@@ -189,43 +224,13 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 				.map(HashableString::from)
 				.toList();
 
-		return List.of(HashableString.from(tenantId), HashableString.from(electionEventId), HashableString.from(verificationCardSetId),
-				HashableList.from(hashableAllowList), HashableBigInteger.from(BigInteger.valueOf(chunkId)), encryptionGroup,
-				HashableList.from(setupComponentVerificationData), combinedCorrectnessInformation);
-	}
-
-	private void checkConsistency(final List<String> partialChoiceReturnCodesAllowList, final GqGroup encryptionGroup,
-			final List<SetupComponentVerificationData> setupComponentVerificationData,
-			final CombinedCorrectnessInformation combinedCorrectnessInformation) {
-		checkNotNull(partialChoiceReturnCodesAllowList);
-		checkNotNull(encryptionGroup);
-		checkNotNull(setupComponentVerificationData);
-		checkNotNull(combinedCorrectnessInformation);
-
-		checkArgument(!partialChoiceReturnCodesAllowList.isEmpty(), "The partial Choice Return Codes Allow List must not be empty.");
-		checkArgument(partialChoiceReturnCodesAllowList.stream().allMatch(Objects::nonNull),
-				"The partial Choice Return Codes Allow List must not contain null elements.");
-		checkArgument(!setupComponentVerificationData.isEmpty(), "The setup component verification data must not be empty.");
-		checkArgument(setupComponentVerificationData.stream().allMatch(Objects::nonNull),
-				"The setup component verification data list must not contain null elements.");
-
-		checkArgument(allEqual(setupComponentVerificationData.stream().map(SetupComponentVerificationData::verificationCardPublicKey),
-				ElGamalMultiRecipientPublicKey::getGroup), "All setup verification data must have the same group.");
-		checkArgument(encryptionGroup.equals(setupComponentVerificationData.get(0).verificationCardPublicKey().getGroup()),
-				"The groups of the setup component verification data must be equal to the encryption group.");
-
-		checkArgument(allEqual(setupComponentVerificationData.stream()
-						.map(SetupComponentVerificationData::encryptedHashedSquaredPartialChoiceReturnCodes)
-						.map(ElGamalMultiRecipientCiphertext::getPhi), Function.identity()),
-				"All encrypted hashed squared Partial Choice Return Codes must have the same size.");
-
-		checkArgument(setupComponentVerificationData.stream()
-				.map(SetupComponentVerificationData::verificationCardId)
-				.distinct().toList().size() == setupComponentVerificationData.size(), "The verification card IDs must all be distinct.");
-		checkArgument(partialChoiceReturnCodesAllowList.size() == setupComponentVerificationData.size() * combinedCorrectnessInformation.getTotalNumberOfVotingOptions(),
-				"The number of elements in the partial Choice Return Codes Allow List must correspond to the size of the SetupComponentVerificationData multiplied with the total number of voting options.");
-		checkArgument(setupComponentVerificationData.stream()
-				.map(SetupComponentVerificationData::encryptedHashedSquaredPartialChoiceReturnCodes)
-				.map(ElGamalMultiRecipientCiphertext::size).allMatch(size -> Objects.equals(size, combinedCorrectnessInformation.getTotalNumberOfVotingOptions())), "The size of the encrypted hashed squared Partial Choice Return Codes must correpsond to the total number of voting options.");
+		return List.of(HashableString.from(tenantId),
+				HashableString.from(electionEventId),
+				HashableString.from(verificationCardSetId),
+				HashableList.from(hashableAllowList),
+				HashableBigInteger.from(BigInteger.valueOf(chunkId)),
+				encryptionGroup,
+				HashableList.from(setupComponentVerificationData),
+				combinedCorrectnessInformation);
 	}
 }
