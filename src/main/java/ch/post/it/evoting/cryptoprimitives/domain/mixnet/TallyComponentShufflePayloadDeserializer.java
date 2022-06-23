@@ -37,6 +37,10 @@ class TallyComponentShufflePayloadDeserializer extends JsonDeserializer<TallyCom
 		final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
 
 		final JsonNode node = mapper.readTree(parser);
+
+		final String electionEventId = mapper.readValue(node.get("electionEventId").toString(), String.class);
+		final String ballotBoxId = mapper.readValue(node.get("ballotBoxId").toString(), String.class);
+
 		final JsonNode encryptionGroupNode = node.get("encryptionGroup");
 		final GqGroup gqGroup = mapper.readValue(encryptionGroupNode.toString(), GqGroup.class);
 		final String groupAttribute = "group";
@@ -52,6 +56,6 @@ class TallyComponentShufflePayloadDeserializer extends JsonDeserializer<TallyCom
 		final CryptoPrimitivesSignature signature = mapper.reader()
 				.readValue(node.get("signature").toString(), CryptoPrimitivesSignature.class);
 
-		return new TallyComponentShufflePayload(gqGroup, verifiableShuffle, verifiablePlaintextDecryption, signature);
+		return new TallyComponentShufflePayload(gqGroup, electionEventId, ballotBoxId, verifiableShuffle, verifiablePlaintextDecryption, signature);
 	}
 }

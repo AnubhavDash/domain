@@ -16,27 +16,35 @@
 package ch.post.it.evoting.cryptoprimitives.domain.returncodes;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 
 import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Throwables;
 
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
 import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
+import ch.post.it.evoting.cryptoprimitives.test.tools.data.GroupTestData;
 
 @DisplayName("A SetupComponentVerificationData")
 class SetupComponentVerificationDataTest extends MapperSetUp {
 
-	private static final String VERIFICATION_CARD_ID = "1234";
+	private static final String VERIFICATION_CARD_ID = "4b7a8f063b564dbf8e24420d3f52f54f";
 
 	private static SetupComponentVerificationData setupComponentVerificationData;
 	private static ObjectNode rootNode;
@@ -48,7 +56,7 @@ class SetupComponentVerificationDataTest extends MapperSetUp {
 
 		final ElGamalMultiRecipientCiphertext encryptedHashedSquaredConfirmationKey = SerializationTestData.getSinglePhiCiphertext();
 		final ElGamalMultiRecipientCiphertext encryptedHashedSquaredPartialChoiceReturnCodes = SerializationTestData.getCiphertexts(1).get(0);
-		final ElGamalMultiRecipientPublicKey verificationCardPublicKey = SerializationTestData.getPublicKey();
+		final ElGamalMultiRecipientPublicKey verificationCardPublicKey = SerializationTestData.getSingleElementPublicKey();
 
 		setupComponentVerificationData = new SetupComponentVerificationData(VERIFICATION_CARD_ID, encryptedHashedSquaredConfirmationKey,
 				encryptedHashedSquaredPartialChoiceReturnCodes, verificationCardPublicKey);
@@ -93,4 +101,79 @@ class SetupComponentVerificationDataTest extends MapperSetUp {
 		assertEquals(setupComponentVerificationData, deserializedInput);
 	}
 
+	@Nested
+	@DisplayName("constructed with")
+	class SetupComponentVerificationDataConsistencyCheckTest {
+
+		private ElGamalMultiRecipientCiphertext encryptedHashedSquaredConfirmationKey;
+		private ElGamalMultiRecipientCiphertext encryptedHashedSquaredPartialChoiceReturnCodes;
+		private ElGamalMultiRecipientPublicKey verificationCardPublicKey;
+
+		@BeforeEach
+		void setup() {
+			encryptedHashedSquaredConfirmationKey = SerializationTestData.getSinglePhiCiphertext();
+			encryptedHashedSquaredPartialChoiceReturnCodes = SerializationTestData.getCiphertexts(1).get(0);
+			verificationCardPublicKey = SerializationTestData.getSingleElementPublicKey();
+		}
+
+		@Test
+		@DisplayName("null parameters throws NullPointerException")
+		void constructWithNullParameters() {
+			assertThrows(NullPointerException.class, () -> new SetupComponentVerificationData(null, encryptedHashedSquaredConfirmationKey,
+					encryptedHashedSquaredPartialChoiceReturnCodes, verificationCardPublicKey));
+			assertThrows(NullPointerException.class,
+					() -> new SetupComponentVerificationData(VERIFICATION_CARD_ID, null, encryptedHashedSquaredPartialChoiceReturnCodes,
+							verificationCardPublicKey));
+			assertThrows(NullPointerException.class,
+					() -> new SetupComponentVerificationData(VERIFICATION_CARD_ID, encryptedHashedSquaredConfirmationKey, null,
+							verificationCardPublicKey));
+			assertThrows(NullPointerException.class,
+					() -> new SetupComponentVerificationData(VERIFICATION_CARD_ID, encryptedHashedSquaredConfirmationKey,
+							encryptedHashedSquaredPartialChoiceReturnCodes, null));
+		}
+
+		@Test
+		@DisplayName("confirmation key having different group than partial choice return codes throws IllegalArgumentException")
+		void constructWithConfirmationKeyPartialChoiceReturnCodesDifferentGroup() {
+			final ElGamalMultiRecipientCiphertext otherEncryptedHashedSquaredPartialChoiceReturnCodes = spy(encryptedHashedSquaredPartialChoiceReturnCodes);
+			final GqGroup otherEncryptionGroup = GroupTestData.getDifferentGqGroup(SerializationTestData.getGqGroup());
+			doReturn(otherEncryptionGroup).when(otherEncryptedHashedSquaredPartialChoiceReturnCodes).getGroup();
+			final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+					() -> new SetupComponentVerificationData(VERIFICATION_CARD_ID, encryptedHashedSquaredConfirmationKey,
+							otherEncryptedHashedSquaredPartialChoiceReturnCodes, verificationCardPublicKey));
+			assertEquals("The encrypted hashed squared confirmation key and the encrypted hashed squared Partial Choice Return Codes must have the same group.", Throwables.getRootCause(exception).getMessage());
+		}
+
+		@Test
+		@DisplayName("verification card public key having different group than confirmation key throws IllegalArgumentException")
+		void constructWithVerificationCardPublicKeyConfirmationKeyDifferentGroup() {
+			final ElGamalMultiRecipientPublicKey otherVerificationCardPublicKey = spy(verificationCardPublicKey);
+			final GqGroup otherEncryptionGroup = GroupTestData.getDifferentGqGroup(SerializationTestData.getGqGroup());
+			doReturn(otherEncryptionGroup).when(otherVerificationCardPublicKey).getGroup();
+			final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+					() -> new SetupComponentVerificationData(VERIFICATION_CARD_ID, encryptedHashedSquaredConfirmationKey,
+							encryptedHashedSquaredPartialChoiceReturnCodes, otherVerificationCardPublicKey));
+			assertEquals("The encrypted hashed squared confirmation key and the verification card public key must have the same group.", Throwables.getRootCause(exception).getMessage());
+		}
+
+		@Test
+		@DisplayName("encrypted hashed squared confirmation key with more than 1 element throws IllegalArgumentException")
+		void constructWithTooLargeEncryptedHashedSquaredConfirmationKey() {
+			final ElGamalMultiRecipientCiphertext tooLargeEncryptedHashedSquaredConfirmationKey = SerializationTestData.getCiphertexts(1).get(0);
+			final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+					() -> new SetupComponentVerificationData(VERIFICATION_CARD_ID, tooLargeEncryptedHashedSquaredConfirmationKey,
+							encryptedHashedSquaredPartialChoiceReturnCodes, verificationCardPublicKey));
+			assertEquals("The encrypted hashed squared confirmation key must be of size 1.", Throwables.getRootCause(exception).getMessage());
+		}
+
+		@Test
+		@DisplayName("verification card public key with more than 1 element throws IllegalArgumentException")
+		void constructWithTooLargeVerificationCardPublicKey() {
+			final ElGamalMultiRecipientPublicKey tooLargeVerificationCardPublicKey = SerializationTestData.getPublicKey();
+			final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+					() -> new SetupComponentVerificationData(VERIFICATION_CARD_ID, encryptedHashedSquaredConfirmationKey,
+							encryptedHashedSquaredPartialChoiceReturnCodes, tooLargeVerificationCardPublicKey));
+			assertEquals("The verification card public key must be of size 1.", Throwables.getRootCause(exception).getMessage());
+		}
+	}
 }
