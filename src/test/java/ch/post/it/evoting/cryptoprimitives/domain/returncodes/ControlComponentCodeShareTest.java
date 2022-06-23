@@ -16,28 +16,37 @@
 package ch.post.it.evoting.cryptoprimitives.domain.returncodes;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 
 import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Throwables;
 
 import ch.post.it.evoting.cryptoprimitives.domain.MapperSetUp;
 import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
+import ch.post.it.evoting.cryptoprimitives.math.ZqGroup;
+import ch.post.it.evoting.cryptoprimitives.test.tools.data.GroupTestData;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.ExponentiationProof;
 
 @DisplayName("A ControlComponentCodeShare")
 class ControlComponentCodeShareTest extends MapperSetUp {
 
-	private static final String VERIFICATION_CARD_ID = "1234";
+	private static final String VERIFICATION_CARD_ID = "cbf8ac1c1bcf444da0ccf5d7e956153b";
 
 	private static ControlComponentCodeShare controlComponentCodeShare;
 	private static ObjectNode rootNode;
@@ -47,8 +56,8 @@ class ControlComponentCodeShareTest extends MapperSetUp {
 	static void setUpAll() {
 		gqGroup = SerializationTestData.getGqGroup();
 
-		final ElGamalMultiRecipientPublicKey voterChoiceReturnCodeGenerationPublicKey = SerializationTestData.getPublicKey();
-		final ElGamalMultiRecipientPublicKey voterVoteCastReturnCodeGenerationPublicKey = SerializationTestData.getPublicKey();
+		final ElGamalMultiRecipientPublicKey voterChoiceReturnCodeGenerationPublicKey = SerializationTestData.getSingleElementPublicKey();
+		final ElGamalMultiRecipientPublicKey voterVoteCastReturnCodeGenerationPublicKey = SerializationTestData.getSingleElementPublicKey();
 		final ElGamalMultiRecipientCiphertext exponentiatedEncryptedPartialChoiceReturnCodes = SerializationTestData.getCiphertexts(1).get(0);
 		final ExponentiationProof encryptedPartialChoiceReturnCodeExponentiationProof = SerializationTestData.createExponentiationProof();
 		final ElGamalMultiRecipientCiphertext exponentiatedEncryptedConfirmationKey = SerializationTestData.getSinglePhiCiphertext();
@@ -109,4 +118,129 @@ class ControlComponentCodeShareTest extends MapperSetUp {
 		assertEquals(controlComponentCodeShare, deserializedOutput);
 	}
 
+	@Nested
+	@DisplayName("contructed with")
+	class ControlComponentCodeShareConsistencyCheckTest {
+
+		private ElGamalMultiRecipientPublicKey voterChoiceReturnCodeGenerationPublicKey;
+		private ElGamalMultiRecipientPublicKey voterVoteCastReturnCodeGenerationPublicKey;
+		private ElGamalMultiRecipientCiphertext exponentiatedEncryptedPartialChoiceReturnCodes;
+		private ExponentiationProof encryptedPartialChoiceReturnCodeExponentiationProof;
+		private ElGamalMultiRecipientCiphertext exponentiatedEncryptedConfirmationKey;
+		private ExponentiationProof encryptedConfirmationKeyExponentiationProof;
+
+		@BeforeEach
+		void setup() {
+			voterChoiceReturnCodeGenerationPublicKey = SerializationTestData.getSingleElementPublicKey();
+			voterVoteCastReturnCodeGenerationPublicKey = SerializationTestData.getSingleElementPublicKey();
+			exponentiatedEncryptedPartialChoiceReturnCodes = SerializationTestData.getCiphertexts(1).get(0);
+			encryptedPartialChoiceReturnCodeExponentiationProof = SerializationTestData.createExponentiationProof();
+			exponentiatedEncryptedConfirmationKey = SerializationTestData.getSinglePhiCiphertext();
+			encryptedConfirmationKeyExponentiationProof = SerializationTestData.createExponentiationProof();
+		}
+
+		@Test
+		@DisplayName("null parameters throws NullPointerException")
+		void constructWithNullParameters() {
+			assertThrows(NullPointerException.class,
+					() -> new ControlComponentCodeShare(null, voterChoiceReturnCodeGenerationPublicKey,
+							voterVoteCastReturnCodeGenerationPublicKey, exponentiatedEncryptedPartialChoiceReturnCodes,
+							encryptedPartialChoiceReturnCodeExponentiationProof, exponentiatedEncryptedConfirmationKey,
+							encryptedConfirmationKeyExponentiationProof));
+			assertThrows(NullPointerException.class,
+					() -> new ControlComponentCodeShare(VERIFICATION_CARD_ID, null,
+							voterVoteCastReturnCodeGenerationPublicKey, exponentiatedEncryptedPartialChoiceReturnCodes,
+							encryptedPartialChoiceReturnCodeExponentiationProof, exponentiatedEncryptedConfirmationKey,
+							encryptedConfirmationKeyExponentiationProof));
+			assertThrows(NullPointerException.class,
+					() -> new ControlComponentCodeShare(VERIFICATION_CARD_ID, voterChoiceReturnCodeGenerationPublicKey,
+							null, exponentiatedEncryptedPartialChoiceReturnCodes,
+							encryptedPartialChoiceReturnCodeExponentiationProof, exponentiatedEncryptedConfirmationKey,
+							encryptedConfirmationKeyExponentiationProof));
+			assertThrows(NullPointerException.class,
+					() -> new ControlComponentCodeShare(VERIFICATION_CARD_ID, voterChoiceReturnCodeGenerationPublicKey,
+							voterVoteCastReturnCodeGenerationPublicKey, null,
+							encryptedPartialChoiceReturnCodeExponentiationProof, exponentiatedEncryptedConfirmationKey,
+							encryptedConfirmationKeyExponentiationProof));
+			assertThrows(NullPointerException.class,
+					() -> new ControlComponentCodeShare(VERIFICATION_CARD_ID, voterChoiceReturnCodeGenerationPublicKey,
+							voterVoteCastReturnCodeGenerationPublicKey, exponentiatedEncryptedPartialChoiceReturnCodes,
+							null, exponentiatedEncryptedConfirmationKey,
+							encryptedConfirmationKeyExponentiationProof));
+			assertThrows(NullPointerException.class,
+					() -> new ControlComponentCodeShare(VERIFICATION_CARD_ID, voterChoiceReturnCodeGenerationPublicKey,
+							voterVoteCastReturnCodeGenerationPublicKey, exponentiatedEncryptedPartialChoiceReturnCodes,
+							encryptedPartialChoiceReturnCodeExponentiationProof, null,
+							encryptedConfirmationKeyExponentiationProof));
+			assertThrows(NullPointerException.class,
+					() -> new ControlComponentCodeShare(VERIFICATION_CARD_ID, voterChoiceReturnCodeGenerationPublicKey,
+							voterVoteCastReturnCodeGenerationPublicKey, exponentiatedEncryptedPartialChoiceReturnCodes,
+							encryptedPartialChoiceReturnCodeExponentiationProof, exponentiatedEncryptedConfirmationKey,
+							null));
+		}
+
+		@Test
+		@DisplayName("keys and choice return codes not having all the same group throws IllegalArgumentException")
+		void constructWithInconsistentGroups() {
+			final ElGamalMultiRecipientCiphertext otherExponentiatedEncryptedConfirmationKey = spy(exponentiatedEncryptedConfirmationKey);
+			final GqGroup otherEncryptionGroup = GroupTestData.getDifferentGqGroup(SerializationTestData.getGqGroup());
+			doReturn(otherEncryptionGroup).when(otherExponentiatedEncryptedConfirmationKey).getGroup();
+			final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+					() -> new ControlComponentCodeShare(VERIFICATION_CARD_ID, voterChoiceReturnCodeGenerationPublicKey,
+							voterVoteCastReturnCodeGenerationPublicKey, exponentiatedEncryptedPartialChoiceReturnCodes,
+							encryptedPartialChoiceReturnCodeExponentiationProof, otherExponentiatedEncryptedConfirmationKey,
+							encryptedConfirmationKeyExponentiationProof));
+			assertEquals("The keys and partial choice return codes must have the same group.", Throwables.getRootCause(exception).getMessage());
+		}
+
+		@Test
+		@DisplayName("Encrypted Partial Choice Return Code Exponentiation Proofs having different group order throws IllegalArgumentException")
+		void constructWithEncryptedPartialChoiceReturnCodeExponentiationProofsDifferentGroupOrder() {
+			final ExponentiationProof otherEncryptedPartialChoiceReturnCodeExponentiationProof = spy(encryptedPartialChoiceReturnCodeExponentiationProof);
+			final ZqGroup otherGroup = GroupTestData.getDifferentZqGroup(ZqGroup.sameOrderAs(SerializationTestData.getGqGroup()));
+			doReturn(otherGroup).when(otherEncryptedPartialChoiceReturnCodeExponentiationProof).getGroup();
+			final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+					() -> new ControlComponentCodeShare(VERIFICATION_CARD_ID, voterChoiceReturnCodeGenerationPublicKey,
+							voterVoteCastReturnCodeGenerationPublicKey, exponentiatedEncryptedPartialChoiceReturnCodes,
+							otherEncryptedPartialChoiceReturnCodeExponentiationProof, exponentiatedEncryptedConfirmationKey,
+							encryptedConfirmationKeyExponentiationProof));
+			assertEquals("The Encrypted Partial Choice Return Code Exponentiation Proofs must have the same group order as the keys.", Throwables.getRootCause(exception).getMessage());
+		}
+
+		@Test
+		@DisplayName("voter Choice Return Code Generation Public Key size greater 1 throws IllegalArgumentException")
+		void constructWithTooLargeVoterChoiceReturnCodeGenerationPublicKey() {
+			final ElGamalMultiRecipientPublicKey tooLargeVoterChoiceReturnCodeGenerationPublicKey = SerializationTestData.getPublicKey();
+			final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+					() -> new ControlComponentCodeShare(VERIFICATION_CARD_ID, tooLargeVoterChoiceReturnCodeGenerationPublicKey,
+							voterVoteCastReturnCodeGenerationPublicKey, exponentiatedEncryptedPartialChoiceReturnCodes,
+							encryptedPartialChoiceReturnCodeExponentiationProof, exponentiatedEncryptedConfirmationKey,
+							encryptedConfirmationKeyExponentiationProof));
+			assertEquals("The voter Choice Return Code Generation Public Key must be of size 1.", Throwables.getRootCause(exception).getMessage());
+		}
+
+		@Test
+		@DisplayName("voter Cast Code Generation Public Key size greater 1 throws IllegalArgumentException")
+		void constructWithTooLargeVoterCastCodeGenerationPublicKey() {
+			final ElGamalMultiRecipientPublicKey tooLargeVoterVoteCastCodeGenerationPublicKey = SerializationTestData.getPublicKey();
+			final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+					() -> new ControlComponentCodeShare(VERIFICATION_CARD_ID, voterChoiceReturnCodeGenerationPublicKey,
+							tooLargeVoterVoteCastCodeGenerationPublicKey, exponentiatedEncryptedPartialChoiceReturnCodes,
+							encryptedPartialChoiceReturnCodeExponentiationProof, exponentiatedEncryptedConfirmationKey,
+							encryptedConfirmationKeyExponentiationProof));
+			assertEquals("The voter Vote Cast Return Code Generation Public Key must be of size 1.", Throwables.getRootCause(exception).getMessage());
+		}
+
+		@Test
+		@DisplayName("exponentiated Encrypted Confirmation Key size greater 1 throws IllegalArgumentException")
+		void constructWithTooLargeExponentiatedEncryptedConfirmationKey() {
+			final ElGamalMultiRecipientCiphertext tooLargeExponentiatedEncryptedConfirmationKey = SerializationTestData.getCiphertexts(1).get(0);
+			final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+					() -> new ControlComponentCodeShare(VERIFICATION_CARD_ID, voterChoiceReturnCodeGenerationPublicKey,
+							voterVoteCastReturnCodeGenerationPublicKey, exponentiatedEncryptedPartialChoiceReturnCodes,
+							encryptedPartialChoiceReturnCodeExponentiationProof, tooLargeExponentiatedEncryptedConfirmationKey,
+							encryptedConfirmationKeyExponentiationProof));
+			assertEquals("The exponentiated Encrypted Confirmation Key must be of size 1.", Throwables.getRootCause(exception).getMessage());
+		}
+	}
 }

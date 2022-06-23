@@ -16,6 +16,7 @@
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigInteger;
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import ch.post.it.evoting.cryptoprimitives.domain.ControlComponentConstants;
 import ch.post.it.evoting.cryptoprimitives.domain.returncodes.SignedPayload;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
@@ -66,42 +68,51 @@ public class ControlComponentShufflePayload implements SignedPayload {
 
 	@JsonCreator
 	public ControlComponentShufflePayload(
-			@JsonProperty(value = "encryptionGroup", required = true)
+
+			@JsonProperty(value = "encryptionGroup")
 			final GqGroup encryptionGroup,
-			@JsonProperty(value = "electionEventId", required = true)
+
+			@JsonProperty(value = "electionEventId")
 			final String electionEventId,
-			@JsonProperty(value = "ballotBoxId", required = true)
+
+			@JsonProperty(value = "ballotBoxId")
 			final String ballotBoxId,
-			@JsonProperty(value = "nodeId", required = true)
+
+			@JsonProperty(value = "nodeId")
 			final int nodeId,
-			@JsonProperty(value = "verifiableDecryptions", required = true)
+
+			@JsonProperty(value = "verifiableDecryptions")
 			final VerifiableDecryptions verifiableDecryptions,
-			@JsonProperty(value = "verifiableShuffle", required = true)
+
+			@JsonProperty(value = "verifiableShuffle")
 			final VerifiableShuffle verifiableShuffle,
-			@JsonProperty(value = "signature", required = true)
+
+			@JsonProperty(value = "signature")
 			final CryptoPrimitivesSignature signature) {
 
-		this.encryptionGroup = checkNotNull(encryptionGroup);
-		this.electionEventId = validateUUID(electionEventId);
-		this.ballotBoxId = validateUUID(ballotBoxId);
-		this.nodeId = nodeId;
-		this.verifiableDecryptions = checkNotNull(verifiableDecryptions);
-		this.verifiableShuffle = checkNotNull(verifiableShuffle);
+		this(encryptionGroup, electionEventId, ballotBoxId, nodeId, verifiableDecryptions, verifiableShuffle);
 		this.signature = checkNotNull(signature);
 	}
 
-	/**
-	 * Constructs an unsigned payload.
-	 */
 	public ControlComponentShufflePayload(final GqGroup encryptionGroup, final String electionEventId, final String ballotBoxId, final int nodeId,
 			final VerifiableDecryptions verifiableDecryptions, final VerifiableShuffle verifiableShuffle) {
-
-		this.encryptionGroup = checkNotNull(encryptionGroup);
+		this.encryptionGroup = encryptionGroup;
 		this.electionEventId = validateUUID(electionEventId);
 		this.ballotBoxId = validateUUID(ballotBoxId);
 		this.nodeId = nodeId;
 		this.verifiableDecryptions = checkNotNull(verifiableDecryptions);
 		this.verifiableShuffle = checkNotNull(verifiableShuffle);
+
+		checkArgument(ControlComponentConstants.NODE_IDS.contains(nodeId),
+				"The node id must be part of the known node ids. [nodeId: %s]", nodeId);
+		checkArgument(encryptionGroup.equals(verifiableDecryptions.getGroup()),
+				"The verifiable decryptions' group should be equal to the encryption group.");
+		checkArgument(encryptionGroup.equals(verifiableShuffle.shuffleArgument().getGroup()),
+				"The verifiable shuffle's group should be equal to the encryption group.");
+		checkArgument(verifiableDecryptions.get_N() == verifiableShuffle.shuffledCiphertexts().size(),
+				"The verifiable decryptions and the verifiable shuffle must have the same number of ciphertexts.");
+		checkArgument(verifiableDecryptions.get_l() == verifiableShuffle.shuffledCiphertexts().getElementSize(),
+				"The verifiable decryptions' and the verifiable shuffle's ciphertexts must have the same element size.");
 	}
 
 	public GqGroup getEncryptionGroup() {
@@ -139,9 +150,13 @@ public class ControlComponentShufflePayload implements SignedPayload {
 	}
 
 	@Override
-	public List<? extends Hashable> toHashableForm() {
-		return List.of(this.encryptionGroup, HashableString.from(this.electionEventId), HashableString.from(this.ballotBoxId),
-				HashableBigInteger.from(BigInteger.valueOf(this.nodeId)), this.verifiableDecryptions, this.verifiableShuffle);
+	public List<Hashable> toHashableForm() {
+		return List.of(encryptionGroup,
+				HashableString.from(electionEventId),
+				HashableString.from(ballotBoxId),
+				HashableBigInteger.from(BigInteger.valueOf(nodeId)),
+				verifiableDecryptions,
+				verifiableShuffle);
 	}
 
 	@Override
@@ -153,14 +168,17 @@ public class ControlComponentShufflePayload implements SignedPayload {
 			return false;
 		}
 		final ControlComponentShufflePayload that = (ControlComponentShufflePayload) o;
-		return nodeId == that.nodeId && encryptionGroup.equals(that.encryptionGroup) && electionEventId.equals(that.electionEventId)
-				&& ballotBoxId.equals(that.ballotBoxId) && verifiableDecryptions.equals(that.verifiableDecryptions) && verifiableShuffle.equals(
-				that.verifiableShuffle) && Objects.equals(signature, that.signature);
+		return nodeId == that.nodeId &&
+				encryptionGroup.equals(that.encryptionGroup) &&
+				electionEventId.equals(that.electionEventId) &&
+				ballotBoxId.equals(that.ballotBoxId) &&
+				verifiableDecryptions.equals(that.verifiableDecryptions) &&
+				verifiableShuffle.equals(that.verifiableShuffle) &&
+				Objects.equals(signature, that.signature);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(encryptionGroup, electionEventId, ballotBoxId, nodeId, verifiableDecryptions, verifiableShuffle, signature);
 	}
-
 }
