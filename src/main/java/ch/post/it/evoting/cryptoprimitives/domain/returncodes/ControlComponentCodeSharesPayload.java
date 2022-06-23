@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -42,6 +41,7 @@ import ch.post.it.evoting.cryptoprimitives.hashing.HashableBigInteger;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
+import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 
 @JsonPropertyOrder({ "tenantId", "electionEventId", "verificationCardSetId", "chunkId", "encryptionGroup", "controlComponentCodeShares", "nodeId",
 		"signature" })
@@ -121,7 +121,7 @@ public class ControlComponentCodeSharesPayload implements SignedPayload {
 
 		checkArgument(allEqual(this.controlComponentCodeShares.stream()
 						.map(ControlComponentCodeShare::exponentiatedEncryptedPartialChoiceReturnCodes)
-						.map(ElGamalMultiRecipientCiphertext::getPhis), Function.identity()),
+						.map(ElGamalMultiRecipientCiphertext::getPhis), GroupVector::size),
 				"All exponentiated encrypted Partial Choice Return Codes must have the same size.");
 
 		checkArgument(this.controlComponentCodeShares.stream()
