@@ -64,6 +64,7 @@ import ch.post.it.evoting.cryptoprimitives.securitylevel.SecurityLevelConfig;
 import ch.post.it.evoting.cryptoprimitives.test.tools.generator.GqGroupGenerator;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.DecryptionProof;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.ExponentiationProof;
+import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.SchnorrProof;
 
 public class SerializationTestData {
 
@@ -176,6 +177,15 @@ public class SerializationTestData {
 		final ZqElement z = ZqElement.create(3, zqGroup);
 
 		return new ExponentiationProof(e, z);
+	}
+
+	public static GroupVector<SchnorrProof, ZqGroup> createSchnorrProofs(final int copyNumber) {
+		final ZqGroup zqGroup = ZqGroup.sameOrderAs(gqGroup);
+		final ZqElement e = ZqElement.create(2, zqGroup);
+		final ZqElement z = ZqElement.create(2, zqGroup);
+		final SchnorrProof schnorrProof = new SchnorrProof(e, z);
+
+		return Collections.nCopies(copyNumber, schnorrProof).stream().collect(GroupVector.toGroupVector());
 	}
 
 	// ===============================================================================================================================================
