@@ -38,7 +38,6 @@ public class ControlComponentCodeSharesPayloadDeserializer extends JsonDeseriali
 		final JsonNode encryptionGroupNode = node.get("encryptionGroup");
 		final GqGroup gqGroup = mapper.readValue(encryptionGroupNode.toString(), GqGroup.class);
 
-		final String tenantId = mapper.readValue(node.get("tenantId").toString(), String.class);
 		final String electionEventId = mapper.readValue(node.get("electionEventId").toString(), String.class);
 		final String verificationCardSetId = mapper.readValue(node.get("verificationCardSetId").toString(), String.class);
 		final int chunkId = mapper.readValue(node.get("chunkId").toString(), Integer.class);
@@ -50,7 +49,7 @@ public class ControlComponentCodeSharesPayloadDeserializer extends JsonDeseriali
 
 		final CryptoPrimitivesSignature signature = mapper.reader().readValue(node.get("signature").toString(), CryptoPrimitivesSignature.class);
 
-		return new ControlComponentCodeSharesPayload(tenantId, electionEventId, verificationCardSetId, chunkId, gqGroup, returnCodeGenerationInputs,
+		return new ControlComponentCodeSharesPayload(electionEventId, verificationCardSetId, chunkId, gqGroup, returnCodeGenerationInputs,
 				nodeId, signature);
 	}
 

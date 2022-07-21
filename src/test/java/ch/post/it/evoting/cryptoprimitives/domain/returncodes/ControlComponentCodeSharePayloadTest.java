@@ -116,19 +116,16 @@ class ControlComponentCodeSharePayloadTest extends MapperSetUp {
 		void constructWithNullParameters() {
 			assertAll(
 					() -> assertThrows(NullPointerException.class,
-							() -> new ControlComponentCodeSharesPayload(null, electionEventId, verificationCardSetId, chunkId, encryptionGroup,
+							() -> new ControlComponentCodeSharesPayload(null, verificationCardSetId, chunkId, encryptionGroup,
 									controlComponentCodeShares, nodeId)),
 					() -> assertThrows(NullPointerException.class,
-							() -> new ControlComponentCodeSharesPayload(tenantId, null, verificationCardSetId, chunkId, encryptionGroup,
+							() -> new ControlComponentCodeSharesPayload(electionEventId, null, chunkId, encryptionGroup,
 									controlComponentCodeShares, nodeId)),
 					() -> assertThrows(NullPointerException.class,
-							() -> new ControlComponentCodeSharesPayload(tenantId, electionEventId, null, chunkId, encryptionGroup,
+							() -> new ControlComponentCodeSharesPayload(electionEventId, verificationCardSetId, chunkId, null,
 									controlComponentCodeShares, nodeId)),
 					() -> assertThrows(NullPointerException.class,
-							() -> new ControlComponentCodeSharesPayload(tenantId, electionEventId, verificationCardSetId, chunkId, null,
-									controlComponentCodeShares, nodeId)),
-					() -> assertThrows(NullPointerException.class,
-							() -> new ControlComponentCodeSharesPayload(tenantId, electionEventId, verificationCardSetId, chunkId, encryptionGroup,
+							() -> new ControlComponentCodeSharesPayload(electionEventId, verificationCardSetId, chunkId, encryptionGroup,
 									null, nodeId))
 			);
 		}
@@ -137,13 +134,13 @@ class ControlComponentCodeSharePayloadTest extends MapperSetUp {
 		@DisplayName("nodeId out of range throws IllegalArgumentException")
 		void constructWithBadNodeId() {
 			final IllegalArgumentException exception1 = assertThrows(IllegalArgumentException.class,
-					() -> new ControlComponentCodeSharesPayload(tenantId, electionEventId, verificationCardSetId, chunkId, encryptionGroup,
+					() -> new ControlComponentCodeSharesPayload(electionEventId, verificationCardSetId, chunkId, encryptionGroup,
 							controlComponentCodeShares, 0));
 			assertEquals(String.format("The node id must be part of the known node ids. [nodeId: %s]", 0),
 					Throwables.getRootCause(exception1).getMessage());
 
 			final IllegalArgumentException exception2 = assertThrows(IllegalArgumentException.class,
-					() -> new ControlComponentCodeSharesPayload(tenantId, electionEventId, verificationCardSetId, chunkId, encryptionGroup,
+					() -> new ControlComponentCodeSharesPayload(electionEventId, verificationCardSetId, chunkId, encryptionGroup,
 							controlComponentCodeShares, 5));
 			assertEquals(String.format("The node id must be part of the known node ids. [nodeId: %s]", 5),
 					Throwables.getRootCause(exception2).getMessage());
@@ -154,7 +151,7 @@ class ControlComponentCodeSharePayloadTest extends MapperSetUp {
 		void constructWithEmptyControlComponentCodeSharesList() {
 			final List<ControlComponentCodeShare> emptyControlComponentCodeShares = List.of();
 			final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-					() -> new ControlComponentCodeSharesPayload(tenantId, electionEventId, verificationCardSetId, chunkId, encryptionGroup,
+					() -> new ControlComponentCodeSharesPayload(electionEventId, verificationCardSetId, chunkId, encryptionGroup,
 							emptyControlComponentCodeShares, nodeId));
 			assertEquals("The list of control component code shares must not be empty.", Throwables.getRootCause(exception).getMessage());
 		}
@@ -166,7 +163,7 @@ class ControlComponentCodeSharePayloadTest extends MapperSetUp {
 					.asList(SerializationTestData.getReturnCodeGenerationOutput("1ecb40f5bab5400e8166b63a04a0708d"),
 							SerializationTestData.getReturnCodeGenerationOutput("2ecb40f5bab5400e8166b63a04a0708d"), null);
 			assertThrows(NullPointerException.class,
-					() -> new ControlComponentCodeSharesPayload(tenantId, electionEventId, verificationCardSetId, chunkId, encryptionGroup,
+					() -> new ControlComponentCodeSharesPayload(electionEventId, verificationCardSetId, chunkId, encryptionGroup,
 							controlComponentCodeSharesWithNull, nodeId));
 		}
 
@@ -175,7 +172,7 @@ class ControlComponentCodeSharePayloadTest extends MapperSetUp {
 		void constructWithInconsistentGroups() {
 			final GqGroup otherEncryptionGroup = GroupTestData.getDifferentGqGroup(encryptionGroup);
 			final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-					() -> new ControlComponentCodeSharesPayload(tenantId, electionEventId, verificationCardSetId, chunkId, otherEncryptionGroup,
+					() -> new ControlComponentCodeSharesPayload(electionEventId, verificationCardSetId, chunkId, otherEncryptionGroup,
 							controlComponentCodeShares, nodeId));
 			assertEquals("The groups of the ControlComponentCodeShares must correspond to the encryption group.",
 					Throwables.getRootCause(exception).getMessage());
@@ -189,7 +186,7 @@ class ControlComponentCodeSharePayloadTest extends MapperSetUp {
 							SerializationTestData.getReturnCodeGenerationOutput("2ecb40f5bab5400e8166b63a04a0708d"),
 							SerializationTestData.getReturnCodeGenerationOutput("2ecb40f5bab5400e8166b63a04a0708d"));
 			final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-					() -> new ControlComponentCodeSharesPayload(tenantId, electionEventId, verificationCardSetId, chunkId, encryptionGroup,
+					() -> new ControlComponentCodeSharesPayload(electionEventId, verificationCardSetId, chunkId, encryptionGroup,
 							controlComponentCodeSharesWithDuplicate, nodeId));
 			assertEquals("The verification card IDs must all be distinct.", Throwables.getRootCause(exception).getMessage());
 		}

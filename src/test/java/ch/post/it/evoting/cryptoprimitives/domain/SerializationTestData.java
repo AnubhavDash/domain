@@ -410,7 +410,7 @@ public class SerializationTestData {
 				.asList(getReturnCodeGenerationOutput("1ecb40f5bab5400e8166b63a04a0708d"),
 						getReturnCodeGenerationOutput("2ecb40f5bab5400e8166b63a04a0708d"));
 
-		final ControlComponentCodeSharesPayload responsePayload = new ControlComponentCodeSharesPayload(tenantId, electionEventId,
+		final ControlComponentCodeSharesPayload responsePayload = new ControlComponentCodeSharesPayload( electionEventId,
 				verificationCardSetId, chunkId, gqGroup, controlComponentCodeShares, 1);
 
 		// Generate random bytes for signature content and create payload signature.
@@ -424,7 +424,6 @@ public class SerializationTestData {
 
 	public static ObjectNode createResponsePayloadNode(final ControlComponentCodeSharesPayload responsePayload) throws JsonProcessingException {
 		final ObjectNode rootNode = mapper.createObjectNode();
-		rootNode.put("tenantId", responsePayload.getTenantId());
 		rootNode.put("electionEventId", responsePayload.getElectionEventId());
 		rootNode.put("verificationCardSetId", responsePayload.getVerificationCardSetId());
 		rootNode.put("chunkId", responsePayload.getChunkId());
@@ -457,7 +456,7 @@ public class SerializationTestData {
 				encryptedConfirmationKeyExponentiationProof);
 	}
 
-	public static SetupComponentVerificationDataPayload getRequestPayload(final Ballot ballot, final String tenantId, final String electionEventId,
+	public static SetupComponentVerificationDataPayload getRequestPayload(final Ballot ballot, final String electionEventId,
 			final String verificationCardSetId, final int chunkId) {
 
 		final CombinedCorrectnessInformation combinedCorrectnessInformation = new CombinedCorrectnessInformation(ballot);
@@ -478,7 +477,7 @@ public class SerializationTestData {
 				.mapToObj(String::valueOf)
 				.toList();
 
-		final SetupComponentVerificationDataPayload requestPayload = new SetupComponentVerificationDataPayload(tenantId, electionEventId,
+		final SetupComponentVerificationDataPayload requestPayload = new SetupComponentVerificationDataPayload(electionEventId,
 				verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId, gqGroup, setupComponentVerificationData,
 				combinedCorrectnessInformation);
 
@@ -493,7 +492,6 @@ public class SerializationTestData {
 
 	public static ObjectNode createRequestPayloadNode(final SetupComponentVerificationDataPayload requestPayload) throws JsonProcessingException {
 		final ObjectNode rootNode = mapper.createObjectNode();
-		rootNode.put("tenantId", requestPayload.getTenantId());
 		rootNode.put("electionEventId", requestPayload.getElectionEventId());
 		rootNode.put("verificationCardSetId", requestPayload.getVerificationCardSetId());
 

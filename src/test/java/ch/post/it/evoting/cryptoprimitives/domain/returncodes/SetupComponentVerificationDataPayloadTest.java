@@ -53,7 +53,7 @@ class SetupComponentVerificationDataPayloadTest extends MapperSetUp {
 	@BeforeAll
 	static void setupAll() throws IOException {
 		final Ballot ballot = getBallotFromResourceName();
-		requestPayload = SerializationTestData.getRequestPayload(ballot, TENANT_ID, ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID, CHUNK_ID);
+		requestPayload = SerializationTestData.getRequestPayload(ballot,  ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID, CHUNK_ID);
 
 		// Create expected json.
 		rootNode = SerializationTestData.createRequestPayloadNode(requestPayload);
@@ -110,26 +110,22 @@ class SetupComponentVerificationDataPayloadTest extends MapperSetUp {
 		@DisplayName("null parameters throws NullPointerException")
 		void constructWithNullParameters() {
 			assertThrows(NullPointerException.class,
-					() -> new SetupComponentVerificationDataPayload(null, ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID,
-							partialChoiceReturnCodesAllowList, CHUNK_ID, encryptionGroup, setupComponentVerificationData,
-							combinedCorrectnessInformation));
-			assertThrows(NullPointerException.class,
-					() -> new SetupComponentVerificationDataPayload(TENANT_ID, null, VERIFICATION_CARD_SET_ID, partialChoiceReturnCodesAllowList,
+					() -> new SetupComponentVerificationDataPayload(null, VERIFICATION_CARD_SET_ID, partialChoiceReturnCodesAllowList,
 							CHUNK_ID, encryptionGroup, setupComponentVerificationData, combinedCorrectnessInformation));
 			assertThrows(NullPointerException.class,
-					() -> new SetupComponentVerificationDataPayload(TENANT_ID, ELECTION_EVENT_ID, null, partialChoiceReturnCodesAllowList, CHUNK_ID,
+					() -> new SetupComponentVerificationDataPayload(ELECTION_EVENT_ID, null, partialChoiceReturnCodesAllowList, CHUNK_ID,
 							encryptionGroup, setupComponentVerificationData, combinedCorrectnessInformation));
 			assertThrows(NullPointerException.class,
-					() -> new SetupComponentVerificationDataPayload(TENANT_ID, ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID, null, CHUNK_ID,
+					() -> new SetupComponentVerificationDataPayload(ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID, null, CHUNK_ID,
 							encryptionGroup, setupComponentVerificationData, combinedCorrectnessInformation));
 			assertThrows(NullPointerException.class,
-					() -> new SetupComponentVerificationDataPayload(TENANT_ID, ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID,
+					() -> new SetupComponentVerificationDataPayload(ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID,
 							partialChoiceReturnCodesAllowList, CHUNK_ID, null, setupComponentVerificationData, combinedCorrectnessInformation));
 			assertThrows(NullPointerException.class,
-					() -> new SetupComponentVerificationDataPayload(TENANT_ID, ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID,
+					() -> new SetupComponentVerificationDataPayload(ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID,
 							partialChoiceReturnCodesAllowList, CHUNK_ID, encryptionGroup, null, combinedCorrectnessInformation));
 			assertThrows(NullPointerException.class,
-					() -> new SetupComponentVerificationDataPayload(TENANT_ID, ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID,
+					() -> new SetupComponentVerificationDataPayload(ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID,
 							partialChoiceReturnCodesAllowList, CHUNK_ID, encryptionGroup, setupComponentVerificationData, null));
 		}
 
@@ -138,7 +134,7 @@ class SetupComponentVerificationDataPayloadTest extends MapperSetUp {
 		void constructWithEmptyPartialChoiceReturnCodesAllowList() {
 			final List<String> emptyPartialChoiceReturnCodesAllowList = List.of();
 			final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-					() -> new SetupComponentVerificationDataPayload(TENANT_ID, ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID,
+					() -> new SetupComponentVerificationDataPayload(ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID,
 							emptyPartialChoiceReturnCodesAllowList, CHUNK_ID, encryptionGroup, setupComponentVerificationData,
 							combinedCorrectnessInformation));
 			assertEquals("The partial Choice Return Codes Allow List must not be empty.", Throwables.getRootCause(exception).getMessage());
@@ -149,7 +145,7 @@ class SetupComponentVerificationDataPayloadTest extends MapperSetUp {
 		void constructWithPartialChoiceReturnCodesAllowListContainingNull() {
 			final List<String> partialChoiceReturnCodesAllowListWithNull = Collections.singletonList(null);
 			assertThrows(NullPointerException.class,
-					() -> new SetupComponentVerificationDataPayload(TENANT_ID, ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID,
+					() -> new SetupComponentVerificationDataPayload(ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID,
 							partialChoiceReturnCodesAllowListWithNull, CHUNK_ID, encryptionGroup, setupComponentVerificationData,
 							combinedCorrectnessInformation));
 		}
