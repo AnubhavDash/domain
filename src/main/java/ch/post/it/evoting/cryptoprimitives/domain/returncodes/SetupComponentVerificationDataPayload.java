@@ -40,13 +40,10 @@ import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 
-@JsonPropertyOrder({ "tenantId", "electionEventId", "verificationCardSetId", "partialChoiceReturnCodesAllowList", "chunkId", "encryptionGroup",
+@JsonPropertyOrder({ "electionEventId", "verificationCardSetId", "partialChoiceReturnCodesAllowList", "chunkId", "encryptionGroup",
 		"setupComponentVerificationData", "combinedCorrectnessInformation", "signature" })
 @JsonDeserialize(using = SetupComponentVerificationDataDeserializer.class)
 public class SetupComponentVerificationDataPayload implements SignedPayload {
-
-	@JsonProperty
-	private final String tenantId;
 
 	@JsonProperty
 	private final String electionEventId;
@@ -74,8 +71,6 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 
 	@JsonCreator
 	public SetupComponentVerificationDataPayload(
-			@JsonProperty("tenantId")
-			final String tenantId,
 
 			@JsonProperty("electionEventId")
 			final String electionEventId,
@@ -101,17 +96,16 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 			@JsonProperty("signature")
 			final CryptoPrimitivesSignature signature) {
 
-		this(tenantId, electionEventId, verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId, encryptionGroup,
+		this(electionEventId, verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId, encryptionGroup,
 				setupComponentVerificationData, combinedCorrectnessInformation);
 		this.signature = checkNotNull(signature);
 	}
 
-	public SetupComponentVerificationDataPayload(final String tenantId, final String electionEventId, final String verificationCardSetId,
+	public SetupComponentVerificationDataPayload(final String electionEventId, final String verificationCardSetId,
 			final List<String> partialChoiceReturnCodesAllowList, final int chunkId, final GqGroup encryptionGroup,
 			final List<SetupComponentVerificationData> setupComponentVerificationData,
 			final CombinedCorrectnessInformation combinedCorrectnessInformation) {
 
-		this.tenantId = checkNotNull(tenantId);
 		this.electionEventId = validateUUID(electionEventId);
 		this.verificationCardSetId = validateUUID(verificationCardSetId);
 		this.partialChoiceReturnCodesAllowList = List.copyOf(checkNotNull(partialChoiceReturnCodesAllowList));
@@ -150,10 +144,6 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 						.map(ElGamalMultiRecipientCiphertext::size)
 						.allMatch(size -> Objects.equals(size, this.combinedCorrectnessInformation.getTotalNumberOfVotingOptions())),
 				"The size of the encrypted hashed squared Partial Choice Return Codes must correspond to the total number of voting options.");
-	}
-
-	public String getTenantId() {
-		return tenantId;
 	}
 
 	public String getElectionEventId() {
@@ -202,7 +192,6 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 		}
 		final SetupComponentVerificationDataPayload that = (SetupComponentVerificationDataPayload) o;
 		return chunkId == that.chunkId &&
-				tenantId.equals(that.tenantId) &&
 				electionEventId.equals(that.electionEventId) &&
 				verificationCardSetId.equals(that.verificationCardSetId) &&
 				partialChoiceReturnCodesAllowList.equals(that.partialChoiceReturnCodesAllowList) &&
@@ -214,7 +203,7 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(tenantId, electionEventId, verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId, encryptionGroup,
+		return Objects.hash(electionEventId, verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId, encryptionGroup,
 				setupComponentVerificationData, combinedCorrectnessInformation, signature);
 	}
 
@@ -224,7 +213,7 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 				.map(HashableString::from)
 				.toList();
 
-		return List.of(HashableString.from(tenantId),
+		return List.of(
 				HashableString.from(electionEventId),
 				HashableString.from(verificationCardSetId),
 				HashableList.from(hashableAllowList),

@@ -39,7 +39,6 @@ public class SetupComponentVerificationDataDeserializer extends JsonDeserializer
 		final JsonNode encryptionGroupNode = node.get("encryptionGroup");
 		final GqGroup gqGroup = mapper.readValue(encryptionGroupNode.toString(), GqGroup.class);
 
-		final String tenantId = mapper.readValue(node.get("tenantId").toString(), String.class);
 		final String electionEventId = mapper.readValue(node.get("electionEventId").toString(), String.class);
 		final String verificationCardSetId = mapper.readValue(node.get("verificationCardSetId").toString(), String.class);
 		final int chunkId = mapper.readValue(node.get("chunkId").toString(), Integer.class);
@@ -56,7 +55,7 @@ public class SetupComponentVerificationDataDeserializer extends JsonDeserializer
 		final CryptoPrimitivesSignature signature = mapper.reader()
 				.readValue(node.get("signature").toString(), CryptoPrimitivesSignature.class);
 
-		return new SetupComponentVerificationDataPayload(tenantId, electionEventId, verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId,
+		return new SetupComponentVerificationDataPayload( electionEventId, verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId,
 				gqGroup, setupComponentVerificationData, combinedCorrectnessInformation, signature);
 	}
 
