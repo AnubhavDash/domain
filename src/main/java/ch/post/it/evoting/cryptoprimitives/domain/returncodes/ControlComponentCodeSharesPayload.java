@@ -43,13 +43,10 @@ import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 
-@JsonPropertyOrder({ "tenantId", "electionEventId", "verificationCardSetId", "chunkId", "encryptionGroup", "controlComponentCodeShares", "nodeId",
+@JsonPropertyOrder({ "electionEventId", "verificationCardSetId", "chunkId", "encryptionGroup", "controlComponentCodeShares", "nodeId",
 		"signature" })
 @JsonDeserialize(using = ControlComponentCodeSharesPayloadDeserializer.class)
 public class ControlComponentCodeSharesPayload implements SignedPayload {
-
-	@JsonProperty
-	private final String tenantId;
 
 	@JsonProperty
 	private final String electionEventId;
@@ -74,8 +71,6 @@ public class ControlComponentCodeSharesPayload implements SignedPayload {
 
 	@JsonCreator
 	public ControlComponentCodeSharesPayload(
-			@JsonProperty("tenantId")
-			final String tenantId,
 
 			@JsonProperty("electionEventId")
 			final String electionEventId,
@@ -98,14 +93,13 @@ public class ControlComponentCodeSharesPayload implements SignedPayload {
 			@JsonProperty("signature")
 			final CryptoPrimitivesSignature signature) {
 
-		this(tenantId, electionEventId, verificationCardSetId, chunkId, encryptionGroup, controlComponentCodeShares, nodeId);
+		this(electionEventId, verificationCardSetId, chunkId, encryptionGroup, controlComponentCodeShares, nodeId);
 		this.signature = checkNotNull(signature);
 	}
 
-	public ControlComponentCodeSharesPayload(final String tenantId, final String electionEventId, final String verificationCardSetId,
+	public ControlComponentCodeSharesPayload( final String electionEventId, final String verificationCardSetId,
 			final int chunkId, final GqGroup encryptionGroup, final List<ControlComponentCodeShare> controlComponentCodeShares, final int nodeId) {
 
-		this.tenantId = checkNotNull(tenantId);
 		this.electionEventId = validateUUID(electionEventId);
 		this.verificationCardSetId = validateUUID(verificationCardSetId);
 		this.chunkId = chunkId;
@@ -138,10 +132,6 @@ public class ControlComponentCodeSharesPayload implements SignedPayload {
 				.map(ControlComponentCodeShare::verificationCardId)
 				.filter(verificationCardId -> !duplicatedVerificationCardIds.add(verificationCardId))
 				.collect(Collectors.toSet()).isEmpty(), "All control component shares must have a different verification card id.");
-	}
-
-	public String getTenantId() {
-		return tenantId;
 	}
 
 	public String getElectionEventId() {
@@ -187,7 +177,6 @@ public class ControlComponentCodeSharesPayload implements SignedPayload {
 		final ControlComponentCodeSharesPayload that = (ControlComponentCodeSharesPayload) o;
 		return chunkId == that.chunkId &&
 				nodeId == that.nodeId &&
-				tenantId.equals(that.tenantId) &&
 				electionEventId.equals(that.electionEventId) &&
 				verificationCardSetId.equals(that.verificationCardSetId) &&
 				encryptionGroup.equals(that.encryptionGroup) &&
@@ -197,14 +186,13 @@ public class ControlComponentCodeSharesPayload implements SignedPayload {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(tenantId, electionEventId, verificationCardSetId, chunkId, encryptionGroup, controlComponentCodeShares, nodeId,
+		return Objects.hash(electionEventId, verificationCardSetId, chunkId, encryptionGroup, controlComponentCodeShares, nodeId,
 				signature);
 	}
 
 	@Override
 	public List<Hashable> toHashableForm() {
-		return List.of(HashableString.from(tenantId),
-				HashableString.from(electionEventId),
+		return List.of(HashableString.from(electionEventId),
 				HashableString.from(verificationCardSetId),
 				HashableBigInteger.from(BigInteger.valueOf(chunkId)),
 				encryptionGroup,
