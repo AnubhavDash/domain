@@ -22,6 +22,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,8 +36,16 @@ import ch.post.it.evoting.cryptoprimitives.math.ZqElement;
 import ch.post.it.evoting.cryptoprimitives.math.ZqGroup;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.DecryptionProof;
 
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
+
 @DisplayName("A DecryptionProof")
+@ExtendWith({ SystemStubsExtension.class })
 class DecryptionProofMixInTest extends MapperSetUp {
+
+	@SystemStub
+	private static EnvironmentVariables environmentVariables;
 
 	private static DecryptionProof decryptionProof;
 	private static ObjectNode rootNode;
@@ -44,6 +53,8 @@ class DecryptionProofMixInTest extends MapperSetUp {
 
 	@BeforeAll
 	static void setUpAll() throws JsonProcessingException {
+		environmentVariables.set("SECURITY_LEVEL", "TESTING_ONLY");
+
 		gqGroup = SerializationTestData.getGqGroup();
 		final ZqGroup zqGroup = ZqGroup.sameOrderAs(gqGroup);
 
