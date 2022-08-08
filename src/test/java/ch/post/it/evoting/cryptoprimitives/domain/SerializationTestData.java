@@ -25,9 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,8 +56,6 @@ import ch.post.it.evoting.cryptoprimitives.mixnet.ShuffleArgument;
 import ch.post.it.evoting.cryptoprimitives.mixnet.SingleValueProductArgument;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
 import ch.post.it.evoting.cryptoprimitives.mixnet.ZeroArgument;
-import ch.post.it.evoting.cryptoprimitives.securitylevel.SecurityLevel;
-import ch.post.it.evoting.cryptoprimitives.securitylevel.SecurityLevelConfig;
 import ch.post.it.evoting.cryptoprimitives.test.tools.generator.GqGroupGenerator;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.DecryptionProof;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.ExponentiationProof;
@@ -94,11 +89,11 @@ public class SerializationTestData {
 		// Intentionally left blank.
 	}
 
+	/**
+	 * This group is only compatible with securityLevel TESTING_ONLY
+	 */
 	public static GqGroup getGqGroup() {
-		try (MockedStatic<SecurityLevelConfig> mockedSecurityLevel = Mockito.mockStatic(SecurityLevelConfig.class)) {
-			mockedSecurityLevel.when(SecurityLevelConfig::getSystemSecurityLevel).thenReturn(SecurityLevel.TESTING_ONLY);
-			return new GqGroup(BigInteger.valueOf(11), BigInteger.valueOf(5), BigInteger.valueOf(3));
-		}
+		return new GqGroup(BigInteger.valueOf(11), BigInteger.valueOf(5), BigInteger.valueOf(3));
 	}
 
 	// ===============================================================================================================================================
@@ -410,7 +405,7 @@ public class SerializationTestData {
 				.asList(getReturnCodeGenerationOutput("1ecb40f5bab5400e8166b63a04a0708d"),
 						getReturnCodeGenerationOutput("2ecb40f5bab5400e8166b63a04a0708d"));
 
-		final ControlComponentCodeSharesPayload responsePayload = new ControlComponentCodeSharesPayload( electionEventId,
+		final ControlComponentCodeSharesPayload responsePayload = new ControlComponentCodeSharesPayload(electionEventId,
 				verificationCardSetId, chunkId, gqGroup, controlComponentCodeShares, 1);
 
 		// Generate random bytes for signature content and create payload signature.
