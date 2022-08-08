@@ -54,11 +54,13 @@ public record Ballot(String id,
 	 *                                      <li>{@value Contest#LISTS_AND_CANDIDATES_TEMPLATE}</li>
 	 *                                      <li>{@value Contest#OPTIONS_TEMPLATE}</li>
 	 *                                  </ul>
+	 * @throws ArithmeticException if an encoded voting option is too big to be encoded as an Integer.
 	 */
 	@JsonIgnore
-	public List<BigInteger> getEncodedVotingOptions() {
+	public List<Integer> getEncodedVotingOptions() {
 		return getOrderedElectionOptions().stream()
 				.map(electionOption -> Conversions.stringToInteger(electionOption.getRepresentation()))
+				.map(BigInteger::intValueExact)
 				.toList();
 	}
 

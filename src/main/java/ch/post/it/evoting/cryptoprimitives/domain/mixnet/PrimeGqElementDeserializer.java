@@ -15,7 +15,7 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
-import static ch.post.it.evoting.cryptoprimitives.domain.mixnet.ConversionUtils.hexToBigInteger;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import java.io.IOException;
 
@@ -42,9 +42,10 @@ class PrimeGqElementDeserializer extends JsonDeserializer<PrimeGqElement> {
 	public PrimeGqElement deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
 		final GqGroup gqGroup = (GqGroup) context.getAttribute("group");
 		final JsonNode node = new ObjectMapper().readTree(parser);
-		final String value = node.asText();
+		checkArgument(node.isInt(), "The serialized primeGqElement is not an int");
+		final int value = node.asInt();
 
-		return PrimeGqElement.PrimeGqElementFactory.fromValue(hexToBigInteger(value), gqGroup);
+		return PrimeGqElement.PrimeGqElementFactory.fromValue(value, gqGroup);
 	}
 
 }
