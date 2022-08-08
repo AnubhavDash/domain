@@ -90,8 +90,7 @@ class BallotTest {
 	void getEncodedVotingOptionsReturnsExpectedTest() throws IOException {
 
 		final Ballot ballot = getBallotFromResourceName(BALLOT_JSON);
-		final List<BigInteger> expected = Arrays.asList(stringToInteger("79"), stringToInteger("47"), stringToInteger("73"), stringToInteger("37"),
-				stringToInteger("71"), stringToInteger("59"));
+		final List<Integer> expected = Arrays.asList(79, 47, 73, 37, 71, 59);
 
 		assertEquals(expected, ballot.getEncodedVotingOptions());
 	}

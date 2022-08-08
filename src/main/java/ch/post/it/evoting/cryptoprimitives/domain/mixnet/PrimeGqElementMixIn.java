@@ -18,7 +18,7 @@ package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-@JsonSerialize(using = GroupElementSerializer.class)
+@JsonSerialize(using = PrimeGroupElementSerializer.class)
 @JsonDeserialize(using = PrimeGqElementDeserializer.class)
 public interface PrimeGqElementMixIn {
 }

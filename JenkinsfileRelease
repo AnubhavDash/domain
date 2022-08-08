@@ -17,8 +17,8 @@ RTMAVEN.deployer releaseRepo: 'libs-release-evoting-local', snapshotRepo: 'libs-
 RTMAVEN.resolver releaseRepo: 'swisspost', snapshotRepo: 'swisspost', server: ARTIFACTORY_SERVER
 
 // Tools
-def JDK = 'jdk-17'
-def MAVEN = 'maven-3'
+def JDK = 'jdk-17.0.3'
+def MAVEN = 'maven-3.8.6'
 
 pipeline {
 

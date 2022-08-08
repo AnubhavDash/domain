@@ -24,8 +24,6 @@ import java.util.regex.Pattern;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import ch.post.it.evoting.cryptoprimitives.domain.mixnet.exceptions.FailedValidationException;
-
 public final class Validations {
 
 	@VisibleForTesting

@@ -8,17 +8,18 @@
 
 def BUILD_INFO = Artifactory.newBuildInfo()
 def PROJECT_NAME = 'crypto-primitives-domain'
+
 // Maven
 def MAVEN_RELEASE_REPO = 'libs-release-evoting-local'
 def MAVEN_SNAPSHOT_REPO = 'libs-snapshot-evoting-local'
 def MAVEN_RESOLVE_REPO = 'maven-evoting-virtual'
 def MAVEN_PARAMS = '-T 1.5C -U --settings .mvn/settings.xml --no-transfer-progress'
 
-def PR_ID = env.BRANCH_NAME.replace('PR-', '')
-
 // Tools
-def JDK = 'jdk-17'
-def MAVEN = 'maven-3'
+def JDK = 'jdk-17.0.3'
+def MAVEN = 'maven-3.8.6'
+
+def PR_ID = env.BRANCH_NAME.replace('PR-', '')
 
 pipeline {
 
@@ -34,14 +35,14 @@ pipeline {
 	}
 
 	tools {
-   		jdk "${JDK}"
-   		maven "${MAVEN}"
-    }
+		jdk "${JDK}"
+		maven "${MAVEN}"
+	}
 
-    environment {
-        MAVEN_OPTS = '-Xms512m -Xmx768m -Djava.awt.headless=true'
-        //workaround for https://gitit.post.ch/projects/JENKINS/repos/jenkins-slave-selenium/browse/Dockerfile#15
-    }
+	environment {
+		MAVEN_OPTS = '-Xms512m -Xmx768m -Djava.awt.headless=true'
+		//workaround for https://gitit.post.ch/projects/JENKINS/repos/jenkins-slave-selenium/browse/Dockerfile#15
+	}
 
 	stages {
 
@@ -74,7 +75,8 @@ pipeline {
 					anyOf {
 						branch 'develop'
 						branch 'master'
-                        branch 'hotfix/*'
+						branch 'hotfix/*'
+						branch 'release/*'
 					}
 				}
 			}
@@ -93,7 +95,8 @@ pipeline {
 				anyOf {
 					branch 'develop'
 					branch 'master'
-                    branch 'hotfix/*'
+					branch 'hotfix/*'
+					branch 'release/*'
 				}
 			}
 			steps {
@@ -124,7 +127,8 @@ pipeline {
 				anyOf {
 					branch 'master'
 					branch 'develop'
-                    branch 'hotfix/*'
+					branch 'hotfix/*'
+					branch 'release/*'
 				}
 			}
 			environment {
@@ -133,21 +137,6 @@ pipeline {
 			}
 			steps {
 				publishBuildInformation(buildName: BUILD_NAME, buildInfo: BUILD_INFO)
-			}
-		}
-
-		stage('Removal of .m2 directory on feature jobs') {
-			when {
-				not {
-					anyOf {
-						branch 'master'
-						branch 'develop'
-                        branch 'hotfix/*'
-					}
-				}
-			}
-			steps {
-				sh "rm -rf .m2/repository/ch/post/"
 			}
 		}
 	}
