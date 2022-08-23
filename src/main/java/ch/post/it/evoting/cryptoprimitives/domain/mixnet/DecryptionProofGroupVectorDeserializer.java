@@ -37,7 +37,7 @@ class DecryptionProofGroupVectorDeserializer extends JsonDeserializer<GroupVecto
 	/**
 	 * The {@code context} must provide the {@link GqGroup} that will be used to reconstruct the underlying {@link ZqElement}s.
 	 *
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public GroupVector<DecryptionProof, ZqGroup> deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {

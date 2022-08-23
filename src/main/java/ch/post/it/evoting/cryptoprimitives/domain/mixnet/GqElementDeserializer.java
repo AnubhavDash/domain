@@ -36,7 +36,7 @@ class GqElementDeserializer extends JsonDeserializer<GqElement> {
 	/**
 	 * The {@code context} must provide the {@link GqGroup} that will be used to reconstruct the various {@link GqElement}s.
 	 *
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public GqElement deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
