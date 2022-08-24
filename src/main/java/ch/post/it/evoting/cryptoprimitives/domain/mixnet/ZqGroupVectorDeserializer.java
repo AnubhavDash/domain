@@ -36,7 +36,7 @@ class ZqGroupVectorDeserializer extends JsonDeserializer<GroupVector<ZqElement, 
 	/**
 	 * The {@code context} must provide the {@link GqGroup} that will be used to reconstruct the various {@link ZqElement}s.
 	 *
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public GroupVector<ZqElement, ZqGroup> deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
