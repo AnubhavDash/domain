@@ -21,10 +21,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -119,9 +117,8 @@ public class TallyComponentShufflePayload implements SignedPayload {
 		return ballotBoxId;
 	}
 
-	@JsonIgnore
-	public Optional<VerifiableShuffle> getVerifiableShuffle() {
-		return Optional.ofNullable(verifiableShuffle);
+	public VerifiableShuffle getVerifiableShuffle() {
+		return verifiableShuffle;
 	}
 
 	public VerifiablePlaintextDecryption getVerifiablePlaintextDecryption() {
