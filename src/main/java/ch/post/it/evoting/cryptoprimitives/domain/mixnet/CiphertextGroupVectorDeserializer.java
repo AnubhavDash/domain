@@ -37,7 +37,7 @@ class CiphertextGroupVectorDeserializer extends JsonDeserializer<GroupVector<ElG
 	/**
 	 * The {@code context} must provide the {@link GqGroup} that will be used to reconstruct the various {@link GqElement}s.
 	 *
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public GroupVector<ElGamalMultiRecipientCiphertext, GqGroup> deserialize(final JsonParser parser, final DeserializationContext context)

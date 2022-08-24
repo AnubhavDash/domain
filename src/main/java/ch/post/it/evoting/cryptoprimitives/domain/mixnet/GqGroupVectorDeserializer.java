@@ -35,7 +35,7 @@ public class GqGroupVectorDeserializer extends JsonDeserializer<GroupVector<GqEl
 	/**
 	 * The {@code context} must provide the {@link GqGroup} that will be used to reconstruct the various {@link GqElement}s.
 	 *
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public GroupVector<GqElement, GqGroup> deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
