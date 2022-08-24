@@ -74,8 +74,7 @@ public class CombinedCorrectnessInformation implements HashableList {
 	/**
 	 * Gets the correctness id corresponding to the provided selection index.
 	 *
-	 * @param index the selection index to get the corresponding correctness id. Must respect 0 <= index < number of voting options a voter can
-	 *              select.
+	 * @param index the selection index to get the corresponding correctness id. Must respect {@code 0 <= index < number of voting options a voter can select}.
 	 * @return the corresponding correctness id.
 	 * @throws IllegalArgumentException if the provided selection index does not respect its preconditions or does not correspond to any correctness
 	 *                                  id.
@@ -92,7 +91,7 @@ public class CombinedCorrectnessInformation implements HashableList {
 	/**
 	 * Gets the correctness id corresponding to the provided voting option index.
 	 *
-	 * @param index the voting option index to get the corresponding correctness id. Must respect 0 <= index < number of possible voting options.
+	 * @param index the voting option index to get the corresponding correctness id. Must respect {@code 0 <= index < number of possible voting options}.
 	 * @return the corresponding correctness id.
 	 * @throws IllegalArgumentException if the provided voting option index does not respect its preconditions or does not correspond to any
 	 *                                  correctness id.

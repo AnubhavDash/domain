@@ -37,7 +37,7 @@ class MessageGroupVectorDeserializer extends JsonDeserializer<GroupVector<ElGama
 	/**
 	 * The {@code context} must provide the {@link GqGroup} that will be used to reconstruct the various {@link GqElement}s.
 	 *
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public GroupVector<ElGamalMultiRecipientMessage, GqGroup> deserialize(final JsonParser parser, final DeserializationContext context)

@@ -36,7 +36,7 @@ class PrimeGqElementDeserializer extends JsonDeserializer<PrimeGqElement> {
 	/**
 	 * The {@code context} must provide the {@link GqGroup} that will be used to reconstruct the various {@link PrimeGqElement}s.
 	 *
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public PrimeGqElement deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
