@@ -113,7 +113,8 @@ public record ElectionEventContext(String electionEventId,
 								.map(ControlComponentPublicKeys::ccmElectionPublicKey)
 								.filter(ccmElectionPublicKey -> ccmElectionPublicKey.size() >= maxNumberOfWriteInFields + 1)
 								.map(ccmElectionPublicKey ->
-										new ElGamalMultiRecipientPublicKey(ccmElectionPublicKey.getKeyElements().subList(0, maxNumberOfWriteInFields + 1))),
+										new ElGamalMultiRecipientPublicKey(
+												ccmElectionPublicKey.getKeyElements().subList(0, maxNumberOfWriteInFields + 1))),
 						Stream.of(electoralBoardPublicKey))
 				.collect(GroupVector.toGroupVector());
 
@@ -121,9 +122,11 @@ public record ElectionEventContext(String electionEventId,
 				"Multiplication of the ccmElectionPublicKeys times the electoralBoardPublicKey must equal the electionPublicKey");
 
 		final ControlComponentPublicKeys controlComponentPublicKey = this.combinedControlComponentPublicKeys.get(0);
-		checkArgument(controlComponentPublicKey.ccmElectionPublicKey().getGroup().equals(electoralBoardPublicKey.getGroup()));
-		checkArgument(controlComponentPublicKey.ccmElectionPublicKey().getGroup().equals(electionPublicKey.getGroup()));
-		checkArgument(controlComponentPublicKey.ccmElectionPublicKey().getGroup().equals(choiceReturnCodesEncryptionPublicKey.getGroup()));
+		final GqGroup gqGroup = controlComponentPublicKey.ccmElectionPublicKey().getGroup();
+		checkArgument(gqGroup.equals(electoralBoardPublicKey.getGroup()));
+		checkArgument(gqGroup.equals(electionPublicKey.getGroup()));
+		checkArgument(gqGroup.equals(choiceReturnCodesEncryptionPublicKey.getGroup()));
+		checkArgument(gqGroup.equals(this.verificationCardSetContexts.get(0).primesMappingTable().getPTable().getGroup()));
 	}
 
 	/**

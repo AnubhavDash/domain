@@ -17,6 +17,7 @@ package ch.post.it.evoting.cryptoprimitives.domain.election;
 
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -31,7 +32,8 @@ public record VerificationCardSetContext(String verificationCardSetId,
 										 boolean testBallotBox,
 										 int numberOfWriteInFields,
 										 int numberOfVotingCards,
-										 int gracePeriod) implements HashableList {
+										 int gracePeriod,
+										 PrimesMappingTable primesMappingTable) implements HashableList {
 
 	public VerificationCardSetContext {
 		validateUUID(verificationCardSetId);
@@ -39,6 +41,7 @@ public record VerificationCardSetContext(String verificationCardSetId,
 		checkArgument(numberOfWriteInFields >= 0, "The number of write-in fields must be positive.");
 		checkArgument(numberOfVotingCards >= 0, "The number of voting cards must be positive.");
 		checkArgument(gracePeriod >= 0, "The grace period must be positive.");
+		checkNotNull(primesMappingTable);
 	}
 
 	@Override
@@ -49,6 +52,7 @@ public record VerificationCardSetContext(String verificationCardSetId,
 				HashableString.from(String.valueOf(testBallotBox)),
 				HashableBigInteger.from(BigInteger.valueOf(numberOfWriteInFields)),
 				HashableBigInteger.from(BigInteger.valueOf(numberOfVotingCards)),
-				HashableBigInteger.from(BigInteger.valueOf(gracePeriod)));
+				HashableBigInteger.from(BigInteger.valueOf(gracePeriod)),
+				primesMappingTable);
 	}
 }
