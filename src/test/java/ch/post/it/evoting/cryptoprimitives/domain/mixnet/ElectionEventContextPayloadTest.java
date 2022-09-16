@@ -39,6 +39,8 @@ import com.google.common.collect.Streams;
 import ch.post.it.evoting.cryptoprimitives.domain.SerializationTestData;
 import ch.post.it.evoting.cryptoprimitives.domain.election.ControlComponentPublicKeys;
 import ch.post.it.evoting.cryptoprimitives.domain.election.ElectionEventContext;
+import ch.post.it.evoting.cryptoprimitives.domain.election.PrimesMappingTable;
+import ch.post.it.evoting.cryptoprimitives.domain.election.PrimesMappingTableEntry;
 import ch.post.it.evoting.cryptoprimitives.domain.election.VerificationCardSetContext;
 import ch.post.it.evoting.cryptoprimitives.domain.mapper.DomainObjectMapper;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
@@ -50,6 +52,7 @@ import ch.post.it.evoting.cryptoprimitives.hashing.HashFactory;
 import ch.post.it.evoting.cryptoprimitives.math.GqElement;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
+import ch.post.it.evoting.cryptoprimitives.math.PrimeGqElement;
 import ch.post.it.evoting.cryptoprimitives.math.Random;
 import ch.post.it.evoting.cryptoprimitives.math.RandomFactory;
 import ch.post.it.evoting.cryptoprimitives.math.ZqGroup;
@@ -59,13 +62,16 @@ class ElectionEventContextPayloadTest {
 
 	private static final ObjectMapper mapper = DomainObjectMapper.getNewInstance();
 	private static final Hash hash = HashFactory.createHash();
-	private final static GqGroup encryptionGroup = SerializationTestData.getGqGroup();
+	private static final GqGroup encryptionGroup = SerializationTestData.getGqGroup();
 	private static final Random random = RandomFactory.createRandom();
+	private static final GroupVector<PrimeGqElement, GqGroup> smallPrimeGroupMembers = PrimeGqElement.PrimeGqElementFactory.getSmallPrimeGroupMembers(
+			encryptionGroup, 1);
+
 	private static ElectionEventContextPayload electionEventContextPayload;
 	private static ObjectNode rootNode;
 
 	@BeforeAll
-	static void setupAll() {
+	static void setupAll() throws JsonProcessingException {
 
 		// Create payload.
 		final String electionEventId = random.genRandomBase16String(32).toLowerCase();
@@ -122,6 +128,8 @@ class ElectionEventContextPayloadTest {
 			verificationCardSetContextNode.put("numberOfWriteInFields", verificationCardSetContext.numberOfWriteInFields());
 			verificationCardSetContextNode.put("numberOfVotingCards", verificationCardSetContext.numberOfVotingCards());
 			verificationCardSetContextNode.put("gracePeriod", verificationCardSetContext.gracePeriod());
+			verificationCardSetContextNode.set("primesMappingTable",
+					mapper.readTree(mapper.writeValueAsString(verificationCardSetContext.primesMappingTable())));
 			verificationCardSetContextsNodes.add(verificationCardSetContextNode);
 		}
 		electionEventContextNode.set("verificationCardSetContexts", verificationCardSetContextsNodes);
@@ -242,8 +250,11 @@ class ElectionEventContextPayloadTest {
 		final int numberOfWriteInFields = 1;
 		final int numberOfVotingCards = 10;
 		final int gracePeriod = 900;
+		final PrimesMappingTable primesMappingTable = PrimesMappingTable.from(
+				List.of(new PrimesMappingTableEntry("actualVotingOption", smallPrimeGroupMembers.get(0))));
+
 		return new VerificationCardSetContext(verificationCardSetId, ballotBoxId, testBallotBox, numberOfWriteInFields, numberOfVotingCards,
-				gracePeriod);
+				gracePeriod, primesMappingTable);
 	}
 
 	@Test
@@ -254,15 +265,17 @@ class ElectionEventContextPayloadTest {
 		final String ballotBoxId1 = random.genRandomBase16String(32).toLowerCase();
 		final String ballotBoxId2 = random.genRandomBase16String(32).toLowerCase();
 		final String ballotBoxId4 = random.genRandomBase16String(32).toLowerCase();
+		final PrimesMappingTable primesMappingTable = PrimesMappingTable.from(
+				List.of(new PrimesMappingTableEntry("actualVotingOption", smallPrimeGroupMembers.get(0))));
 
 		final VerificationCardSetContext verificationCardSetContextOne = new VerificationCardSetContext(verificationCardSetId1, ballotBoxId1,
-				false, 0, 10, 900);
+				false, 0, 10, 900, primesMappingTable);
 		final VerificationCardSetContext verificationCardSetContextTwo = new VerificationCardSetContext(verificationCardSetId1, ballotBoxId2,
-				true, 0, 10, 900);
+				true, 0, 10, 900, primesMappingTable);
 		final VerificationCardSetContext verificationCardSetContextThree = new VerificationCardSetContext(verificationCardSetId2, ballotBoxId1,
-				false, 2, 10, 900);
+				false, 2, 10, 900, primesMappingTable);
 		final VerificationCardSetContext verificationCardSetContextFour = new VerificationCardSetContext(verificationCardSetId2, ballotBoxId4,
-				true, 2, 10, 900);
+				true, 2, 10, 900, primesMappingTable);
 
 		final String electionEventId = random.genRandomBase16String(32).toLowerCase();
 
@@ -299,7 +312,7 @@ class ElectionEventContextPayloadTest {
 				duplicateBallotBoxIdsIllegalArgumentException.getMessage());
 
 		final IllegalArgumentException negativeNumberOfWriteInFieldsIllegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new VerificationCardSetContext(verificationCardSetId2, ballotBoxId4, true, -2, 10, 900));
+				() -> new VerificationCardSetContext(verificationCardSetId2, ballotBoxId4, true, -2, 10, 900, primesMappingTable));
 		assertEquals("The number of write-in fields must be positive.",
 				negativeNumberOfWriteInFieldsIllegalArgumentException.getMessage());
 
