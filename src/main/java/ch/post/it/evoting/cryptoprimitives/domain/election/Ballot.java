@@ -54,7 +54,7 @@ public record Ballot(String id,
 	 *                                      <li>{@value Contest#LISTS_AND_CANDIDATES_TEMPLATE}</li>
 	 *                                      <li>{@value Contest#OPTIONS_TEMPLATE}</li>
 	 *                                  </ul>
-	 * @throws ArithmeticException if an encoded voting option is too big to be encoded as an Integer.
+	 * @throws ArithmeticException      if an encoded voting option is too big to be encoded as an Integer.
 	 */
 	@JsonIgnore
 	public List<Integer> getEncodedVotingOptions() {
@@ -134,7 +134,7 @@ public record Ballot(String id,
 
 		return electionAttributes.stream()
 				.filter(ElectionAttributes::isCorrectness)
-				.map(ElectionAttributes::id)
+				.map(ElectionAttributes::getId)
 				.map(correctnessId -> getOrderedElectionOptions(correctnessId, electionAttributes, electionOptions))
 				.flatMap(Collection::stream)
 				.toList();
@@ -166,8 +166,8 @@ public record Ballot(String id,
 	static String getAttributeAlias(final String attributeId, final List<ElectionAttributes> electionAttributes) {
 
 		return electionAttributes.stream()
-				.filter(electionAttribute -> attributeId.equals(electionAttribute.id()))
-				.map(ElectionAttributes::alias)
+				.filter(electionAttribute -> attributeId.equals(electionAttribute.getId()))
+				.map(ElectionAttributes::getAlias)
 				.collect(MoreCollectors.onlyElement());
 	}
 
@@ -193,8 +193,8 @@ public record Ballot(String id,
 		checkNotNull(electionOptions);
 
 		return electionAttributes.stream()
-				.filter(electionAttribute -> electionAttribute.related() != null && electionAttribute.related().contains(correctnessId))
-				.map(ElectionAttributes::id)
+				.filter(electionAttribute -> electionAttribute.getRelated() != null && electionAttribute.getRelated().contains(correctnessId))
+				.map(ElectionAttributes::getId)
 				.map(electionAttributesId -> electionOptions.stream()
 						.filter(electionOption -> electionAttributesId.equals(electionOption.getAttribute()))
 						.toList())
