@@ -74,7 +74,8 @@ public class CombinedCorrectnessInformation implements HashableList {
 	/**
 	 * Gets the correctness id corresponding to the provided selection index.
 	 *
-	 * @param index the selection index to get the corresponding correctness id. Must respect {@code 0 <= index < number of voting options a voter can select}.
+	 * @param index the selection index to get the corresponding correctness id. Must respect
+	 *              {@code 0 <= index < number of voting options a voter can select}.
 	 * @return the corresponding correctness id.
 	 * @throws IllegalArgumentException if the provided selection index does not respect its preconditions or does not correspond to any correctness
 	 *                                  id.
@@ -91,7 +92,8 @@ public class CombinedCorrectnessInformation implements HashableList {
 	/**
 	 * Gets the correctness id corresponding to the provided voting option index.
 	 *
-	 * @param index the voting option index to get the corresponding correctness id. Must respect {@code 0 <= index < number of possible voting options}.
+	 * @param index the voting option index to get the corresponding correctness id. Must respect
+	 *              {@code 0 <= index < number of possible voting options}.
 	 * @return the corresponding correctness id.
 	 * @throws IllegalArgumentException if the provided voting option index does not respect its preconditions or does not correspond to any
 	 *                                  correctness id.
@@ -178,8 +180,8 @@ public class CombinedCorrectnessInformation implements HashableList {
 	}
 
 	/**
-	 * Retrieves the list of {@link CorrectnessInformation} related to the given {@code questions}, {@code attributes}, {@code options}, and {@code
-	 * contestId} of a {@link Contest}.
+	 * Retrieves the list of {@link CorrectnessInformation} related to the given {@code questions}, {@code attributes}, {@code options}, and
+	 * {@code contestId} of a {@link Contest}.
 	 * <p>
 	 * In the case of a contest's template {@value Contest#OPTIONS_TEMPLATE}, the order of the correctness information list is the same as the order
 	 * in which the attributes appear in the {@link Contest}.
@@ -197,7 +199,7 @@ public class CombinedCorrectnessInformation implements HashableList {
 
 		return attributes.stream()
 				.filter(ElectionAttributes::isCorrectness)
-				.map(ElectionAttributes::id)
+				.map(ElectionAttributes::getId)
 				.map(correctnessId ->
 						new CorrectnessInformation(correctnessId,
 								getCorrespondingQuestionByAttribute(questions, correctnessId, contestId).max(),
@@ -212,14 +214,14 @@ public class CombinedCorrectnessInformation implements HashableList {
 	 * In the case of a contest's template {@value Contest#LISTS_AND_CANDIDATES_TEMPLATE}, the order of the correctness information list must ensure
 	 * that the "lists" question comes before the {@value Contest#CANDIDATES} question.
 	 *
-	 * @param questions       the list of {@link Question}s of the {@link Contest}. Size must be at most {@value
-	 *                        Contest#MAX_LISTS_AND_CANDIDATES_QUESTIONS_SIZE}.
+	 * @param questions       the list of {@link Question}s of the {@link Contest}. Size must be at most
+	 *                        {@value Contest#MAX_LISTS_AND_CANDIDATES_QUESTIONS_SIZE}.
 	 * @param attributes      the list of {@link ElectionAttributes} of the {@link Contest}.
 	 * @param electionOptions the list of {@link ElectionOption} of the {@link Contest}.
 	 * @param contestId       the id of the contest.
 	 * @return the correctness information list.
-	 * @throws IllegalArgumentException if the questions list size is bigger than the maximal size of questions for contest's template {@value
-	 *                                  Contest#LISTS_AND_CANDIDATES_TEMPLATE} {@value Contest#MAX_LISTS_AND_CANDIDATES_QUESTIONS_SIZE}
+	 * @throws IllegalArgumentException if the questions list size is bigger than the maximal size of questions for contest's template
+	 *                                  {@value Contest#LISTS_AND_CANDIDATES_TEMPLATE} {@value Contest#MAX_LISTS_AND_CANDIDATES_QUESTIONS_SIZE}
 	 */
 	private static List<CorrectnessInformation> getCorrectnessInformationListFromListsAndCandidatesTemplate(final List<Question> questions,
 			final List<ElectionAttributes> attributes, final List<ElectionOption> electionOptions, final String contestId) {
@@ -268,8 +270,8 @@ public class CombinedCorrectnessInformation implements HashableList {
 
 		// list of the related election attributes ids, ie list of election attributes ids whose field related (an array) contains the value correctnessId.
 		final List<String> relatedElectionAttributesIdsList = attributes.stream()
-				.filter(electionAttributes -> electionAttributes.related() != null && electionAttributes.related().contains(correctnessId))
-				.map(ElectionAttributes::id).toList();
+				.filter(electionAttributes -> electionAttributes.getRelated() != null && electionAttributes.getRelated().contains(correctnessId))
+				.map(ElectionAttributes::getId).toList();
 
 		// the number of voting options is the number of election options which are present in the list of the related election attributes ids.
 		final long numberOfVotingOptions = electionOptions.stream()
