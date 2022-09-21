@@ -80,8 +80,8 @@ public record Contest(
 
 			return attributes.stream()
 					.filter(ElectionAttributes::isCorrectness)
-					.filter(electionAttributes -> CANDIDATES.equals(electionAttributes.alias()))
-					.anyMatch(electionAttributes -> firstQuestion.attribute().equals(electionAttributes.id()));
+					.filter(electionAttributes -> CANDIDATES.equals(electionAttributes.getAlias()))
+					.anyMatch(electionAttributes -> firstQuestion.attribute().equals(electionAttributes.getId()));
 		}
 
 		return false;
