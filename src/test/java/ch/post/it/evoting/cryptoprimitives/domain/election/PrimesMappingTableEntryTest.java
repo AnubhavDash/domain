@@ -23,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.google.common.base.Throwables;
 
@@ -87,5 +89,33 @@ class PrimesMappingTableEntryTest extends TestGroupSetup {
 	@DisplayName("created with a non-null values does not throw.")
 	void withNonNullValuesDoesNotThrow() {
 		assertDoesNotThrow(() -> new PrimesMappingTableEntry(actualVotingOption, encodedVotingOption));
+	}
+
+	@ParameterizedTest
+	@DisplayName("Using invalid actualVotingOptions, throws an IllegalArgumentException.")
+	@ValueSource(strings = {" a  b", "abc  ", "apéosidvnbq13458zœ¶@¼←“þ“ ¢@]œ“→”@µ€ĸ@{þ", "<ycx", " sfasdfa", "pk23]", "asdacà!32", " a p2o3m", "<xyz>" })
+	void invalidXMLTokenForActualVotingOptions(String actualVotingOption) {
+		final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+				() -> new PrimesMappingTableEntry(actualVotingOption, encodedVotingOption));
+
+		assertEquals(String.format("Voting options should match a valid xml xs:token [ actualVotingOption: %s] ",
+				actualVotingOption), Throwables.getRootCause(illegalArgumentException).getMessage());
+	}
+
+	@ParameterizedTest
+	@DisplayName("Using valid actualVotingOptions.")
+	@ValueSource(strings = {"apéosidvnbq13458zœ", "þ","ab" , "as dfoublaj", "vaner82", "xyz", "a token", "這是一個有效的令牌"})
+	void validXMLTokenForActualVotingOptions(String actualVotingOption) {
+		assertDoesNotThrow(()->new PrimesMappingTableEntry(actualVotingOption, encodedVotingOption));
+	}
+
+	@Test
+	void invalidXMLTokenLengthForActualVotingOptions() {
+		String fiftyOne = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY";
+		final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+				() -> new PrimesMappingTableEntry(fiftyOne, encodedVotingOption));
+
+		assertEquals(String.format("The actual voting option length must not exceed 50. [length: %d]",
+				fiftyOne.length()), Throwables.getRootCause(illegalArgumentException).getMessage());
 	}
 }
