@@ -40,7 +40,8 @@ public class ElectionEventContextPayloadDeserializer extends JsonDeserializer<El
 		final JsonNode encryptionGroupNode = node.get("encryptionGroup");
 		final GqGroup gqGroup = mapper.readValue(encryptionGroupNode.toString(), GqGroup.class);
 
-		final ElectionEventContext electionEventContext = mapper.reader().withAttribute("group", gqGroup)
+		final ElectionEventContext electionEventContext = mapper.reader()
+				.withAttribute("group", gqGroup)
 				.readValue(node.get("electionEventContext"), ElectionEventContext.class);
 
 		final CryptoPrimitivesSignature signature = mapper.readValue(node.get("signature").toString(), CryptoPrimitivesSignature.class);
