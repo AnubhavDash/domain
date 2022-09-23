@@ -34,28 +34,34 @@ import ch.post.it.evoting.cryptoprimitives.math.ZqGroup;
 import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.SchnorrProof;
 
 public record ControlComponentPublicKeys(int nodeId,
-										 ElGamalMultiRecipientPublicKey ccrChoiceReturnCodesEncryptionPublicKey,
-										 ElGamalMultiRecipientPublicKey ccmElectionPublicKey,
+										 ElGamalMultiRecipientPublicKey ccrjChoiceReturnCodesEncryptionPublicKey,
 										 @JsonDeserialize(using = SchnorrProofDeserializer.class)
-										 GroupVector<SchnorrProof, ZqGroup> schnorrProofs) implements HashableList {
+										 GroupVector<SchnorrProof, ZqGroup> ccrjSchnorrProofs,
+										 ElGamalMultiRecipientPublicKey ccmjElectionPublicKey,
+										 @JsonDeserialize(using = SchnorrProofDeserializer.class)
+										 GroupVector<SchnorrProof, ZqGroup> ccmjSchnorrProofs) implements HashableList {
 
 	public ControlComponentPublicKeys {
 		checkArgument(NODE_IDS.contains(nodeId), String.format("The node id must be part of the known node ids. [nodeId :%s]", nodeId));
-		checkNotNull(ccrChoiceReturnCodesEncryptionPublicKey);
-		checkNotNull(ccmElectionPublicKey);
-		checkArgument(ccrChoiceReturnCodesEncryptionPublicKey.getGroup().equals(ccmElectionPublicKey.getGroup()),
-				"The groups of the ccr choice return codes encryption public key and the ccm election public key must be equal.");
-		checkNotNull(schnorrProofs);
-		checkArgument(ccrChoiceReturnCodesEncryptionPublicKey.getGroup().hasSameOrderAs(schnorrProofs.getGroup()),
-				"The groups of the ccr choice codes encryption public key and the schnorr proofs must be of same order.");
+		checkNotNull(ccrjChoiceReturnCodesEncryptionPublicKey);
+		checkNotNull(ccrjSchnorrProofs);
+		checkArgument(ccrjChoiceReturnCodesEncryptionPublicKey.getGroup().hasSameOrderAs(ccrjSchnorrProofs.getGroup()),
+				"The groups of the CCRj choice return codes encryption public key and the CCRj schnorr proofs must be of same order.");
+		checkNotNull(ccmjElectionPublicKey);
+		checkArgument(ccrjChoiceReturnCodesEncryptionPublicKey.getGroup().equals(ccmjElectionPublicKey.getGroup()),
+				"The groups of the CCRj choice return codes encryption public key and the CCMj election public key must be equal.");
+		checkNotNull(ccmjSchnorrProofs);
+		checkArgument(ccmjElectionPublicKey.getGroup().hasSameOrderAs(ccmjSchnorrProofs.getGroup()),
+				"The groups of the CCMj election public key and the CCMj schnorr proofs must be of same order.");
 	}
 
 	@Override
 	public List<Hashable> toHashableForm() {
 		return List.of(
 				HashableBigInteger.from(BigInteger.valueOf(nodeId)),
-				ccrChoiceReturnCodesEncryptionPublicKey,
-				ccmElectionPublicKey,
-				schnorrProofs);
+				ccrjChoiceReturnCodesEncryptionPublicKey,
+				ccrjSchnorrProofs,
+				ccmjElectionPublicKey,
+				ccmjSchnorrProofs);
 	}
 }
