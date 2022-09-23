@@ -27,9 +27,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Streams;
 
+import ch.post.it.evoting.cryptoprimitives.domain.mixnet.SchnorrProofDeserializer;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamal;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalFactory;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
@@ -38,11 +40,15 @@ import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
+import ch.post.it.evoting.cryptoprimitives.math.ZqGroup;
+import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.SchnorrProof;
 
 public record ElectionEventContext(String electionEventId,
 								   List<VerificationCardSetContext> verificationCardSetContexts,
 								   List<ControlComponentPublicKeys> combinedControlComponentPublicKeys,
 								   ElGamalMultiRecipientPublicKey electoralBoardPublicKey,
+								   @JsonDeserialize(using = SchnorrProofDeserializer.class)
+								   GroupVector<SchnorrProof, ZqGroup> electoralBoardSchnorrProofs,
 								   ElGamalMultiRecipientPublicKey electionPublicKey,
 								   ElGamalMultiRecipientPublicKey choiceReturnCodesEncryptionPublicKey,
 								   LocalDateTime startTime,
@@ -52,6 +58,8 @@ public record ElectionEventContext(String electionEventId,
 			final List<VerificationCardSetContext> verificationCardSetContexts,
 			final List<ControlComponentPublicKeys> combinedControlComponentPublicKeys,
 			final ElGamalMultiRecipientPublicKey electoralBoardPublicKey,
+			@JsonDeserialize(using = SchnorrProofDeserializer.class)
+			final GroupVector<SchnorrProof, ZqGroup> electoralBoardSchnorrProofs,
 			final ElGamalMultiRecipientPublicKey electionPublicKey,
 			final ElGamalMultiRecipientPublicKey choiceReturnCodesEncryptionPublicKey,
 			final LocalDateTime startTime,
@@ -61,6 +69,7 @@ public record ElectionEventContext(String electionEventId,
 		this.verificationCardSetContexts = List.copyOf(checkNotNull(verificationCardSetContexts));
 		this.combinedControlComponentPublicKeys = List.copyOf(checkNotNull(combinedControlComponentPublicKeys));
 		this.electoralBoardPublicKey = checkNotNull(electoralBoardPublicKey);
+		this.electoralBoardSchnorrProofs = checkNotNull(electoralBoardSchnorrProofs);
 		this.electionPublicKey = checkNotNull(electionPublicKey);
 		this.choiceReturnCodesEncryptionPublicKey = checkNotNull(choiceReturnCodesEncryptionPublicKey);
 		this.startTime = checkNotNull(startTime);
@@ -94,7 +103,7 @@ public record ElectionEventContext(String electionEventId,
 				"CombinedControlComponentPublicKeys must contain the expected node ids.");
 
 		final GroupVector<ElGamalMultiRecipientPublicKey, GqGroup> ccrChoiceReturnCodePublicKeys = this.combinedControlComponentPublicKeys.stream()
-				.map(ControlComponentPublicKeys::ccrChoiceReturnCodesEncryptionPublicKey)
+				.map(ControlComponentPublicKeys::ccrjChoiceReturnCodesEncryptionPublicKey)
 				.collect(GroupVector.toGroupVector());
 
 		final ElGamal elGamal = ElGamalFactory.createElGamal();
@@ -110,7 +119,7 @@ public record ElectionEventContext(String electionEventId,
 
 		final GroupVector<ElGamalMultiRecipientPublicKey, GqGroup> publicKeys = Streams.concat(
 						this.combinedControlComponentPublicKeys.stream()
-								.map(ControlComponentPublicKeys::ccmElectionPublicKey)
+								.map(ControlComponentPublicKeys::ccmjElectionPublicKey)
 								.filter(ccmElectionPublicKey -> ccmElectionPublicKey.size() >= maxNumberOfWriteInFields + 1)
 								.map(ccmElectionPublicKey ->
 										new ElGamalMultiRecipientPublicKey(
@@ -122,11 +131,12 @@ public record ElectionEventContext(String electionEventId,
 				"Multiplication of the ccmElectionPublicKeys times the electoralBoardPublicKey must equal the electionPublicKey");
 
 		final ControlComponentPublicKeys controlComponentPublicKey = this.combinedControlComponentPublicKeys.get(0);
-		final GqGroup gqGroup = controlComponentPublicKey.ccmElectionPublicKey().getGroup();
+		final GqGroup gqGroup = controlComponentPublicKey.ccmjElectionPublicKey().getGroup();
 		checkArgument(gqGroup.equals(electoralBoardPublicKey.getGroup()));
 		checkArgument(gqGroup.equals(electionPublicKey.getGroup()));
 		checkArgument(gqGroup.equals(choiceReturnCodesEncryptionPublicKey.getGroup()));
 		checkArgument(gqGroup.equals(this.verificationCardSetContexts.get(0).primesMappingTable().getPTable().getGroup()));
+		checkArgument(gqGroup.hasSameOrderAs(electoralBoardSchnorrProofs.getGroup()));
 	}
 
 	/**
@@ -146,6 +156,7 @@ public record ElectionEventContext(String electionEventId,
 				HashableList.from(verificationCardSetContexts),
 				HashableList.from(combinedControlComponentPublicKeys),
 				electoralBoardPublicKey,
+				electoralBoardSchnorrProofs,
 				electionPublicKey,
 				choiceReturnCodesEncryptionPublicKey,
 				HashableString.from(startTime.toString()),
