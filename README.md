@@ -37,28 +37,6 @@ The Fortify analysis showed 0 critical, 0 high, 0 medium, and 4 low criticality 
 
 The X-Ray analysis indicates that none of the crypto-primitives-domain' 3rd party dependencies contains known vulnerabilities or non-compliant open source software licenses. As a general principle, we try to minimize external dependencies in cryptographic libraries and only rely on well-tested and widely used 3rd party components.
 
-## Change Log Release 0.15
-
-The following functionalities and improvements are included in release 0.15
-
-* Added new mixnet objects
-* Added additional validations on domain objects
-* Upgraded library to Java 17
-
-## Change Log Release 0.14
-
-The following functionalities and improvements are included in release 0.14
-
-* Added classes to serialize ElGamalMultiRecipient key pairs.
-* Improved the validateUUID method.
-
-## Change Log Release 0.13
-
-The following functionalities and improvements are included in release 0.13:
-
-* Refactored the CombinedCorrectnessInformation object and GetEncodedVotingOptions method.
-* Included the electionEventID and ballotBoxID in the Mix net payload objects.
-
 ## Future work
 
 We plan for the following improvements to the crypto-primitives-domain library:

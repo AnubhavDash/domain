@@ -45,14 +45,20 @@ public record ControlComponentPublicKeys(int nodeId,
 		checkArgument(NODE_IDS.contains(nodeId), String.format("The node id must be part of the known node ids. [nodeId :%s]", nodeId));
 		checkNotNull(ccrjChoiceReturnCodesEncryptionPublicKey);
 		checkNotNull(ccrjSchnorrProofs);
-		checkArgument(ccrjChoiceReturnCodesEncryptionPublicKey.getGroup().hasSameOrderAs(ccrjSchnorrProofs.getGroup()),
-				"The groups of the CCRj choice return codes encryption public key and the CCRj schnorr proofs must be of same order.");
 		checkNotNull(ccmjElectionPublicKey);
+		checkNotNull(ccmjSchnorrProofs);
+
 		checkArgument(ccrjChoiceReturnCodesEncryptionPublicKey.getGroup().equals(ccmjElectionPublicKey.getGroup()),
 				"The groups of the CCRj choice return codes encryption public key and the CCMj election public key must be equal.");
-		checkNotNull(ccmjSchnorrProofs);
+		checkArgument(ccrjChoiceReturnCodesEncryptionPublicKey.getGroup().hasSameOrderAs(ccrjSchnorrProofs.getGroup()),
+				"The groups of the CCRj choice return codes encryption public key and the CCRj schnorr proofs must be of same order.");
 		checkArgument(ccmjElectionPublicKey.getGroup().hasSameOrderAs(ccmjSchnorrProofs.getGroup()),
 				"The groups of the CCMj election public key and the CCMj schnorr proofs must be of same order.");
+
+		checkArgument(ccrjChoiceReturnCodesEncryptionPublicKey.size() == ccrjSchnorrProofs.size(),
+				"The size of the CCRj choice return codes encryption key must be equal to the size of the CCRj Schnorr proofs.");
+		checkArgument(ccmjElectionPublicKey.size() == ccmjSchnorrProofs.size(),
+				"The size of the CCMj election public key must be equal to the size of the CCMj Schnorr proofs.");
 	}
 
 	@Override
