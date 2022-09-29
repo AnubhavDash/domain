@@ -66,7 +66,7 @@ class ElectionEventContextPayloadTest {
 	private static final Random random = RandomFactory.createRandom();
 	private static final GroupVector<PrimeGqElement, GqGroup> smallPrimeGroupMembers = PrimeGqElement.PrimeGqElementFactory.getSmallPrimeGroupMembers(
 			encryptionGroup, 1);
-	private static final GroupVector<SchnorrProof, ZqGroup> schnorrProofs = SerializationTestData.createSchnorrProofs(5);
+	private static final GroupVector<SchnorrProof, ZqGroup> schnorrProofs = SerializationTestData.createSchnorrProofs(2);
 	private static ElectionEventContextPayload electionEventContextPayload;
 	private static ObjectNode rootNode;
 

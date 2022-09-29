@@ -19,8 +19,10 @@ import static ch.post.it.evoting.cryptoprimitives.domain.mixnet.ConversionUtils.
 import static ch.post.it.evoting.cryptoprimitives.math.GqElement.GqElementFactory;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -470,6 +472,8 @@ public class SerializationTestData {
 		final List<String> partialChoiceReturnCodesAllowList = IntStream.range(0,
 						setupComponentVerificationData.size() * combinedCorrectnessInformation.getTotalNumberOfVotingOptions())
 				.mapToObj(String::valueOf)
+				.map(value -> value.getBytes(StandardCharsets.UTF_8))
+				.map(Base64.getEncoder()::encodeToString)
 				.toList();
 
 		final SetupComponentVerificationDataPayload requestPayload = new SetupComponentVerificationDataPayload(electionEventId,

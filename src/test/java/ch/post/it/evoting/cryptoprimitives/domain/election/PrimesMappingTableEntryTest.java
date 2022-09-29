@@ -104,7 +104,7 @@ class PrimesMappingTableEntryTest extends TestGroupSetup {
 
 	@ParameterizedTest
 	@DisplayName("Using valid actualVotingOptions.")
-	@ValueSource(strings = {"apéosidvnbq13458zœ", "þ","ab" , "as dfoublaj", "vaner82", "xyz", "a token", "這是一個有效的令牌"})
+	@ValueSource(strings = {"aposidvnbq13458z", "ab" , "vaner82", "xyz", "a_token", "another-token"})
 	void validXMLTokenForActualVotingOptions(String actualVotingOption) {
 		assertDoesNotThrow(()->new PrimesMappingTableEntry(actualVotingOption, encodedVotingOption));
 	}
