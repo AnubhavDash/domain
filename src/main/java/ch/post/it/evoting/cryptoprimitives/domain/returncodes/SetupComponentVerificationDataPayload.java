@@ -21,6 +21,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigInteger;
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 
@@ -119,6 +120,11 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 		checkArgument(!this.partialChoiceReturnCodesAllowList.isEmpty(), "The partial Choice Return Codes Allow List must not be empty.");
 		checkArgument(this.partialChoiceReturnCodesAllowList.stream().allMatch(Objects::nonNull),
 				"The partial Choice Return Codes Allow List must not contain null elements.");
+		checkArgument(this.partialChoiceReturnCodesAllowList.stream().noneMatch(String::isBlank),
+				"The partial Choice Return Codes Allow List must not contain empty or whitespace strings.");
+		// The partial Choice Return Codes Allow List must only contain Base64 strings.
+		this.partialChoiceReturnCodesAllowList.forEach(Base64.getDecoder()::decode);
+
 		checkArgument(!this.setupComponentVerificationData.isEmpty(), "The setup component verification data must not be empty.");
 		checkArgument(this.setupComponentVerificationData.stream().allMatch(Objects::nonNull),
 				"The setup component verification data list must not contain null elements.");

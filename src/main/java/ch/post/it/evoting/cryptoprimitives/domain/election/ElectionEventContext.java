@@ -116,6 +116,8 @@ public record ElectionEventContext(String electionEventId,
 
 		checkArgument(electoralBoardPublicKey.size() == (maxNumberOfWriteInFields + 1),
 				"The size of the electoralBoardPublicKey must equal the maximum number of write-in fields in all verification card sets + 1");
+		checkArgument(electoralBoardPublicKey.size() == electoralBoardSchnorrProofs.size(),
+				"The size of the electoral board public key must be equal to the size of the electoral board Schnorr proofs.");
 
 		final GroupVector<ElGamalMultiRecipientPublicKey, GqGroup> publicKeys = Streams.concat(
 						this.combinedControlComponentPublicKeys.stream()
