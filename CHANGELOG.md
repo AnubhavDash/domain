@@ -1,5 +1,18 @@
 # Changelog
 
+## Release 1.0
+
+The following functionalities and improvements are included in release 1.0
+
+* Refactored the encryptionParametersPayload object.
+* Added the key generation Schnorr proofs to the ElectionEventContextPayload.
+* Removed the optional keyword from the VerifiableShuffle in the TallyComponentShufflePayload.
+* Added the PrimesMappingTable.
+* Removed unused classes after the removal of the old orchestrator.
+* Updated third-party libraries.
+
+---
+
 ## Release 0.15
 
 The following functionalities and improvements are included in release 0.15
