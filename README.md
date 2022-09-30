@@ -37,6 +37,10 @@ The Fortify analysis showed 0 critical, 0 high, 0 medium, and 4 low criticality 
 
 The X-Ray analysis indicates that none of the crypto-primitives-domain' 3rd party dependencies contains known vulnerabilities or non-compliant open source software licenses. As a general principle, we try to minimize external dependencies in cryptographic libraries and only rely on well-tested and widely used 3rd party components.
 
+## Changelog
+
+An overview of all major changes within the published releases is available [here.](CHANGELOG.md)
+
 ## Future work
 
 We plan for the following improvements to the crypto-primitives-domain library:
