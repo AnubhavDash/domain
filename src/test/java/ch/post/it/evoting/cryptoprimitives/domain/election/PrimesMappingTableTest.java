@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import com.google.common.base.Throwables;
 
+import ch.post.it.evoting.cryptoprimitives.domain.VotingOptionsConstants;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.math.PrimeGqElement;
@@ -84,7 +86,7 @@ class PrimesMappingTableTest {
 	}
 
 	@Test
-	@DisplayName("from an entries containing duplicated encoded voting options, throws an IllegalArgumentException.")
+	@DisplayName("from entries containing duplicated encoded voting options, throws an IllegalArgumentException.")
 	void addAlreadyExistingEncodedVotingOptionEntryThrows() {
 
 		final List<PrimesMappingTableEntry> duplicatedPrimesMappingTableEntries = List.of(primesMappingTableEntries.get(0),
@@ -95,6 +97,30 @@ class PrimesMappingTableTest {
 
 		assertEquals("The primes mapping table entries contain duplicated encoded voting options.",
 				Throwables.getRootCause(illegalArgumentException).getMessage());
+	}
+
+	@Test
+	@DisplayName("from not enough entries, throws an IllegalArgumentException.")
+	void fromNotEnoughThrows() {
+
+		final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+				() -> new PrimesMappingTable(GroupVector.from(List.of())));
+
+		assertEquals("The primes mapping table cannot be empty.", Throwables.getRootCause(illegalArgumentException).getMessage());
+	}
+
+	@Test
+	@DisplayName("from too many entries, throws an IllegalArgumentException.")
+	void fromWithTooManyThrows() {
+
+		final GroupVector<PrimesMappingTableEntry, GqGroup> entries = IntStream.range(0, VotingOptionsConstants.MAXIMUM_NUMBER_OF_VOTING_OPTIONS + 1)
+				.mapToObj(i -> new PrimesMappingTableEntry(actualVotingOption, smallPrimeGroupMembers.get(0)))
+				.collect(GroupVector.toGroupVector());
+
+		final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> new PrimesMappingTable(entries));
+
+		assertEquals(String.format("The primes mapping table cannot have more than omega elements. [omega: %s]",
+				VotingOptionsConstants.MAXIMUM_NUMBER_OF_VOTING_OPTIONS), Throwables.getRootCause(illegalArgumentException).getMessage());
 	}
 
 	@Test
