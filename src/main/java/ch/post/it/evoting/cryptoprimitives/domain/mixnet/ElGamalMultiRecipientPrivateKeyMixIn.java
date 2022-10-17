@@ -15,10 +15,9 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 import ch.post.it.evoting.cryptoprimitives.math.ZqElement;
@@ -31,7 +30,9 @@ public abstract class ElGamalMultiRecipientPrivateKeyMixIn {
 	GroupVector<ZqElement, ZqGroup> privateKeyElements;
 
 	@JsonCreator
-	ElGamalMultiRecipientPrivateKeyMixIn(final List<ZqElement> keyElements) {
+	ElGamalMultiRecipientPrivateKeyMixIn(
+			@JsonDeserialize(using = ZqGroupVectorDeserializer.class)
+			final GroupVector<ZqElement, ZqGroup> keyElements) {
 	}
 
 }

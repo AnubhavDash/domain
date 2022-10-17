@@ -15,10 +15,9 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import ch.post.it.evoting.cryptoprimitives.math.GqElement;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
@@ -31,8 +30,9 @@ public abstract class ElGamalMultiRecipientMessageMixIn {
 	GroupVector<GqElement, GqGroup> messageElements;
 
 	ElGamalMultiRecipientMessageMixIn(
+			@JsonDeserialize(using = GqGroupVectorDeserializer.class)
 			@JsonProperty(value = "message", required = true)
-			final List<GqElement> messageElements) {
+			final GroupVector<GqElement, GqGroup> messageElements) {
 	}
 
 	@JsonIgnore
