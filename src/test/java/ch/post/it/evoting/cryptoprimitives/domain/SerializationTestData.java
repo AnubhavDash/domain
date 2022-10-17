@@ -103,8 +103,9 @@ public class SerializationTestData {
 	// ===============================================================================================================================================
 
 	public static ElGamalMultiRecipientMessage getMessage() {
-		final List<GqElement> messageElements = Arrays
-				.asList(GqElementFactory.fromValue(BigInteger.valueOf(4), gqGroup), GqElementFactory.fromValue(BigInteger.valueOf(5), gqGroup));
+		final GroupVector<GqElement, GqGroup> messageElements = GroupVector.of(
+				GqElementFactory.fromValue(BigInteger.valueOf(4), gqGroup),
+				GqElementFactory.fromValue(BigInteger.valueOf(5), gqGroup));
 
 		return new ElGamalMultiRecipientMessage(messageElements);
 	}
@@ -139,19 +140,21 @@ public class SerializationTestData {
 	}
 
 	public static ElGamalMultiRecipientPublicKey getPublicKey() {
-		final List<GqElement> keyElements = Arrays
-				.asList(GqElementFactory.fromValue(BigInteger.valueOf(4), gqGroup), GqElementFactory.fromValue(BigInteger.valueOf(9), gqGroup));
+		final GroupVector<GqElement, GqGroup> keyElements = GroupVector.of(
+				GqElementFactory.fromValue(BigInteger.valueOf(4), gqGroup),
+				GqElementFactory.fromValue(BigInteger.valueOf(9), gqGroup));
 		return new ElGamalMultiRecipientPublicKey(keyElements);
 	}
 
 	public static ElGamalMultiRecipientPublicKey getSingleElementPublicKey() {
-		final List<GqElement> keyElements = List.of(GqElementFactory.fromValue(BigInteger.valueOf(4), gqGroup));
+		final GroupVector<GqElement, GqGroup> keyElements = GroupVector.of(GqElementFactory.fromValue(BigInteger.valueOf(4), gqGroup));
 		return new ElGamalMultiRecipientPublicKey(keyElements);
 	}
 
 	public static ElGamalMultiRecipientPrivateKey getPrivateKey() {
-		final List<ZqElement> keyElements = Arrays
-				.asList(ZqElement.create(BigInteger.valueOf(2), zqGroup), ZqElement.create(BigInteger.valueOf(3), zqGroup));
+		final GroupVector<ZqElement, ZqGroup> keyElements = GroupVector.of(
+				ZqElement.create(BigInteger.valueOf(2), zqGroup),
+				ZqElement.create(BigInteger.valueOf(3), zqGroup));
 		return new ElGamalMultiRecipientPrivateKey(keyElements);
 	}
 
@@ -400,8 +403,8 @@ public class SerializationTestData {
 		}
 	}
 
-	public static ControlComponentCodeSharesPayload getResponsePayload(final String tenantId, final String electionEventId,
-			final String verificationCardSetId, final int chunkId) {
+	public static ControlComponentCodeSharesPayload getResponsePayload(final String electionEventId, final String verificationCardSetId,
+			final int chunkId) {
 
 		final List<ControlComponentCodeShare> controlComponentCodeShares = Arrays
 				.asList(getReturnCodeGenerationOutput("1ecb40f5bab5400e8166b63a04a0708d"),

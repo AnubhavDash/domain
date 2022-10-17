@@ -125,7 +125,7 @@ public record ElectionEventContext(String electionEventId,
 								.filter(ccmElectionPublicKey -> ccmElectionPublicKey.size() >= maxNumberOfWriteInFields + 1)
 								.map(ccmElectionPublicKey ->
 										new ElGamalMultiRecipientPublicKey(
-												ccmElectionPublicKey.getKeyElements().subList(0, maxNumberOfWriteInFields + 1))),
+												GroupVector.from(ccmElectionPublicKey.getKeyElements().subList(0, maxNumberOfWriteInFields + 1)))),
 						Stream.of(electoralBoardPublicKey))
 				.collect(GroupVector.toGroupVector());
 

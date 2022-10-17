@@ -98,7 +98,7 @@ class PrimesMappingTableEntryTest extends TestGroupSetup {
 		final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
 				() -> new PrimesMappingTableEntry(actualVotingOption, encodedVotingOption));
 
-		assertEquals(String.format("Voting options should match a valid xml xs:token [ actualVotingOption: %s] ",
+		assertEquals(String.format("Voting options should match a valid xml xs:token [actualVotingOption: %s] ",
 				actualVotingOption), Throwables.getRootCause(illegalArgumentException).getMessage());
 	}
 
