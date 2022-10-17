@@ -15,21 +15,24 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import ch.post.it.evoting.cryptoprimitives.math.GqElement;
+import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
+import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 
 @SuppressWarnings({ "java:S1610", "unused" })
 public abstract class ElGamalMultiRecipientPublicKeyMixIn {
 
 	@JsonCreator
-	ElGamalMultiRecipientPublicKeyMixIn(final List<GqElement> keyElements) {
+	ElGamalMultiRecipientPublicKeyMixIn(
+			@JsonDeserialize(using = GqGroupVectorDeserializer.class)
+			final GroupVector<GqElement, GqGroup> keyElements) {
 	}
 
 	@JsonValue
-	abstract List<GqElement> getKeyElements();
+	abstract GroupVector<GqElement, GqGroup> getKeyElements();
 
 }

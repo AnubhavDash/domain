@@ -54,8 +54,8 @@ public record PrimesMappingTableEntry(String actualVotingOption, PrimeGqElement 
 				"The actual voting option length must not exceed %s. [length: %s]", MAXIMUM_ACTUAL_VOTING_OPTION_LENGTH,
 				actualVotingOption.length());
 
-		checkArgument(actualVotingOption.length() <= XML_TOKEN_PATTERN_MAX_LENGTH ,"Voting options should match a valid xml xs:token [ actualVotingOption: %s] ", actualVotingOption);
-		checkArgument(VALID_XML_TOKEN_PATTERN.matcher(actualVotingOption).matches(),"Voting options should match a valid xml xs:token [ actualVotingOption: %s] ", actualVotingOption);
+		checkArgument(actualVotingOption.length() <= XML_TOKEN_PATTERN_MAX_LENGTH ,"Voting options should match a valid xml xs:token [actualVotingOption: %s] ", actualVotingOption);
+		checkArgument(VALID_XML_TOKEN_PATTERN.matcher(actualVotingOption).matches(),"Voting options should match a valid xml xs:token [actualVotingOption: %s] ", actualVotingOption);
 
 	}
 

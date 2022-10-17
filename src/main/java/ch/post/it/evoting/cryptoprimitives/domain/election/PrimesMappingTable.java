@@ -29,8 +29,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.MoreCollectors;
 
+import ch.post.it.evoting.cryptoprimitives.domain.VotingOptionsConstants;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
@@ -54,11 +56,15 @@ public class PrimesMappingTable implements HashableList {
 	private GroupVector<PrimesMappingTableEntry, GqGroup> pTable;
 
 	@JsonCreator
+	@VisibleForTesting
 	public PrimesMappingTable(
 			@JsonProperty("pTable")
 			final GroupVector<PrimesMappingTableEntry, GqGroup> pTable) {
 		this.pTable = checkNotNull(pTable);
 		checkArgument(!this.pTable.isEmpty(), "The primes mapping table cannot be empty.");
+		checkArgument(this.pTable.size() <= VotingOptionsConstants.MAXIMUM_NUMBER_OF_VOTING_OPTIONS,
+				"The primes mapping table cannot have more than omega elements. [omega: %s]",
+				VotingOptionsConstants.MAXIMUM_NUMBER_OF_VOTING_OPTIONS);
 	}
 
 	/**
@@ -67,8 +73,9 @@ public class PrimesMappingTable implements HashableList {
 	 * @param primesMappingTableEntries the list of primes mapping table entries to be built from. Must be non-null, non-empty and its encoded voting
 	 *                                  options must not contain any duplicate.
 	 * @throws NullPointerException     if the primes mapping table entries is null.
-	 * @throws IllegalArgumentException if the encoded voting options of the primes mapping table entries contain duplicates or if the given list of
-	 *                                  primes mapping table entries is empty.
+	 * @throws IllegalArgumentException if the encoded voting options of the primes mapping table entries contain duplicates, or if the given list of
+	 *                                  primes mapping table entries is empty or has more than
+	 *                                  {@value VotingOptionsConstants#MAXIMUM_NUMBER_OF_VOTING_OPTIONS} elements.
 	 */
 	public static PrimesMappingTable from(final List<PrimesMappingTableEntry> primesMappingTableEntries) {
 		final List<PrimesMappingTableEntry> primesMappingTableEntriesCopy = List.copyOf(checkNotNull(primesMappingTableEntries));
@@ -84,8 +91,7 @@ public class PrimesMappingTable implements HashableList {
 	}
 
 	/**
-	 * Returns the number of elements in this primes mapping table. If this primes mapping table contains more than {@code Integer.MAX_VALUE}
-	 * elements, returns {@code Integer.MAX_VALUE}.
+	 * Returns the number of elements in this primes mapping table.
 	 *
 	 * @return the number of elements in this primes mapping table.
 	 */

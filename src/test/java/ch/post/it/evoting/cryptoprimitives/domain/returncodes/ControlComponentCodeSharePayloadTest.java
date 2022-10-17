@@ -54,7 +54,7 @@ class ControlComponentCodeSharePayloadTest extends MapperSetUp {
 
 	@BeforeAll
 	static void setUpAll() throws JsonProcessingException {
-		responsePayload = SerializationTestData.getResponsePayload(TENANT_ID, ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID, CHUNK_ID);
+		responsePayload = SerializationTestData.getResponsePayload(ELECTION_EVENT_ID, VERIFICATION_CARD_SET_ID, CHUNK_ID);
 
 		// Create expected json.
 		rootNode = SerializationTestData.createResponsePayloadNode(responsePayload);
