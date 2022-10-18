@@ -20,6 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.math.BigInteger;
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -28,15 +31,20 @@ class CorrectnessInformationTest {
 	private final static String CORRECTNESS_ID = "correctnessId";
 	private final static Integer NUMBER_OF_SELECTIONS = 12;
 	private final static Integer NUMBER_OF_VOTING_OPTIONS = 408;
+	private final static List<BigInteger> LIST_OF_WRITE_IN_OPTIONS = List.of(BigInteger.ONE);
 
 	@Test
 	@DisplayName("constructed with a null parameter throws a NullPointerException.")
 	void nullParameterTest() {
-
 		assertAll(() -> assertThrows(NullPointerException.class,
-				() -> new CorrectnessInformation(null, NUMBER_OF_SELECTIONS, NUMBER_OF_VOTING_OPTIONS)),
-				() -> assertThrows(NullPointerException.class, () -> new CorrectnessInformation(CORRECTNESS_ID, null, NUMBER_OF_VOTING_OPTIONS)),
-				() -> assertThrows(NullPointerException.class, () -> new CorrectnessInformation(CORRECTNESS_ID, NUMBER_OF_SELECTIONS, null)));
+						() -> new CorrectnessInformation(null, NUMBER_OF_SELECTIONS, NUMBER_OF_VOTING_OPTIONS, LIST_OF_WRITE_IN_OPTIONS)),
+				() -> assertThrows(NullPointerException.class,
+						() -> new CorrectnessInformation(CORRECTNESS_ID, null, NUMBER_OF_VOTING_OPTIONS, LIST_OF_WRITE_IN_OPTIONS)),
+				() -> assertThrows(NullPointerException.class,
+						() -> new CorrectnessInformation(CORRECTNESS_ID, NUMBER_OF_SELECTIONS, null, LIST_OF_WRITE_IN_OPTIONS)),
+				() -> assertThrows(NullPointerException.class,
+						() -> new CorrectnessInformation(CORRECTNESS_ID, NUMBER_OF_SELECTIONS, NUMBER_OF_VOTING_OPTIONS, null))
+		);
 	}
 
 	@Test
@@ -44,12 +52,12 @@ class CorrectnessInformationTest {
 	void nonStrictlyPositiveNumberOfSelectionsTest() {
 
 		IllegalArgumentException zeroIllegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new CorrectnessInformation(CORRECTNESS_ID, 0, NUMBER_OF_VOTING_OPTIONS));
+				() -> new CorrectnessInformation(CORRECTNESS_ID, 0, NUMBER_OF_VOTING_OPTIONS, LIST_OF_WRITE_IN_OPTIONS));
 
 		assertEquals("The number of selections must be strictly positive.", zeroIllegalArgumentException.getMessage());
 
 		IllegalArgumentException minusOneIllegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new CorrectnessInformation(CORRECTNESS_ID, -1, NUMBER_OF_VOTING_OPTIONS));
+				() -> new CorrectnessInformation(CORRECTNESS_ID, -1, NUMBER_OF_VOTING_OPTIONS, LIST_OF_WRITE_IN_OPTIONS));
 
 		assertEquals("The number of selections must be strictly positive.", minusOneIllegalArgumentException.getMessage());
 	}
@@ -59,12 +67,12 @@ class CorrectnessInformationTest {
 	void nonStrictlyPositiveNumberOfVotingOptionsTest() {
 
 		IllegalArgumentException zeroIllegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new CorrectnessInformation(CORRECTNESS_ID, NUMBER_OF_SELECTIONS, 0));
+				() -> new CorrectnessInformation(CORRECTNESS_ID, NUMBER_OF_SELECTIONS, 0, LIST_OF_WRITE_IN_OPTIONS));
 
 		assertEquals("The number of voting options must be strictly positive.", zeroIllegalArgumentException.getMessage());
 
 		IllegalArgumentException minusOneIllegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new CorrectnessInformation(CORRECTNESS_ID, NUMBER_OF_SELECTIONS, -1));
+				() -> new CorrectnessInformation(CORRECTNESS_ID, NUMBER_OF_SELECTIONS, -1, LIST_OF_WRITE_IN_OPTIONS));
 
 		assertEquals("The number of voting options must be strictly positive.", minusOneIllegalArgumentException.getMessage());
 	}
@@ -74,7 +82,7 @@ class CorrectnessInformationTest {
 	void biggerNumberOfSelectionsTest() {
 
 		IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new CorrectnessInformation(CORRECTNESS_ID, NUMBER_OF_VOTING_OPTIONS + 1, NUMBER_OF_VOTING_OPTIONS));
+				() -> new CorrectnessInformation(CORRECTNESS_ID, NUMBER_OF_VOTING_OPTIONS + 1, NUMBER_OF_VOTING_OPTIONS, LIST_OF_WRITE_IN_OPTIONS));
 
 		assertEquals("The number of selections must be at most the number of voting options.", illegalArgumentException.getMessage());
 	}
@@ -82,7 +90,8 @@ class CorrectnessInformationTest {
 	@Test
 	@DisplayName("constructed with valid parameters does not throw any exception.")
 	void validParametersTest() {
-		assertDoesNotThrow(() -> new CorrectnessInformation(CORRECTNESS_ID, NUMBER_OF_SELECTIONS, NUMBER_OF_VOTING_OPTIONS));
+		assertDoesNotThrow(
+				() -> new CorrectnessInformation(CORRECTNESS_ID, NUMBER_OF_SELECTIONS, NUMBER_OF_VOTING_OPTIONS, LIST_OF_WRITE_IN_OPTIONS));
 	}
 
 }
