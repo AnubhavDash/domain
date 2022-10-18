@@ -23,6 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -168,13 +171,13 @@ class CombinedCorrectnessInformationTest {
 	private static Stream<Arguments> combinedCorrectnessInformationFromJsonTestSource() {
 		return Stream.of(
 				Arguments.of("combinedCorrectnessInformation.json", 0, "e7c8b3ac09f64d95b08a6f451e0608fe", 1, "e7c8b3ac09f64d95b08a6f451e0608fe", 13,
-						432),
+						432, Collections.emptyList(), 0),
 				Arguments.of("combinedCorrectnessInformation2.json", 0, "2d22a5bfa0f0406a9812576f925e1cea", 1, "2d22a5bfa0f0406a9812576f925e1cea", 3,
-						10),
+						10, List.of(BigInteger.valueOf(113L)), 1),
 				Arguments.of("combinedCorrectnessInformation3.json", 0, "e727a2d916774758bd0c6f256c5ae241", 1, "e727a2d916774758bd0c6f256c5ae241", 11,
-						124),
+						124, Collections.emptyList(), 0),
 				Arguments.of("combinedCorrectnessInformation4.json", 0, "b3053227e0b144b0ae4126f7ce24f4ab", 1, "b3053227e0b144b0ae4126f7ce24f4ab", 6,
-						25)
+						25, List.of(BigInteger.valueOf(167L), BigInteger.valueOf(257L)), 2)
 
 		);
 	}
@@ -397,7 +400,8 @@ class CombinedCorrectnessInformationTest {
 	@DisplayName("built from a JSON string representation, returns the expected results upon methods calls.")
 	void combinedCorrectnessInformationFromJsonTest(final String jsonFileName, final int selectionIndex,
 			final String expectedCorrectnessIdForSelectionIndex, final int votingOptionIndex, final String expectedCorrectnessIdForVotingOptionIndex,
-			final int expectedTotalNumberOfSelections, final int expectedTotalNumberOfVotingOptions) throws IOException {
+			final int expectedTotalNumberOfSelections, final int expectedTotalNumberOfVotingOptions,
+			final List<BigInteger> expectedTotalListOfWriteInOptions, final int expectedTotalNumberOfWriteInOptions) throws IOException {
 
 		final CombinedCorrectnessInformation combinedCorrectnessInformationRebuiltFromJSON = getCombinedCorrectnessInformationFromJson(jsonFileName);
 
@@ -409,7 +413,10 @@ class CombinedCorrectnessInformationTest {
 						combinedCorrectnessInformationRebuiltFromJSON.getCorrectnessIdForVotingOptionIndex(votingOptionIndex)),
 				() -> assertEquals(expectedTotalNumberOfSelections, combinedCorrectnessInformationRebuiltFromJSON.getTotalNumberOfSelections()),
 				() -> assertEquals(expectedTotalNumberOfVotingOptions,
-						combinedCorrectnessInformationRebuiltFromJSON.getTotalNumberOfVotingOptions()));
+						combinedCorrectnessInformationRebuiltFromJSON.getTotalNumberOfVotingOptions()),
+				() -> assertEquals(expectedTotalListOfWriteInOptions, combinedCorrectnessInformationRebuiltFromJSON.getTotalListOfWriteInOptions()),
+				() -> assertEquals(expectedTotalNumberOfWriteInOptions,
+						combinedCorrectnessInformationRebuiltFromJSON.getTotalNumberOfWriteInOptions()));
 	}
 
 	@Test

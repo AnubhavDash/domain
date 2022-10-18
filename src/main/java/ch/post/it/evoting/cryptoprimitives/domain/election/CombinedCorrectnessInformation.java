@@ -21,6 +21,7 @@ import static ch.post.it.evoting.cryptoprimitives.domain.election.BallotValidati
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ import com.google.common.collect.ImmutableList;
 
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
+import ch.post.it.evoting.cryptoprimitives.utils.Conversions;
 
 public class CombinedCorrectnessInformation implements HashableList {
 
@@ -44,10 +46,13 @@ public class CombinedCorrectnessInformation implements HashableList {
 	private final List<CorrectnessInformation> correctnessInformationList;
 
 	// Corresponds to the variable 𝜓 - the number of voting options a voter can select.
-	private Integer totalNumberOfSelections;
+	private int totalNumberOfSelections;
 
 	// Corresponds to the variable n - the number of possible voting options.
-	private Integer totalNumberOfVotingOptions;
+	private int totalNumberOfVotingOptions;
+
+	private List<BigInteger> totalListOfWriteInOptions;
+	private int totalNumberOfWriteInOptions;
 
 	private Map<String, List<Integer>> correctnessIdToListOfSelectionsIndexesMap;
 	private Map<String, List<Integer>> correctnessIdToListOfVotingOptionsIndexesMap;
@@ -111,7 +116,7 @@ public class CombinedCorrectnessInformation implements HashableList {
 	 * @return the variable 𝜓 - the number of voting options a voter can select.
 	 */
 	@JsonIgnore
-	public Integer getTotalNumberOfSelections() {
+	public int getTotalNumberOfSelections() {
 		return this.totalNumberOfSelections;
 	}
 
@@ -119,8 +124,24 @@ public class CombinedCorrectnessInformation implements HashableList {
 	 * @return the variable n - the number of possible voting options.
 	 */
 	@JsonIgnore
-	public Integer getTotalNumberOfVotingOptions() {
+	public int getTotalNumberOfVotingOptions() {
 		return this.totalNumberOfVotingOptions;
+	}
+
+	/**
+	 * @return the total list of writeInOptions.
+	 */
+	@JsonIgnore
+	public List<BigInteger> getTotalListOfWriteInOptions() {
+		return this.totalListOfWriteInOptions;
+	}
+
+	/**
+	 * @return the total number of writeInOptions.
+	 */
+	@JsonIgnore
+	public int getTotalNumberOfWriteInOptions() {
+		return this.totalNumberOfWriteInOptions;
 	}
 
 	public List<CorrectnessInformation> getCorrectnessInformationList() {
@@ -203,7 +224,8 @@ public class CombinedCorrectnessInformation implements HashableList {
 				.map(correctnessId ->
 						new CorrectnessInformation(correctnessId,
 								getCorrespondingQuestionByAttribute(questions, correctnessId, contestId).max(),
-								getNumberOfVotingOptions(attributes, options, correctnessId)))
+								getNumberOfVotingOptions(attributes, options, correctnessId),
+								Collections.emptyList()))
 				.toList();
 	}
 
@@ -236,7 +258,31 @@ public class CombinedCorrectnessInformation implements HashableList {
 				.map(question ->
 						new CorrectnessInformation(question.attribute(),
 								question.max(),
-								getNumberOfVotingOptions(attributes, electionOptions, question.attribute())))
+								getNumberOfVotingOptions(attributes, electionOptions, question.attribute()),
+								getListOfWriteInOptions(question, electionOptions)))
+				.toList();
+	}
+
+	/**
+	 * Returns the list of prime numbers as {@link BigInteger}s that correspond to write-in options. We identify every write-in position with a
+	 * distinct prime number. The number of elements of this list corresponds to the number of write-in positions for this particular election
+	 * (Question). The method returns an empty list if no write-ins are allowed.
+	 *
+	 * @param question        a {@link Question} of the {@link Contest}.
+	 * @param electionOptions the list {@link ElectionOption} of the {@link Contest}.
+	 * @return the list of prime numbers as {@link BigInteger}s that correspond to write-in options.
+	 */
+	private static List<BigInteger> getListOfWriteInOptions(final Question question, final List<ElectionOption> electionOptions) {
+		if (!question.isWriteIn()) {
+			return Collections.emptyList();
+		}
+
+		final String writeInAttribute = question.writeInAttribute();
+
+		return electionOptions.stream()
+				.filter(electionOption -> electionOption.getAttribute().equals(writeInAttribute))
+				.map(ElectionOption::getRepresentation)
+				.map(Conversions::stringToInteger)
 				.toList();
 	}
 
@@ -244,6 +290,9 @@ public class CombinedCorrectnessInformation implements HashableList {
 
 		this.totalNumberOfSelections = computeTotalNumberOfSelections(this.correctnessInformationList);
 		this.totalNumberOfVotingOptions = computeTotalNumberOfVotingOptions(this.correctnessInformationList);
+
+		this.totalListOfWriteInOptions = computeTotalListOfWriteInOptions(this.correctnessInformationList);
+		this.totalNumberOfWriteInOptions = computeTotalNumberOfWriteInOptions(this.correctnessInformationList);
 
 		this.correctnessIdToListOfSelectionsIndexesMap = getCorrectnessIdToListOfIndexesMap(this.correctnessInformationList,
 				CorrectnessInformation::numberOfSelections);
@@ -331,12 +380,30 @@ public class CombinedCorrectnessInformation implements HashableList {
 								attribute)));
 	}
 
-	private static Integer computeTotalNumberOfSelections(final List<CorrectnessInformation> correctnessInformationList) {
-		return correctnessInformationList.stream().map(CorrectnessInformation::numberOfSelections).reduce(0, Integer::sum);
+	private static int computeTotalNumberOfSelections(final List<CorrectnessInformation> correctnessInformationList) {
+		return correctnessInformationList.stream()
+				.map(CorrectnessInformation::numberOfSelections)
+				.reduce(0, Integer::sum);
 	}
 
-	private static Integer computeTotalNumberOfVotingOptions(final List<CorrectnessInformation> correctnessInformationList) {
-		return correctnessInformationList.stream().map(CorrectnessInformation::numberOfVotingOptions).reduce(0, Integer::sum);
+	private static int computeTotalNumberOfVotingOptions(final List<CorrectnessInformation> correctnessInformationList) {
+		return correctnessInformationList.stream()
+				.map(CorrectnessInformation::numberOfVotingOptions)
+				.reduce(0, Integer::sum);
+	}
+
+	private static List<BigInteger> computeTotalListOfWriteInOptions(final List<CorrectnessInformation> correctnessInformationList) {
+		return correctnessInformationList.stream()
+				.map(CorrectnessInformation::listOfWriteInOptions)
+				.flatMap(Collection::stream)
+				.toList();
+	}
+
+	private int computeTotalNumberOfWriteInOptions(final List<CorrectnessInformation> correctnessInformationList) {
+		return correctnessInformationList.stream()
+				.map(CorrectnessInformation::listOfWriteInOptions)
+				.map(List::size)
+				.reduce(0, Integer::sum);
 	}
 
 	@Override

@@ -20,6 +20,7 @@ public class VotingOptionsConstants {
 	public static final int MAXIMUM_NUMBER_OF_VOTING_OPTIONS = 1200;
 	public static final int MAXIMUM_NUMBER_OF_SELECTABLE_VOTING_OPTIONS = 120;
 	public static final int MAXIMUM_NUMBER_OF_WRITE_IN_OPTIONS = 15;
+	public static final int MAXIMUM_WRITE_IN_OPTION_LENGTH = 500;
 	public static final int MAXIMUM_ACTUAL_VOTING_OPTION_LENGTH = 50;
 
 	private VotingOptionsConstants() {
