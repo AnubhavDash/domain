@@ -29,7 +29,8 @@ import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
 public record CorrectnessInformation(
 		String correctnessId,
 		Integer numberOfSelections,
-		Integer numberOfVotingOptions) implements HashableList {
+		Integer numberOfVotingOptions,
+		List<BigInteger> listOfWriteInOptions) implements HashableList {
 
 	/**
 	 * The constructor.
@@ -53,6 +54,8 @@ public record CorrectnessInformation(
 		checkArgument(numberOfVotingOptions > 0, "The number of voting options must be strictly positive.");
 
 		checkArgument(numberOfSelections <= numberOfVotingOptions, "The number of selections must be at most the number of voting options.");
+
+		checkNotNull(listOfWriteInOptions);
 	}
 
 	@Override
@@ -60,6 +63,9 @@ public record CorrectnessInformation(
 		return List.of(
 				HashableString.from(correctnessId),
 				HashableBigInteger.from(BigInteger.valueOf(numberOfSelections)),
-				HashableBigInteger.from(BigInteger.valueOf(numberOfVotingOptions)));
+				HashableBigInteger.from(BigInteger.valueOf(numberOfVotingOptions)),
+				HashableList.from(listOfWriteInOptions.stream()
+						.map(HashableBigInteger::from)
+						.toList()));
 	}
 }
