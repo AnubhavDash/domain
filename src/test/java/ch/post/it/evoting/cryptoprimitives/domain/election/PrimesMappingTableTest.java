@@ -102,9 +102,9 @@ class PrimesMappingTableTest {
 	@Test
 	@DisplayName("from not enough entries, throws an IllegalArgumentException.")
 	void fromNotEnoughThrows() {
-
+		final GroupVector<PrimesMappingTableEntry, GqGroup> emptyGroupVector = GroupVector.of();
 		final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new PrimesMappingTable(GroupVector.of()));
+				() -> new PrimesMappingTable(emptyGroupVector));
 
 		assertEquals("The primes mapping table cannot be empty.", Throwables.getRootCause(illegalArgumentException).getMessage());
 	}
