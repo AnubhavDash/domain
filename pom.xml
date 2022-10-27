@@ -14,9 +14,9 @@
 		<maven-enforcer-plugin.requiredMavenVersion>3.8.6</maven-enforcer-plugin.requiredMavenVersion>
 		<project.build.outputTimestamp>2022-10-18T13:31:39+02:00</project.build.outputTimestamp>
 
-		<crypto-primitives.version>1.0.0.4</crypto-primitives.version>
-		<bouncycastle.version>1.71.1</bouncycastle.version>
-		<jackson.version>2.13.3</jackson.version>
+		<crypto-primitives.version>1.1.0.0</crypto-primitives.version>
+		<bouncycastle.version>1.72</bouncycastle.version>
+		<jackson.version>2.13.4.20221013</jackson.version>
 		<jacoco.version>0.8.8</jacoco.version>
 		<junit-jupiter.version>5.9.1</junit-jupiter.version>
 		<mockito.version>4.8.0</mockito.version>
