@@ -31,7 +31,7 @@ Out of the 3 code smells:
 
 ### Fortify Analysis
 
-The Fortify analysis showed 0 critical, 0 high, 0 medium, and 4 low criticality issues. We manually reviewed the 4 low-criticality issues and assessed them as false positives.
+The Fortify analysis showed 0 critical, 0 high, 0 medium, and 1 low criticality issues. We manually reviewed the low-criticality issue and assessed it as false positive.
 
 ### JFrog X-Ray Analysis
 

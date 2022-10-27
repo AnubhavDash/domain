@@ -1,5 +1,15 @@
 # Changelog
 
+## Release 1.1
+
+The following functionalities and improvements are included in release 1.1
+
+* Ensure that the PrimesMappingTable does not contain more than OMEGA (1200 entries)
+* Integrate the QuadraticResidueToWriteIn and IntegerToWriteIn in the ProcessPlaintexts algorithm
+* Add the list of write-in options to the CombinedCorrectnessInformation object
+
+---
+
 ## Release 1.0
 
 The following functionalities and improvements are included in release 1.0

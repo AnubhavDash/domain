@@ -42,7 +42,7 @@ import ch.post.it.evoting.cryptoprimitives.math.PrimeGqElement;
 public record PrimesMappingTableEntry(String actualVotingOption, PrimeGqElement encodedVotingOption)
 		implements GroupVectorElement<GqGroup>, HashableList {
 
-	public static final Pattern VALID_XML_TOKEN_PATTERN = Pattern.compile( "^[\\w\\-_]{1,50}$");
+	public static final Pattern VALID_XML_TOKEN_PATTERN = Pattern.compile("^[\\w\\-]{1,50}$");
 	public static final int XML_TOKEN_PATTERN_MAX_LENGTH = 50;
 
 	public PrimesMappingTableEntry {
