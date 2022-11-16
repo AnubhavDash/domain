@@ -15,7 +15,6 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.election;
 
-import static ch.post.it.evoting.cryptoprimitives.domain.ControlComponentConstants.NODE_IDS;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -23,60 +22,30 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Streams;
 
-import ch.post.it.evoting.cryptoprimitives.domain.mixnet.SchnorrProofDeserializer;
-import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamal;
-import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalFactory;
-import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
-import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
-import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
-import ch.post.it.evoting.cryptoprimitives.math.ZqGroup;
-import ch.post.it.evoting.cryptoprimitives.zeroknowledgeproofs.SchnorrProof;
 
 public record ElectionEventContext(String electionEventId,
 								   List<VerificationCardSetContext> verificationCardSetContexts,
-								   List<ControlComponentPublicKeys> combinedControlComponentPublicKeys,
-								   ElGamalMultiRecipientPublicKey electoralBoardPublicKey,
-								   @JsonDeserialize(using = SchnorrProofDeserializer.class)
-								   GroupVector<SchnorrProof, ZqGroup> electoralBoardSchnorrProofs,
-								   ElGamalMultiRecipientPublicKey electionPublicKey,
-								   ElGamalMultiRecipientPublicKey choiceReturnCodesEncryptionPublicKey,
 								   LocalDateTime startTime,
 								   LocalDateTime finishTime) implements HashableList {
 
 	public ElectionEventContext(final String electionEventId,
 			final List<VerificationCardSetContext> verificationCardSetContexts,
-			final List<ControlComponentPublicKeys> combinedControlComponentPublicKeys,
-			final ElGamalMultiRecipientPublicKey electoralBoardPublicKey,
-			@JsonDeserialize(using = SchnorrProofDeserializer.class)
-			final GroupVector<SchnorrProof, ZqGroup> electoralBoardSchnorrProofs,
-			final ElGamalMultiRecipientPublicKey electionPublicKey,
-			final ElGamalMultiRecipientPublicKey choiceReturnCodesEncryptionPublicKey,
 			final LocalDateTime startTime,
 			final LocalDateTime finishTime) {
 
 		this.electionEventId = validateUUID(electionEventId);
 		this.verificationCardSetContexts = List.copyOf(checkNotNull(verificationCardSetContexts));
-		this.combinedControlComponentPublicKeys = List.copyOf(checkNotNull(combinedControlComponentPublicKeys));
-		this.electoralBoardPublicKey = checkNotNull(electoralBoardPublicKey);
-		this.electoralBoardSchnorrProofs = checkNotNull(electoralBoardSchnorrProofs);
-		this.electionPublicKey = checkNotNull(electionPublicKey);
-		this.choiceReturnCodesEncryptionPublicKey = checkNotNull(choiceReturnCodesEncryptionPublicKey);
 		this.startTime = checkNotNull(startTime);
 		this.finishTime = checkNotNull(finishTime);
 
 		this.verificationCardSetContexts.forEach(Preconditions::checkNotNull);
-		this.combinedControlComponentPublicKeys.forEach(Preconditions::checkNotNull);
 
 		final int verificationCardSetContextsSize = this.verificationCardSetContexts.size();
 		checkArgument(verificationCardSetContextsSize > 0, "VerificationCardSetContexts cannot be empty.");
@@ -92,53 +61,6 @@ public record ElectionEventContext(String electionEventId,
 						.map(VerificationCardSetContext::numberOfWriteInFields)
 						.allMatch(n -> n >= 0),
 				"VerificationCardSetContexts cannot contain negative numberOfWriteInFields.");
-
-		final int combinedControlComponentPublicKeysSize = this.combinedControlComponentPublicKeys.size();
-		checkArgument(combinedControlComponentPublicKeysSize == NODE_IDS.size(),
-				"CombinedControlComponentPublicKeys must contain the expected number of ControlComponentPublicKeys.");
-		checkArgument(NODE_IDS.equals(
-						this.combinedControlComponentPublicKeys.stream()
-								.map(ControlComponentPublicKeys::nodeId)
-								.collect(Collectors.toSet())),
-				"CombinedControlComponentPublicKeys must contain the expected node ids.");
-
-		final GroupVector<ElGamalMultiRecipientPublicKey, GqGroup> ccrChoiceReturnCodePublicKeys = this.combinedControlComponentPublicKeys.stream()
-				.map(ControlComponentPublicKeys::ccrjChoiceReturnCodesEncryptionPublicKey)
-				.collect(GroupVector.toGroupVector());
-
-		final ElGamal elGamal = ElGamalFactory.createElGamal();
-		final ElGamalMultiRecipientPublicKey combinedCCrChoiceReturnCodesPublicKeys = elGamal.combinePublicKeys(ccrChoiceReturnCodePublicKeys);
-
-		checkArgument(choiceReturnCodesEncryptionPublicKey.equals(combinedCCrChoiceReturnCodesPublicKeys),
-				"Multiplication of the ccrChoiceReturnCodesPublicKeys must equal the choiceReturnCodesPublicKey");
-
-		final int maxNumberOfWriteInFields = getMaxNumberOfWriteInFields();
-
-		checkArgument(electoralBoardPublicKey.size() == (maxNumberOfWriteInFields + 1),
-				"The size of the electoralBoardPublicKey must equal the maximum number of write-in fields in all verification card sets + 1");
-		checkArgument(electoralBoardPublicKey.size() == electoralBoardSchnorrProofs.size(),
-				"The size of the electoral board public key must be equal to the size of the electoral board Schnorr proofs.");
-
-		final GroupVector<ElGamalMultiRecipientPublicKey, GqGroup> publicKeys = Streams.concat(
-						this.combinedControlComponentPublicKeys.stream()
-								.map(ControlComponentPublicKeys::ccmjElectionPublicKey)
-								.filter(ccmElectionPublicKey -> ccmElectionPublicKey.size() >= maxNumberOfWriteInFields + 1)
-								.map(ccmElectionPublicKey ->
-										new ElGamalMultiRecipientPublicKey(
-												GroupVector.from(ccmElectionPublicKey.getKeyElements().subList(0, maxNumberOfWriteInFields + 1)))),
-						Stream.of(electoralBoardPublicKey))
-				.collect(GroupVector.toGroupVector());
-
-		checkArgument(electionPublicKey.equals(elGamal.combinePublicKeys(publicKeys)),
-				"Multiplication of the ccmElectionPublicKeys times the electoralBoardPublicKey must equal the electionPublicKey");
-
-		final ControlComponentPublicKeys controlComponentPublicKey = this.combinedControlComponentPublicKeys.get(0);
-		final GqGroup gqGroup = controlComponentPublicKey.ccmjElectionPublicKey().getGroup();
-		checkArgument(gqGroup.equals(electoralBoardPublicKey.getGroup()));
-		checkArgument(gqGroup.equals(electionPublicKey.getGroup()));
-		checkArgument(gqGroup.equals(choiceReturnCodesEncryptionPublicKey.getGroup()));
-		checkArgument(gqGroup.equals(this.verificationCardSetContexts.get(0).primesMappingTable().getPTable().getGroup()));
-		checkArgument(gqGroup.hasSameOrderAs(electoralBoardSchnorrProofs.getGroup()));
 	}
 
 	/**
@@ -156,11 +78,6 @@ public record ElectionEventContext(String electionEventId,
 	public List<Hashable> toHashableForm() {
 		return List.of(HashableString.from(electionEventId),
 				HashableList.from(verificationCardSetContexts),
-				HashableList.from(combinedControlComponentPublicKeys),
-				electoralBoardPublicKey,
-				electoralBoardSchnorrProofs,
-				electionPublicKey,
-				choiceReturnCodesEncryptionPublicKey,
 				HashableString.from(startTime.toString()),
 				HashableString.from(finishTime.toString()));
 	}
