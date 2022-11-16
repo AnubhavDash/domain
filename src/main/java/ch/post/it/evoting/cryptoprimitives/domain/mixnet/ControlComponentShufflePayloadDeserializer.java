@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ch.post.it.evoting.cryptoprimitives.domain.mapper.EncryptionGroupUtils;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
@@ -43,15 +44,15 @@ class ControlComponentShufflePayloadDeserializer extends JsonDeserializer<Contro
 		final String ballotBoxId = mapper.readValue(node.get("ballotBoxId").toString(), String.class);
 
 		final JsonNode encryptionGroupNode = node.get("encryptionGroup");
-		final GqGroup gqGroup = mapper.readValue(encryptionGroupNode.toString(), GqGroup.class);
+		final GqGroup encryptionGroup = EncryptionGroupUtils.getEncryptionGroup(mapper, encryptionGroupNode);
 		final String groupAttribute = "group";
 
 		final VerifiableDecryptions verifiableDecryptions = mapper.reader()
-				.withAttribute(groupAttribute, gqGroup)
+				.withAttribute(groupAttribute, encryptionGroup)
 				.readValue(node.get("verifiableDecryptions").toString(), VerifiableDecryptions.class);
 
 		final VerifiableShuffle verifiableShuffle = mapper.reader()
-				.withAttribute(groupAttribute, gqGroup)
+				.withAttribute(groupAttribute, encryptionGroup)
 				.readValue(node.get("verifiableShuffle").toString(), VerifiableShuffle.class);
 
 		final int nodeId = mapper.readValue(node.get("nodeId").toString(), Integer.class);
@@ -59,6 +60,6 @@ class ControlComponentShufflePayloadDeserializer extends JsonDeserializer<Contro
 		final CryptoPrimitivesSignature signature = mapper.reader()
 				.readValue(node.get("signature").toString(), CryptoPrimitivesSignature.class);
 
-		return new ControlComponentShufflePayload(gqGroup, electionEventId, ballotBoxId, nodeId, verifiableDecryptions, verifiableShuffle, signature);
+		return new ControlComponentShufflePayload(encryptionGroup, electionEventId, ballotBoxId, nodeId, verifiableDecryptions, verifiableShuffle, signature);
 	}
 }

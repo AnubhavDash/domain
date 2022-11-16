@@ -15,6 +15,8 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.mapper;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -110,9 +112,16 @@ public class DomainObjectMapper {
 				.addMixIn(SingleValueProductArgument.Builder.class, SingleValueProductArgumentMixIn.SingleValueProductArgumentBuilderMixIn.class)
 				.addMixIn(ZeroArgument.Builder.class, ZeroArgumentMixIn.ZeroArgumentBuilderMixIn.class)
 				.disable(MapperFeature.USE_GETTERS_AS_SETTERS)
-				.addModule(new JavaTimeModule())
+				.addModule(newJavaTimeModule())
 				.build()
 				.registerModule(new Jdk8Module());
+	}
+
+	private static JavaTimeModule newJavaTimeModule() {
+		final JavaTimeModule module = new JavaTimeModule();
+		module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
+		module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
+		return module;
 	}
 
 }

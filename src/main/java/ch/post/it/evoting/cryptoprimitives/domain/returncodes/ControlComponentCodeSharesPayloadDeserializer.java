@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ch.post.it.evoting.cryptoprimitives.domain.mapper.EncryptionGroupUtils;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
@@ -36,20 +37,22 @@ public class ControlComponentCodeSharesPayloadDeserializer extends JsonDeseriali
 
 		final JsonNode node = mapper.readTree(parser);
 		final JsonNode encryptionGroupNode = node.get("encryptionGroup");
-		final GqGroup gqGroup = mapper.readValue(encryptionGroupNode.toString(), GqGroup.class);
+		final GqGroup encryptionGroup = EncryptionGroupUtils.getEncryptionGroup(mapper, encryptionGroupNode);
+		final String groupAttribute = "group";
 
 		final String electionEventId = mapper.readValue(node.get("electionEventId").toString(), String.class);
 		final String verificationCardSetId = mapper.readValue(node.get("verificationCardSetId").toString(), String.class);
 		final int chunkId = mapper.readValue(node.get("chunkId").toString(), Integer.class);
 
-		final List<ControlComponentCodeShare> returnCodeGenerationInputs = Arrays.asList(mapper.reader().withAttribute("group", gqGroup)
+		final List<ControlComponentCodeShare> returnCodeGenerationInputs = Arrays.asList(mapper.reader()
+				.withAttribute(groupAttribute, encryptionGroup)
 				.readValue(node.get("controlComponentCodeShares").toString(), ControlComponentCodeShare[].class));
 
 		final int nodeId = mapper.readValue(node.get("nodeId").toString(), Integer.class);
 
 		final CryptoPrimitivesSignature signature = mapper.reader().readValue(node.get("signature").toString(), CryptoPrimitivesSignature.class);
 
-		return new ControlComponentCodeSharesPayload(electionEventId, verificationCardSetId, chunkId, gqGroup, returnCodeGenerationInputs,
+		return new ControlComponentCodeSharesPayload(electionEventId, verificationCardSetId, chunkId, encryptionGroup, returnCodeGenerationInputs,
 				nodeId, signature);
 	}
 

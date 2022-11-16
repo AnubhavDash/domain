@@ -23,30 +23,29 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ch.post.it.evoting.cryptoprimitives.domain.election.ElectionEventContext;
+import ch.post.it.evoting.cryptoprimitives.domain.election.SetupComponentPublicKeys;
 import ch.post.it.evoting.cryptoprimitives.domain.mapper.EncryptionGroupUtils;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
-public class ElectionEventContextPayloadDeserializer extends JsonDeserializer<ElectionEventContextPayload> {
-
+public class SetupComponentPublicKeysPayloadDeserializer extends JsonDeserializer<SetupComponentPublicKeysPayload> {
 	@Override
-	public ElectionEventContextPayload deserialize(final JsonParser parser, final DeserializationContext deserializationContext)
+	public SetupComponentPublicKeysPayload deserialize(JsonParser parser, DeserializationContext deserializationContext)
 			throws IOException {
-
 		final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
 
 		final JsonNode node = mapper.readTree(parser);
 		final JsonNode encryptionGroupNode = node.get("encryptionGroup");
 		final GqGroup encryptionGroup = EncryptionGroupUtils.getEncryptionGroup(mapper, encryptionGroupNode);
-		final String groupAttribute = "group";
 
-		final ElectionEventContext electionEventContext = mapper.reader()
-				.withAttribute(groupAttribute, encryptionGroup)
-				.readValue(node.get("electionEventContext"), ElectionEventContext.class);
+		final String electionEventId = mapper.readValue(node.get("electionEventId").toString(), String.class);
+
+		final SetupComponentPublicKeys setupComponentPublicKeys = mapper.reader()
+				.withAttribute("group", encryptionGroup)
+				.readValue(node.get("setupComponentPublicKeys"), SetupComponentPublicKeys.class);
 
 		final CryptoPrimitivesSignature signature = mapper.readValue(node.get("signature").toString(), CryptoPrimitivesSignature.class);
 
-		return new ElectionEventContextPayload(encryptionGroup, electionEventContext, signature);
+		return new SetupComponentPublicKeysPayload(encryptionGroup, electionEventId, setupComponentPublicKeys, signature);
 	}
 }

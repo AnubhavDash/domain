@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.post.it.evoting.cryptoprimitives.domain.mapper.DomainObjectMapper;
+import ch.post.it.evoting.cryptoprimitives.domain.mapper.EncryptionGroupUtils;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
@@ -37,12 +38,13 @@ public class EncryptionParametersPayloadDeserializer extends JsonDeserializer<En
 
 		final JsonNode node = mapper.readTree(parser);
 		final JsonNode encryptionGroupNode = node.get("encryptionGroup");
-		final GqGroup encryptionGroup = mapper.readValue(encryptionGroupNode.toString(), GqGroup.class);
+		final GqGroup encryptionGroup = EncryptionGroupUtils.getEncryptionGroup(mapper, encryptionGroupNode);
+		final String groupAttribute = "group";
 		final String seed = mapper.readValue(node.get("seed").toString(), String.class);
 
 		final JsonNode smallPrimesNode = node.get("smallPrimes");
 		final PrimeGqElement[] smallPrimesEntries = mapper.reader()
-				.withAttribute("group", encryptionGroup)
+				.withAttribute(groupAttribute, encryptionGroup)
 				.readValue(smallPrimesNode, PrimeGqElement[].class);
 
 		final GroupVector<PrimeGqElement, GqGroup> smallPrimes = GroupVector.of(smallPrimesEntries);

@@ -77,33 +77,12 @@ class ElectionEventContextPayloadTest {
 		final String electionEventId = random.genRandomBase16String(32).toLowerCase();
 		final List<VerificationCardSetContext> verificationCardSetContexts = new ArrayList<>();
 
-		final List<ControlComponentPublicKeys> combinedControlComponentPublicKeys = new ArrayList<>();
-
 		IntStream.rangeClosed(1, 2).forEach(i -> verificationCardSetContexts.add(generatedVerificationCardSetContext()));
-
-		IntStream.rangeClosed(1, 4).forEach(nodeId -> combinedControlComponentPublicKeys.add(generateCombinedControlComponentPublicKeys(nodeId)));
-
-		final ElGamalMultiRecipientPublicKey electoralBoardPublicKey = SerializationTestData.getPublicKey();
-
-		final GroupVector<ElGamalMultiRecipientPublicKey, GqGroup> ccrChoiceReturnCodePublicKeys = combinedControlComponentPublicKeys.stream()
-				.map(ControlComponentPublicKeys::ccrjChoiceReturnCodesEncryptionPublicKey).collect(GroupVector.toGroupVector());
-
-		final ElGamal elGamal = ElGamalFactory.createElGamal();
-		final ElGamalMultiRecipientPublicKey choiceReturnCodesPublicKey = elGamal.combinePublicKeys(ccrChoiceReturnCodePublicKeys);
-
-		final GroupVector<ElGamalMultiRecipientPublicKey, GqGroup> ccmElectionPublicKeys = Streams.concat(
-				combinedControlComponentPublicKeys.stream()
-						.map(ControlComponentPublicKeys::ccmjElectionPublicKey),
-				Stream.of(electoralBoardPublicKey)).collect(GroupVector.toGroupVector());
-
-		final ElGamalMultiRecipientPublicKey electionPublicKey = elGamal.combinePublicKeys(ccmElectionPublicKeys);
 
 		final LocalDateTime startTime = LocalDateTime.now();
 		final LocalDateTime finishTime = startTime.plusWeeks(1);
 
-		final ElectionEventContext electionEventContext = new ElectionEventContext(electionEventId, verificationCardSetContexts,
-				combinedControlComponentPublicKeys, electoralBoardPublicKey, schnorrProofs, electionPublicKey, choiceReturnCodesPublicKey, startTime,
-				finishTime);
+		final ElectionEventContext electionEventContext = new ElectionEventContext(electionEventId, verificationCardSetContexts, startTime, finishTime);
 
 		electionEventContextPayload = new ElectionEventContextPayload(encryptionGroup, electionEventContext);
 
@@ -135,88 +114,8 @@ class ElectionEventContextPayloadTest {
 		}
 		electionEventContextNode.set("verificationCardSetContexts", verificationCardSetContextsNodes);
 
-		final ArrayNode combinedControlComponentPublicKeysNodes = mapper.createArrayNode();
-
-		for (final ControlComponentPublicKeys combinedControlComponentPublicKey : combinedControlComponentPublicKeys) {
-			final ObjectNode combinedControlComponentPublicKeyNode = mapper.createObjectNode();
-			combinedControlComponentPublicKeyNode.put("nodeId", combinedControlComponentPublicKey.nodeId());
-
-			final ElGamalMultiRecipientPublicKey ccrChoiceReturnCodesEncryptionPublicKey = combinedControlComponentPublicKey.ccrjChoiceReturnCodesEncryptionPublicKey();
-			final ArrayNode ccrChoiceReturnCodesEncryptionPublicKeyElements = mapper.createArrayNode();
-			for (final GqElement element : ccrChoiceReturnCodesEncryptionPublicKey.getKeyElements()) {
-				ccrChoiceReturnCodesEncryptionPublicKeyElements.add("0x" + element.toHashableForm());
-			}
-
-			final ElGamalMultiRecipientPublicKey ccmElectionPublicKey = combinedControlComponentPublicKey.ccmjElectionPublicKey();
-			final ArrayNode ccmElectionPublicKeyElements = mapper.createArrayNode();
-			for (final GqElement element : ccmElectionPublicKey.getKeyElements()) {
-				ccmElectionPublicKeyElements.add("0x" + element.toHashableForm());
-			}
-
-			// schnorrProof
-			final ArrayNode schnorrProofsNodes = mapper.createArrayNode();
-			final ObjectNode schnorrProofNode = mapper.createObjectNode();
-			for (final SchnorrProof schnorrProof : schnorrProofs) {
-				schnorrProofNode.put("_e", "0x" + schnorrProof.get_e().getValue());
-				schnorrProofNode.put("_z", "0x" + schnorrProof.get_z().getValue());
-				schnorrProofsNodes.add(schnorrProofNode);
-			}
-
-			combinedControlComponentPublicKeyNode.set("ccrjChoiceReturnCodesEncryptionPublicKey", ccrChoiceReturnCodesEncryptionPublicKeyElements);
-			combinedControlComponentPublicKeyNode.set("ccrjSchnorrProofs", schnorrProofsNodes);
-			combinedControlComponentPublicKeyNode.set("ccmjElectionPublicKey", ccmElectionPublicKeyElements);
-			combinedControlComponentPublicKeyNode.set("ccmjSchnorrProofs", schnorrProofsNodes);
-			combinedControlComponentPublicKeysNodes.add(combinedControlComponentPublicKeyNode);
-		}
-
-		electionEventContextNode.set("combinedControlComponentPublicKeys", combinedControlComponentPublicKeysNodes);
-
-		final ArrayNode electoralBoardPublicKeyNodeElements = mapper.createArrayNode();
-		for (final GqElement element : electoralBoardPublicKey.getKeyElements()) {
-			electoralBoardPublicKeyNodeElements.add("0x" + element.toHashableForm());
-		}
-		electionEventContextNode.set("electoralBoardPublicKey", electoralBoardPublicKeyNodeElements);
-
-		final ArrayNode schnorrProofsNodes = mapper.createArrayNode();
-		final ObjectNode schnorrProofNode = mapper.createObjectNode();
-		for (final SchnorrProof schnorrProof : schnorrProofs) {
-			schnorrProofNode.put("_e", "0x" + schnorrProof.get_e().getValue());
-			schnorrProofNode.put("_z", "0x" + schnorrProof.get_z().getValue());
-			schnorrProofsNodes.add(schnorrProofNode);
-		}
-		electionEventContextNode.set("electoralBoardSchnorrProofs", schnorrProofsNodes);
-
-		final ArrayNode electionPublicKeyNodeElements = mapper.createArrayNode();
-		for (final GqElement element : electionPublicKey.getKeyElements()) {
-			electionPublicKeyNodeElements.add("0x" + element.toHashableForm());
-		}
-		electionEventContextNode.set("electionPublicKey", electionPublicKeyNodeElements);
-
-		final ArrayNode choiceReturnCodesPublicKeyNodeElements = mapper.createArrayNode();
-		for (final GqElement element : choiceReturnCodesPublicKey.getKeyElements()) {
-			choiceReturnCodesPublicKeyNodeElements.add("0x" + element.toHashableForm());
-		}
-		electionEventContextNode.set("choiceReturnCodesEncryptionPublicKey", choiceReturnCodesPublicKeyNodeElements);
-
-		final ArrayNode startTimeNodeElements = mapper.createArrayNode();
-		startTimeNodeElements.add(startTime.getYear());
-		startTimeNodeElements.add(startTime.getMonthValue());
-		startTimeNodeElements.add(startTime.getDayOfMonth());
-		startTimeNodeElements.add(startTime.getHour());
-		startTimeNodeElements.add(startTime.getMinute());
-		startTimeNodeElements.add(startTime.getSecond());
-		startTimeNodeElements.add(startTime.getNano());
-		electionEventContextNode.set("startTime", startTimeNodeElements);
-
-		final ArrayNode finishTimeNodeElements = mapper.createArrayNode();
-		finishTimeNodeElements.add(finishTime.getYear());
-		finishTimeNodeElements.add(finishTime.getMonthValue());
-		finishTimeNodeElements.add(finishTime.getDayOfMonth());
-		finishTimeNodeElements.add(finishTime.getHour());
-		finishTimeNodeElements.add(finishTime.getMinute());
-		finishTimeNodeElements.add(finishTime.getSecond());
-		finishTimeNodeElements.add(finishTime.getNano());
-		electionEventContextNode.set("finishTime", finishTimeNodeElements);
+		electionEventContextNode.set("startTime", mapper.readTree(mapper.writeValueAsString(startTime)));
+		electionEventContextNode.set("finishTime", mapper.readTree(mapper.writeValueAsString(finishTime)));
 
 		rootNode.set("electionEventContext", electionEventContextNode);
 
@@ -245,12 +144,6 @@ class ElectionEventContextPayloadTest {
 				.readValue(mapper.writeValueAsString(electionEventContextPayload), ElectionEventContextPayload.class);
 
 		assertEquals(electionEventContextPayload, deserializedPayload);
-	}
-
-	private static ControlComponentPublicKeys generateCombinedControlComponentPublicKeys(final int nodeId) {
-		final ElGamalMultiRecipientPublicKey ccrChoiceReturnCodesEncryptionPublicKey = SerializationTestData.getPublicKey();
-		final ElGamalMultiRecipientPublicKey ccmElectionPublicKey = SerializationTestData.getPublicKey();
-		return new ControlComponentPublicKeys(nodeId, ccrChoiceReturnCodesEncryptionPublicKey, schnorrProofs, ccmElectionPublicKey, schnorrProofs);
 	}
 
 	private static VerificationCardSetContext generatedVerificationCardSetContext() {
@@ -291,23 +184,17 @@ class ElectionEventContextPayloadTest {
 
 		final List<VerificationCardSetContext> duplicateVerificationCardSetIds = new ArrayList<>();
 
-		final List<ControlComponentPublicKeys> emptyCombinedControlComponentPublicKeys = new ArrayList<>();
-		final ElGamalMultiRecipientPublicKey testElectoralBoardPublicKey = SerializationTestData.getPublicKey();
-		final ElGamalMultiRecipientPublicKey testElectionPublicKey = SerializationTestData.getPublicKey();
-		final ElGamalMultiRecipientPublicKey testChoiceReturnCodesPublicKey = SerializationTestData.getPublicKey();
 		final LocalDateTime start = LocalDateTime.now();
 		final LocalDateTime finish = start.plusWeeks(1);
 		final IllegalArgumentException emptyIllegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new ElectionEventContext(electionEventId, duplicateVerificationCardSetIds, emptyCombinedControlComponentPublicKeys,
-						testElectoralBoardPublicKey, schnorrProofs, testElectionPublicKey, testChoiceReturnCodesPublicKey, start, finish));
+				() -> new ElectionEventContext(electionEventId, duplicateVerificationCardSetIds, start, finish));
 		assertEquals("VerificationCardSetContexts cannot be empty.", emptyIllegalArgumentException.getMessage());
 
 		duplicateVerificationCardSetIds.add(verificationCardSetContextOne);
 		duplicateVerificationCardSetIds.add(verificationCardSetContextTwo);
 
 		final IllegalArgumentException duplicateVerificationCardSetIdsIllegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new ElectionEventContext(electionEventId, duplicateVerificationCardSetIds, emptyCombinedControlComponentPublicKeys,
-						testElectoralBoardPublicKey, schnorrProofs, testElectionPublicKey, testChoiceReturnCodesPublicKey, start, finish));
+				() -> new ElectionEventContext(electionEventId, duplicateVerificationCardSetIds, start, finish));
 		assertEquals("VerificationCardSetContexts cannot contain duplicate VerificationCardSetIds.",
 				duplicateVerificationCardSetIdsIllegalArgumentException.getMessage());
 
@@ -316,8 +203,7 @@ class ElectionEventContextPayloadTest {
 		duplicateBallotBoxIds.add(verificationCardSetContextThree);
 
 		final IllegalArgumentException duplicateBallotBoxIdsIllegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new ElectionEventContext(electionEventId, duplicateBallotBoxIds, emptyCombinedControlComponentPublicKeys,
-						testElectoralBoardPublicKey, schnorrProofs, testElectionPublicKey, testChoiceReturnCodesPublicKey, start, finish));
+				() -> new ElectionEventContext(electionEventId, duplicateBallotBoxIds, start, finish));
 		assertEquals("VerificationCardSetContexts cannot contain duplicate BallotBoxIds.",
 				duplicateBallotBoxIdsIllegalArgumentException.getMessage());
 
@@ -330,36 +216,13 @@ class ElectionEventContextPayloadTest {
 		correctVerificationCardSetContexts.add(verificationCardSetContextOne);
 		correctVerificationCardSetContexts.add(verificationCardSetContextFour);
 
-		final List<ControlComponentPublicKeys> controlComponentPublicKeys = new ArrayList<>();
-		final IllegalArgumentException emptyCombinedControlComponentPublicKeysIllegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new ElectionEventContext(electionEventId, correctVerificationCardSetContexts, controlComponentPublicKeys,
-						testElectoralBoardPublicKey, schnorrProofs, testElectionPublicKey, testChoiceReturnCodesPublicKey, start, finish));
-		assertEquals("CombinedControlComponentPublicKeys must contain the expected number of ControlComponentPublicKeys.",
-				emptyCombinedControlComponentPublicKeysIllegalArgumentException.getMessage());
-
 		assertThrows(NullPointerException.class,
-				() -> new ElectionEventContext(null, correctVerificationCardSetContexts, emptyCombinedControlComponentPublicKeys,
-						testElectoralBoardPublicKey, schnorrProofs, testElectionPublicKey, testChoiceReturnCodesPublicKey, start, finish));
+				() -> new ElectionEventContext(null, correctVerificationCardSetContexts, start, finish));
 		assertThrows(NullPointerException.class,
-				() -> new ElectionEventContext(electionEventId, null, emptyCombinedControlComponentPublicKeys, testElectoralBoardPublicKey,
-						schnorrProofs, testElectionPublicKey, testChoiceReturnCodesPublicKey, start, finish));
+				() -> new ElectionEventContext(electionEventId, null, start, finish));
 		assertThrows(NullPointerException.class,
-				() -> new ElectionEventContext(electionEventId, correctVerificationCardSetContexts, null, testElectoralBoardPublicKey, schnorrProofs,
-						testElectionPublicKey, testChoiceReturnCodesPublicKey, start, finish));
+				() -> new ElectionEventContext(electionEventId, correctVerificationCardSetContexts, null, finish));
 		assertThrows(NullPointerException.class,
-				() -> new ElectionEventContext(electionEventId, correctVerificationCardSetContexts, emptyCombinedControlComponentPublicKeys, null,
-						schnorrProofs, testElectionPublicKey, testChoiceReturnCodesPublicKey, start, finish));
-		assertThrows(NullPointerException.class,
-				() -> new ElectionEventContext(electionEventId, correctVerificationCardSetContexts, emptyCombinedControlComponentPublicKeys,
-						testElectoralBoardPublicKey, schnorrProofs, null, testChoiceReturnCodesPublicKey, start, finish));
-		assertThrows(NullPointerException.class,
-				() -> new ElectionEventContext(electionEventId, correctVerificationCardSetContexts, emptyCombinedControlComponentPublicKeys,
-						testElectoralBoardPublicKey, schnorrProofs, testElectionPublicKey, null, start, finish));
-		assertThrows(NullPointerException.class,
-				() -> new ElectionEventContext(electionEventId, correctVerificationCardSetContexts, emptyCombinedControlComponentPublicKeys,
-						testElectoralBoardPublicKey, schnorrProofs, testElectionPublicKey, testChoiceReturnCodesPublicKey, null, finish));
-		assertThrows(NullPointerException.class,
-				() -> new ElectionEventContext(electionEventId, correctVerificationCardSetContexts, emptyCombinedControlComponentPublicKeys,
-						testElectoralBoardPublicKey, schnorrProofs, testElectionPublicKey, testChoiceReturnCodesPublicKey, start, null));
+				() -> new ElectionEventContext(electionEventId, correctVerificationCardSetContexts, start, null));
 	}
 }
