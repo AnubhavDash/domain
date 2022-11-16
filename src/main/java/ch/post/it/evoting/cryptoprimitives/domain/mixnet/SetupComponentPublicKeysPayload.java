@@ -25,86 +25,93 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import ch.post.it.evoting.cryptoprimitives.domain.election.ElectionEventContext;
+import ch.post.it.evoting.cryptoprimitives.domain.election.SetupComponentPublicKeys;
 import ch.post.it.evoting.cryptoprimitives.domain.returncodes.SignedPayload;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
-/**
- * This payload represents the SetupComponentPublicKeys message
- */
-@JsonDeserialize(using = ElectionEventContextPayloadDeserializer.class)
-@JsonPropertyOrder({ "encryptionGroup", "electionEventContext", "signature" })
-public class ElectionEventContextPayload implements SignedPayload {
+@JsonDeserialize(using = SetupComponentPublicKeysPayloadDeserializer.class)
+@JsonPropertyOrder({ "encryptionGroup", "electionEventId", "setupComponentPublicKeys", "signature" })
+public class SetupComponentPublicKeysPayload implements SignedPayload {
 
 	@JsonProperty
 	private final GqGroup encryptionGroup;
 
 	@JsonProperty
-	private final ElectionEventContext electionEventContext;
+	private final String electionEventId;
+
+	@JsonProperty
+	private final SetupComponentPublicKeys setupComponentPublicKeys;
 
 	@JsonProperty
 	private CryptoPrimitivesSignature signature;
 
 	@JsonCreator
-	public ElectionEventContextPayload(
+	public SetupComponentPublicKeysPayload(
 			@JsonProperty("encryptionGroup")
 			final GqGroup encryptionGroup,
-
-			@JsonProperty("electionEventContext")
-			final ElectionEventContext electionEventContext,
-
+			@JsonProperty("electionEventId")
+			final String electionEventId,
+			@JsonProperty("setupComponentPublicKeys")
+			final SetupComponentPublicKeys setupComponentPublicKeys,
 			@JsonProperty("signature")
-			final CryptoPrimitivesSignature signature
-	) {
-
-		this(encryptionGroup, electionEventContext);
+			final CryptoPrimitivesSignature signature) {
+		this(encryptionGroup, electionEventId, setupComponentPublicKeys);
 		this.signature = checkNotNull(signature);
 	}
 
-	public ElectionEventContextPayload(final GqGroup encryptionGroup, final ElectionEventContext electionEventContext) {
+	public SetupComponentPublicKeysPayload(
+			final GqGroup encryptionGroup,
+			final String electionEventId,
+			final SetupComponentPublicKeys setupComponentPublicKeys
+	) {
 		this.encryptionGroup = checkNotNull(encryptionGroup);
-		this.electionEventContext = checkNotNull(electionEventContext);
+		this.electionEventId = checkNotNull(electionEventId);
+		this.setupComponentPublicKeys = checkNotNull(setupComponentPublicKeys);
 	}
 
 	public GqGroup getEncryptionGroup() {
 		return encryptionGroup;
 	}
 
-	public ElectionEventContext getElectionEventContext() {
-		return electionEventContext;
+	public String getElectionEventId() {
+		return electionEventId;
 	}
 
-	public CryptoPrimitivesSignature getSignature() {
-		return signature;
-	}
-
-	public void setSignature(final CryptoPrimitivesSignature signature) {
-		this.signature = checkNotNull(signature);
+	public SetupComponentPublicKeys getSetupComponentPublicKeys() {
+		return setupComponentPublicKeys;
 	}
 
 	@Override
-	public List<Hashable> toHashableForm() {
-		return List.of(encryptionGroup, electionEventContext);
-	}
-
-	@Override
-	public boolean equals(final Object o) {
+	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
 		}
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		final ElectionEventContextPayload that = (ElectionEventContextPayload) o;
-		return encryptionGroup.equals(that.encryptionGroup) &&
-				electionEventContext.equals(that.electionEventContext)
-				&& Objects.equals(signature, that.signature);
+		SetupComponentPublicKeysPayload that = (SetupComponentPublicKeysPayload) o;
+		return encryptionGroup.equals(that.encryptionGroup) && setupComponentPublicKeys.equals(that.setupComponentPublicKeys);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(encryptionGroup, electionEventContext, signature);
+		return Objects.hash(encryptionGroup, setupComponentPublicKeys);
+	}
+
+	@Override
+	public CryptoPrimitivesSignature getSignature() {
+		return this.signature;
+	}
+
+	@Override
+	public void setSignature(CryptoPrimitivesSignature signature) {
+		this.signature = signature;
+	}
+
+	@Override
+	public List<? extends Hashable> toHashableForm() {
+		return List.of(encryptionGroup, setupComponentPublicKeys);
 	}
 }
