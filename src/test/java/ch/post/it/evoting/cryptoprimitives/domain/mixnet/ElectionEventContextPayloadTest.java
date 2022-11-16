@@ -197,26 +197,8 @@ class ElectionEventContextPayloadTest {
 			choiceReturnCodesPublicKeyNodeElements.add("0x" + element.toHashableForm());
 		}
 		electionEventContextNode.set("choiceReturnCodesEncryptionPublicKey", choiceReturnCodesPublicKeyNodeElements);
-
-		final ArrayNode startTimeNodeElements = mapper.createArrayNode();
-		startTimeNodeElements.add(startTime.getYear());
-		startTimeNodeElements.add(startTime.getMonthValue());
-		startTimeNodeElements.add(startTime.getDayOfMonth());
-		startTimeNodeElements.add(startTime.getHour());
-		startTimeNodeElements.add(startTime.getMinute());
-		startTimeNodeElements.add(startTime.getSecond());
-		startTimeNodeElements.add(startTime.getNano());
-		electionEventContextNode.set("startTime", startTimeNodeElements);
-
-		final ArrayNode finishTimeNodeElements = mapper.createArrayNode();
-		finishTimeNodeElements.add(finishTime.getYear());
-		finishTimeNodeElements.add(finishTime.getMonthValue());
-		finishTimeNodeElements.add(finishTime.getDayOfMonth());
-		finishTimeNodeElements.add(finishTime.getHour());
-		finishTimeNodeElements.add(finishTime.getMinute());
-		finishTimeNodeElements.add(finishTime.getSecond());
-		finishTimeNodeElements.add(finishTime.getNano());
-		electionEventContextNode.set("finishTime", finishTimeNodeElements);
+		electionEventContextNode.set("startTime", mapper.readTree(mapper.writeValueAsString(startTime)));
+		electionEventContextNode.set("finishTime", mapper.readTree(mapper.writeValueAsString(finishTime)));
 
 		rootNode.set("electionEventContext", electionEventContextNode);
 
