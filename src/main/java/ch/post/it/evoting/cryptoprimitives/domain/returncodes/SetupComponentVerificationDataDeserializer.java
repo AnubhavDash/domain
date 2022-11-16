@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.post.it.evoting.cryptoprimitives.domain.election.CombinedCorrectnessInformation;
+import ch.post.it.evoting.cryptoprimitives.domain.mapper.EncryptionGroupUtils;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
@@ -37,7 +38,8 @@ public class SetupComponentVerificationDataDeserializer extends JsonDeserializer
 
 		final JsonNode node = mapper.readTree(parser);
 		final JsonNode encryptionGroupNode = node.get("encryptionGroup");
-		final GqGroup gqGroup = mapper.readValue(encryptionGroupNode.toString(), GqGroup.class);
+		final GqGroup encryptionGroup = EncryptionGroupUtils.getEncryptionGroup(mapper, encryptionGroupNode);
+		final String groupAttribute = "group";
 
 		final String electionEventId = mapper.readValue(node.get("electionEventId").toString(), String.class);
 		final String verificationCardSetId = mapper.readValue(node.get("verificationCardSetId").toString(), String.class);
@@ -46,17 +48,19 @@ public class SetupComponentVerificationDataDeserializer extends JsonDeserializer
 		final List<String> partialChoiceReturnCodesAllowList = Arrays.asList(
 				mapper.readValue(node.get("partialChoiceReturnCodesAllowList").toString(), String[].class));
 
-		final List<SetupComponentVerificationData> setupComponentVerificationData = Arrays.asList(mapper.reader().withAttribute("group", gqGroup)
+		final List<SetupComponentVerificationData> setupComponentVerificationData = Arrays.asList(mapper.reader()
+				.withAttribute(groupAttribute, encryptionGroup)
 				.readValue(node.get("setupComponentVerificationData").toString(), SetupComponentVerificationData[].class));
 
-		final CombinedCorrectnessInformation combinedCorrectnessInformation = mapper.reader().withAttribute("group", gqGroup)
+		final CombinedCorrectnessInformation combinedCorrectnessInformation = mapper.reader()
+				.withAttribute(groupAttribute, encryptionGroup)
 				.readValue(node.get("combinedCorrectnessInformation").toString(), CombinedCorrectnessInformation.class);
 
 		final CryptoPrimitivesSignature signature = mapper.reader()
 				.readValue(node.get("signature").toString(), CryptoPrimitivesSignature.class);
 
-		return new SetupComponentVerificationDataPayload( electionEventId, verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId,
-				gqGroup, setupComponentVerificationData, combinedCorrectnessInformation, signature);
+		return new SetupComponentVerificationDataPayload(electionEventId, verificationCardSetId, partialChoiceReturnCodesAllowList, chunkId,
+				encryptionGroup, setupComponentVerificationData, combinedCorrectnessInformation, signature);
 	}
 
 }

@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.post.it.evoting.cryptoprimitives.domain.election.ElectionEventContext;
-import ch.post.it.evoting.cryptoprimitives.domain.mapper.DomainObjectMapper;
+import ch.post.it.evoting.cryptoprimitives.domain.mapper.EncryptionGroupUtils;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
@@ -34,18 +34,19 @@ public class ElectionEventContextPayloadDeserializer extends JsonDeserializer<El
 	public ElectionEventContextPayload deserialize(final JsonParser parser, final DeserializationContext deserializationContext)
 			throws IOException {
 
-		final ObjectMapper mapper = DomainObjectMapper.getNewInstance();
+		final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
 
 		final JsonNode node = mapper.readTree(parser);
 		final JsonNode encryptionGroupNode = node.get("encryptionGroup");
-		final GqGroup gqGroup = mapper.readValue(encryptionGroupNode.toString(), GqGroup.class);
+		final GqGroup encryptionGroup = EncryptionGroupUtils.getEncryptionGroup(mapper, encryptionGroupNode);
+		final String groupAttribute = "group";
 
 		final ElectionEventContext electionEventContext = mapper.reader()
-				.withAttribute("group", gqGroup)
+				.withAttribute(groupAttribute, encryptionGroup)
 				.readValue(node.get("electionEventContext"), ElectionEventContext.class);
 
 		final CryptoPrimitivesSignature signature = mapper.readValue(node.get("signature").toString(), CryptoPrimitivesSignature.class);
 
-		return new ElectionEventContextPayload(gqGroup, electionEventContext, signature);
+		return new ElectionEventContextPayload(encryptionGroup, electionEventContext, signature);
 	}
 }

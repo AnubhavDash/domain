@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ch.post.it.evoting.cryptoprimitives.domain.mapper.EncryptionGroupUtils;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.mixnet.VerifiableShuffle;
@@ -42,20 +43,22 @@ class TallyComponentShufflePayloadDeserializer extends JsonDeserializer<TallyCom
 		final String ballotBoxId = mapper.readValue(node.get("ballotBoxId").toString(), String.class);
 
 		final JsonNode encryptionGroupNode = node.get("encryptionGroup");
-		final GqGroup gqGroup = mapper.readValue(encryptionGroupNode.toString(), GqGroup.class);
+		final GqGroup encryptionGroup = EncryptionGroupUtils.getEncryptionGroup(mapper, encryptionGroupNode);
 		final String groupAttribute = "group";
 
 		final VerifiableShuffle verifiableShuffle = mapper.reader()
-				.withAttribute(groupAttribute, gqGroup)
+				.withAttribute(groupAttribute, encryptionGroup)
 				.readValue(node.get("verifiableShuffle").toString(), VerifiableShuffle.class);
 
 		final VerifiablePlaintextDecryption verifiablePlaintextDecryption = mapper.reader()
-				.withAttribute(groupAttribute, gqGroup)
+				.withAttribute(groupAttribute, encryptionGroup)
 				.readValue(node.get("verifiablePlaintextDecryption").toString(), VerifiablePlaintextDecryption.class);
 
 		final CryptoPrimitivesSignature signature = mapper.reader()
 				.readValue(node.get("signature").toString(), CryptoPrimitivesSignature.class);
 
-		return new TallyComponentShufflePayload(gqGroup, electionEventId, ballotBoxId, verifiableShuffle, verifiablePlaintextDecryption, signature);
+		return new TallyComponentShufflePayload(encryptionGroup, electionEventId, ballotBoxId, verifiableShuffle, verifiablePlaintextDecryption,
+				signature);
 	}
+
 }
