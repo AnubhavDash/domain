@@ -203,6 +203,19 @@ class CombinedCorrectnessInformationTest {
 				CombinedCorrectnessInformation.class);
 	}
 
+	private static Stream<Arguments> getCorrectnessInformationSelectionsTestSource() {
+		return Stream.of(Arguments.of(BALLOT_JSON, combinedCorrectnessInformation, 13),
+				Arguments.of(BALLOT_2_JSON, combinedCorrectnessInformation2, 3), Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 11),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 6));
+	}
+
+	private static Stream<Arguments> getCorrectnessInformationVotingOptionsTestSource() {
+		return Stream.of(Arguments.of(BALLOT_JSON, combinedCorrectnessInformation, 432),
+				Arguments.of(BALLOT_2_JSON, combinedCorrectnessInformation2, 10),
+				Arguments.of(BALLOT_3_JSON, combinedCorrectnessInformation3, 124),
+				Arguments.of(BALLOT_4_JSON, combinedCorrectnessInformation4, 25));
+	}
+
 	@ParameterizedTest(name = "built from {0} expected value {2}.")
 	@MethodSource("getTotalNumberOfSelectionsTestSource")
 	@DisplayName("built from a valid ballot, calling getTotalNumberOfSelections returns the expected result.")
@@ -425,5 +438,29 @@ class CombinedCorrectnessInformationTest {
 		assertAll(() -> assertEquals(combinedCorrectnessInformation, new CombinedCorrectnessInformation(ballot)),
 				() -> assertEquals(combinedCorrectnessInformation, combinedCorrectnessInformation)
 		);
+	}
+
+	@Test
+	void getCorrectnessInformationSelectionsTest() {
+
+	}
+
+	@ParameterizedTest(name = "built from {0} expected value {2}.")
+	@MethodSource("getCorrectnessInformationSelectionsTestSource")
+	@DisplayName("built from a valid ballot, calling getCorrectnessInformationSelections returns the expected result.")
+	void getCorrectnessInformationSelectionsTest(final String ignoredBallotName, final CombinedCorrectnessInformation combinedCorrectnessInformation,
+			final int expectedNumberOfSelections) {
+
+		assertEquals(expectedNumberOfSelections, combinedCorrectnessInformation.getCorrectnessInformationSelections().size());
+	}
+
+	@ParameterizedTest(name = "built from {0} expected value {2}.")
+	@MethodSource("getCorrectnessInformationVotingOptionsTestSource")
+	@DisplayName("built from a valid ballot, calling getCorrectnessInformationVotingOptions returns the expected result.")
+	void getCorrectnessInformationVotingOptionsTest(final String ignoredBallotName,
+			final CombinedCorrectnessInformation combinedCorrectnessInformation,
+			final int expectedNumberOfVotingOptions) {
+
+		assertEquals(expectedNumberOfVotingOptions, combinedCorrectnessInformation.getCorrectnessInformationVotingOptions().size());
 	}
 }
