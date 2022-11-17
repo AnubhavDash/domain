@@ -10,7 +10,7 @@
 	<name>Crypto Primitives Domain</name>
 
 	<properties>
-		<maven-enforcer-plugin.requiredJavaVersion>[17.0.3]</maven-enforcer-plugin.requiredJavaVersion>
+		<maven-enforcer-plugin.requiredJavaVersion>[17.0.5]</maven-enforcer-plugin.requiredJavaVersion>
 		<maven-enforcer-plugin.requiredMavenVersion>3.8.6</maven-enforcer-plugin.requiredMavenVersion>
 		<project.build.outputTimestamp>2022-11-16T15:10:25+02:00</project.build.outputTimestamp>
 
