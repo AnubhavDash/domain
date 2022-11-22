@@ -16,6 +16,7 @@ import com.google.common.base.Supplier;
  * Alias of the participants of direct trust.
  */
 public enum Alias implements Supplier<String> {
+	CANTON("canton"),
 	SDM_CONFIG("sdm_config"),
 	SDM_TALLY("sdm_tally"),
 	VOTING_SERVER("voting_server"),

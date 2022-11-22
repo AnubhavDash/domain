@@ -148,6 +148,34 @@ public class CombinedCorrectnessInformation implements HashableList {
 		return this.correctnessInformationList;
 	}
 
+	/**
+	 * Gets a list containing the correctness id for every selected voting option. The order of the correctness id within this list corresponds to the
+	 * order of the selected voting options.
+	 *
+	 * @return the list of correctness ids for selections.
+	 */
+	@JsonIgnore
+	public List<String> getCorrectnessInformationSelections() {
+		return IntStream.range(0, this.getTotalNumberOfSelections())
+				.parallel()
+				.mapToObj(this::getCorrectnessIdForSelectionIndex)
+				.toList();
+	}
+
+	/**
+	 * Gets a list containing the correctness id for every available voting option. The order of the correctness id within this list corresponds to
+	 * the order of the encoded voting options.
+	 *
+	 * @return the list of correctness ids for voting options.
+	 */
+	@JsonIgnore
+	public List<String> getCorrectnessInformationVotingOptions() {
+		return IntStream.range(0, this.getTotalNumberOfVotingOptions())
+				.parallel()
+				.mapToObj(this::getCorrectnessIdForVotingOptionIndex)
+				.toList();
+	}
+
 	private static List<CorrectnessInformation> getCorrectnessInformationListFromBallot(final Ballot ballot) {
 
 		return checkContestsNotNullAndNotEmpty(ballot.contests(), ballot.id()).stream()
