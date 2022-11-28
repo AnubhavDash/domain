@@ -5,21 +5,21 @@
 
 	<groupId>ch.post.it.evoting.cryptoprimitives.domain</groupId>
 	<artifactId>crypto-primitives-domain</artifactId>
-	<version>1.1.0.3</version>
+	<version>1.1.0.4</version>
 	<packaging>jar</packaging>
 	<name>Crypto Primitives Domain</name>
 
 	<properties>
 		<maven-enforcer-plugin.requiredJavaVersion>[17.0.5]</maven-enforcer-plugin.requiredJavaVersion>
 		<maven-enforcer-plugin.requiredMavenVersion>3.8.6</maven-enforcer-plugin.requiredMavenVersion>
-		<project.build.outputTimestamp>2022-11-24T11:40:19+02:00</project.build.outputTimestamp>
+		<project.build.outputTimestamp>2022-11-28T13:28:56+02:00</project.build.outputTimestamp>
 
-		<crypto-primitives.version>1.1.0.2</crypto-primitives.version>
+		<crypto-primitives.version>1.1.0.3</crypto-primitives.version>
 		<bouncycastle.version>1.72</bouncycastle.version>
-		<jackson.version>2.13.4.20221013</jackson.version>
+		<jackson.version>2.14.1</jackson.version>
 		<jacoco.version>0.8.8</jacoco.version>
 		<junit-jupiter.version>5.9.1</junit-jupiter.version>
-		<mockito.version>4.8.0</mockito.version>
+		<mockito.version>4.9.0</mockito.version>
 		<system-stubs-jupiter.version>2.0.1</system-stubs-jupiter.version>
 
 		<maven.compiler.release>17</maven.compiler.release>
