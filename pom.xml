@@ -33,7 +33,7 @@
 		<sonar.coverage.exclusions>**/test/**/*,**/tests/**/*</sonar.coverage.exclusions>
 		<sonar.java.source>${maven.compiler.release}</sonar.java.source>
 		<sonar.java.target>${maven.compiler.release}</sonar.java.target>
-		<sonar-maven-plugin.version>3.9.0.2155</sonar-maven-plugin.version>
+		<sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
 
 		<!-- Plugins versions -->
 		<maven-deploy-plugin.version>3.0.0</maven-deploy-plugin.version>
