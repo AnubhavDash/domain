@@ -2,7 +2,8 @@
 
 ## What is the content of this repository?
 
-The Crypto-primitives-domain library encapsulates the data objects that are produced by the e-voting system and consumed by a verifier. It acts as a documentation of the interface between these two systems.
+The Crypto-primitives-domain library encapsulates the data objects that are produced by the e-voting system and consumed by a verifier. It acts as a
+documentation of the interface between these two systems.
 
 ## Under which license is this code available?
 
@@ -12,30 +13,31 @@ The crypto-primitives-domain library is released under Apache 2.0.
 
 We strive for excellent code quality to minimize the risk of bugs and vulnerabilities. We rely on the following tools for code analysis.
 
-| Tool        | Focus                 |
-|-------------|-----------------------|
-| [SonarQube](https://www.sonarqube.org/)  | Code quality and code security      |
-| [Fortify](https://www.microfocus.com/de-de/products/static-code-analysis-sast/overview)  | Static Application Security Testing    |
-| [JFrog X-Ray](https://jfrog.com/xray/) | Common vulnerabilities and exposures (CVE) analysis, Open-source software (OSS) license compliance | |
+| Tool                                                                                    | Focus                                                                                              |
+|-----------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| [SonarQube](https://www.sonarqube.org/)                                                 | Code quality and code security                                                                     |
+| [Fortify](https://www.microfocus.com/de-de/products/static-code-analysis-sast/overview) | Static Application Security Testing                                                                |
+| [JFrog X-Ray](https://jfrog.com/xray/)                                                  | Common vulnerabilities and exposures (CVE) analysis, Open-source software (OSS) license compliance | |
 
 ### SonarQube Analysis
 
-We parametrize SonarQube with the built-in Sonar way quality profile. The SonarQube analysis of the crypto-primitives-domain code reveals 0 bugs, 0 vulnerabilities, 0 security hotspots, and 3 code smells.
+We parametrize SonarQube with the built-in Sonar way quality profile. The SonarQube analysis of the crypto-primitives-domain code reveals 0 bugs, 0
+vulnerabilities, 0 security hotspots, and 3 code smells.
 
 ![SonarQube](SonarQube.jpg)
 
-Out of the 3 code smells:
-
-* 2 code smells concern duplicated blocks. We left the code blocks as is since removing them reduces the code's readability.
-* 1 code smell concerns a constructor that has more than 7 input arguments. We prefer to keep the current constructor to better align with the system specification.
+The 2 code smells concern a deprecated duplicated blocks rule. We left the code blocks as is since removing them reduces the code's readability.
 
 ### Fortify Analysis
 
-The Fortify analysis showed 0 critical, 0 high, 0 medium, and 1 low criticality issues. We manually reviewed the low-criticality issue and assessed it as false positive.
+The Fortify analysis showed 0 critical, 0 high, 0 medium, and 1 low criticality issues. We manually reviewed the low-criticality issue and assessed it
+as false positive.
 
 ### JFrog X-Ray Analysis
 
-The X-Ray analysis indicates that none of the crypto-primitives-domain' 3rd party dependencies contains known vulnerabilities or non-compliant open source software licenses. As a general principle, we try to minimize external dependencies in cryptographic libraries and only rely on well-tested and widely used 3rd party components.
+The X-Ray analysis indicates that none of the crypto-primitives-domain' 3rd party dependencies contains known vulnerabilities or non-compliant open
+source software licenses. As a general principle, we try to minimize external dependencies in cryptographic libraries and only rely on well-tested and
+widely used 3rd party components.
 
 ## Changelog
 
