@@ -440,11 +440,6 @@ class CombinedCorrectnessInformationTest {
 		);
 	}
 
-	@Test
-	void getCorrectnessInformationSelectionsTest() {
-
-	}
-
 	@ParameterizedTest(name = "built from {0} expected value {2}.")
 	@MethodSource("getCorrectnessInformationSelectionsTestSource")
 	@DisplayName("built from a valid ballot, calling getCorrectnessInformationSelections returns the expected result.")
