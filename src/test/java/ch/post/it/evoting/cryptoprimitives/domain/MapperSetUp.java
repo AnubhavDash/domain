@@ -23,7 +23,7 @@ import ch.post.it.evoting.cryptoprimitives.domain.mapper.DomainObjectMapper;
 
 public class MapperSetUp {
 
-	public static ObjectMapper mapper;
+	protected static ObjectMapper mapper;
 
 	@BeforeAll
 	static void setUpMapper() {
