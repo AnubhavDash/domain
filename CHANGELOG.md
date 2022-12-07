@@ -1,5 +1,17 @@
 # Changelog
 
+## Release 1.2
+
+The following functionalities and improvements are included in release 1.2
+
+* Added caching to the encryption group serialization / deserialization.
+* Added a new participant "CANTON" to the direct trust keystores.
+* Implemented the getCorrectnessInformationSelections and getCorrectnessInformationVotingOptions methods.
+* Streamlined the handling of timezones in databases.
+* Updated dependencies and third-party libraries.
+
+---
+
 ## Release 1.1
 
 The following functionalities and improvements are included in release 1.1
