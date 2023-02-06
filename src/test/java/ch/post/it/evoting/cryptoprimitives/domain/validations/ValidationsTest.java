@@ -22,6 +22,8 @@ import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.Locale;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -52,7 +54,8 @@ class ValidationsTest {
 		@DisplayName("a valid input string does not throw.")
 		@Test
 		void validStringDoesNotThrow() {
-			assertDoesNotThrow(() -> validateUUID(random.genRandomBase16String(UUID_LENGTH).toLowerCase()));
+			assertDoesNotThrow(() -> validateUUID(random.genRandomBase16String(UUID_LENGTH).toLowerCase(Locale.ENGLISH)));
+			assertDoesNotThrow(() -> validateUUID(random.genRandomBase16String(UUID_LENGTH)));
 		}
 	}
 
@@ -118,7 +121,7 @@ class ValidationsTest {
 		@DisplayName("a valid input string does not throw.")
 		@Test
 		void validStringDoesNotThrow() {
-			final String validString = "KRUGS42JONAUEYLTMUZTELRO".toLowerCase();
+			final String validString = "KRUGS42JONAUEYLTMUZTELRO".toLowerCase(Locale.ENGLISH);
 			assertDoesNotThrow(() -> validateBase32NoPadAlphabet(validString, LENGTH));
 		}
 	}
