@@ -19,6 +19,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigInteger;
+import java.util.Locale;
 
 /**
  * Conversion methods used during the serialization/deserialization of Mixnet payloads.
@@ -40,7 +41,7 @@ public class ConversionUtils {
 	public static String bigIntegerToHex(final BigInteger value) {
 		checkNotNull(value);
 
-		return HEX_PREFIX + value.toString(16).toUpperCase();
+		return HEX_PREFIX + value.toString(16).toUpperCase(Locale.ENGLISH);
 	}
 
 	/**
