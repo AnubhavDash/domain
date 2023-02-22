@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -65,7 +64,7 @@ class SetupComponentPublicKeysPayloadTest {
 
 	@BeforeAll
 	static void setupAll() {
-		final String electionEventId = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
+		final String electionEventId = random.genRandomBase16String(32).toLowerCase();
 
 		// Create payload.
 		final List<ControlComponentPublicKeys> combinedControlComponentPublicKeys = new ArrayList<>();

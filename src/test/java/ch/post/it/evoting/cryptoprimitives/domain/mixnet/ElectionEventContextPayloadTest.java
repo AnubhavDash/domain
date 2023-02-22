@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -75,7 +74,7 @@ class ElectionEventContextPayloadTest {
 	static void setupAll() throws JsonProcessingException {
 
 		// Create payload.
-		final String electionEventId = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
+		final String electionEventId = random.genRandomBase16String(32).toLowerCase();
 		final List<VerificationCardSetContext> verificationCardSetContexts = new ArrayList<>();
 
 		IntStream.rangeClosed(1, 2).forEach(i -> verificationCardSetContexts.add(generatedVerificationCardSetContext()));
@@ -148,8 +147,8 @@ class ElectionEventContextPayloadTest {
 	}
 
 	private static VerificationCardSetContext generatedVerificationCardSetContext() {
-		final String verificationCardSetId = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
-		final String ballotBoxId = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
+		final String verificationCardSetId = random.genRandomBase16String(32).toLowerCase();
+		final String ballotBoxId = random.genRandomBase16String(32).toLowerCase();
 		final boolean testBallotBox = Math.random() < 0.5;
 		final int numberOfWriteInFields = 1;
 		final int numberOfVotingCards = 10;
@@ -164,11 +163,11 @@ class ElectionEventContextPayloadTest {
 	@Test
 	@DisplayName("test ElectionEventContext constructor validation")
 	void testInvalidElectionEventContext() {
-		final String verificationCardSetId1 = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
-		final String verificationCardSetId2 = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
-		final String ballotBoxId1 = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
-		final String ballotBoxId2 = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
-		final String ballotBoxId4 = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
+		final String verificationCardSetId1 = random.genRandomBase16String(32).toLowerCase();
+		final String verificationCardSetId2 = random.genRandomBase16String(32).toLowerCase();
+		final String ballotBoxId1 = random.genRandomBase16String(32).toLowerCase();
+		final String ballotBoxId2 = random.genRandomBase16String(32).toLowerCase();
+		final String ballotBoxId4 = random.genRandomBase16String(32).toLowerCase();
 		final PrimesMappingTable primesMappingTable = PrimesMappingTable.from(
 				List.of(new PrimesMappingTableEntry("actualVotingOption", smallPrimeGroupMembers.get(0))));
 
@@ -181,7 +180,7 @@ class ElectionEventContextPayloadTest {
 		final VerificationCardSetContext verificationCardSetContextFour = new VerificationCardSetContext(verificationCardSetId2, ballotBoxId4,
 				true, 2, 10, 900, primesMappingTable);
 
-		final String electionEventId = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
+		final String electionEventId = random.genRandomBase16String(32).toLowerCase();
 
 		final List<VerificationCardSetContext> duplicateVerificationCardSetIds = new ArrayList<>();
 
