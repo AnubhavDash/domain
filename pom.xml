@@ -14,7 +14,7 @@
 		<maven-enforcer-plugin.requiredMavenVersion>3.8.6</maven-enforcer-plugin.requiredMavenVersion>
 		<project.build.outputTimestamp>2023-02-17T13:36:41+02:00</project.build.outputTimestamp>
 
-		<crypto-primitives.version>1.2.0.1</crypto-primitives.version>
+		<crypto-primitives.version>1.2.1.0</crypto-primitives.version>
 		<bouncycastle.version>1.72</bouncycastle.version>
 		<jackson.version>2.14.2</jackson.version>
 		<jacoco.version>0.8.8</jacoco.version>
