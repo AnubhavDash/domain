@@ -29,10 +29,10 @@ public final class Validations {
 	@VisibleForTesting
 	static final int UUID_LENGTH = 32;
 
-	private static final String BASE16_ALPHABET_WITH_LOWERCASE = "0123456789abcdefABCDEF";
+	private static final String BASE16_LOWERCASE_ALPHABET = "0123456789abcdef";
 	private static final String BASE32_LOWERCASE_NO_PAD_ALPHABET = "abcdefghijklmnopqrstuvwxyz234567";
 
-	private static final String UUID_REGEX = String.format("^[%s]{%d}$", BASE16_ALPHABET_WITH_LOWERCASE, UUID_LENGTH);
+	private static final String UUID_REGEX = String.format("^[%s]{%d}$", BASE16_LOWERCASE_ALPHABET, UUID_LENGTH);
 	private static final Pattern UUID_PATTERN = Pattern.compile(UUID_REGEX);
 
 	private Validations() {
@@ -40,10 +40,7 @@ public final class Validations {
 	}
 
 	/**
-	 * Validates that the input string is in Base16 alphabet ({@value BASE16_ALPHABET_WITH_LOWERCASE}) and has length {@value UUID_LENGTH}.
-	 * <p>
-	 *     The validation allows for both lowercase and uppercase input.
-	 * </p>
+	 * Validates that the input string is in Base16 lowercase alphabet ({@value BASE16_LOWERCASE_ALPHABET}) and has length {@value UUID_LENGTH}.
 	 *
 	 * @param toValidate the string to validate. Must be non-null.
 	 * @return the validated input string.
