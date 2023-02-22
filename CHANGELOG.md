@@ -1,8 +1,16 @@
 # Changelog
 
+## Release 1.2.1
+
+The following functionalities and improvements are included in release 1.2.1:
+
+* Updated dependencies and third-party libraries.
+
+---
+
 ## Release 1.2
 
-The following functionalities and improvements are included in release 1.2
+The following functionalities and improvements are included in release 1.2:
 
 * Added caching to the encryption group serialization / deserialization.
 * Added a new participant "CANTON" to the direct trust keystores.
@@ -14,17 +22,17 @@ The following functionalities and improvements are included in release 1.2
 
 ## Release 1.1
 
-The following functionalities and improvements are included in release 1.1
+The following functionalities and improvements are included in release 1.1:
 
-* Ensure that the PrimesMappingTable does not contain more than OMEGA (1200 entries)
-* Integrate the QuadraticResidueToWriteIn and IntegerToWriteIn in the ProcessPlaintexts algorithm
-* Add the list of write-in options to the CombinedCorrectnessInformation object
+* Ensure that the PrimesMappingTable does not contain more than OMEGA (1200 entries).
+* Integrate the QuadraticResidueToWriteIn and IntegerToWriteIn in the ProcessPlaintexts algorithm.
+* Add the list of write-in options to the CombinedCorrectnessInformation object.
 
 ---
 
 ## Release 1.0
 
-The following functionalities and improvements are included in release 1.0
+The following functionalities and improvements are included in release 1.0:
 
 * Refactored the encryptionParametersPayload object.
 * Added the key generation Schnorr proofs to the ElectionEventContextPayload.
@@ -37,17 +45,17 @@ The following functionalities and improvements are included in release 1.0
 
 ## Release 0.15
 
-The following functionalities and improvements are included in release 0.15
+The following functionalities and improvements are included in release 0.15:
 
-* Added new mixnet objects
-* Added additional validations on domain objects
-* Upgraded library to Java 17
+* Added new mixnet objects.
+* Added additional validations on domain objects.
+* Upgraded library to Java 17.
 
 ---
 
 ## Release 0.14
 
-The following functionalities and improvements are included in release 0.14
+The following functionalities and improvements are included in release 0.14:
 
 * Added classes to serialize ElGamalMultiRecipient key pairs.
 * Improved the validateUUID method.
