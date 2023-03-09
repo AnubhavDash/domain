@@ -18,11 +18,18 @@ package ch.post.it.evoting.cryptoprimitives.domain.validations;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.UUID_LENGTH;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateBase32NoPadAlphabet;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateBase64Encoded;
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.hasNoDuplicates;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -32,6 +39,32 @@ import ch.post.it.evoting.cryptoprimitives.math.Random;
 import ch.post.it.evoting.cryptoprimitives.math.RandomFactory;
 
 class ValidationsTest {
+
+	@DisplayName("Calling hasNoDuplicates with")
+	@Nested
+	class HasNoDuplicates {
+
+		@DisplayName("a null input throws a NullPointerException.")
+		@Test
+		void nullListThrows() {
+			assertThrows(NullPointerException.class, () -> hasNoDuplicates(null));
+			final List<String> nullList = Stream.of("element", null).toList();
+			assertThrows(NullPointerException.class, () -> hasNoDuplicates(nullList));
+		}
+
+		@DisplayName("an input with duplicates returns false.")
+		@Test
+		void collectionWithDuplicatesReturnsFalse() {
+			final List<String> duplicateList = List.of("element", "duplicate", "duplicate");
+			assertFalse(hasNoDuplicates(duplicateList));
+		}
+
+		@DisplayName("an input without duplicates returns true.")
+		@Test
+		void collectionWithoutDuplicatesReturnsTrue() {
+			assertTrue(hasNoDuplicates(List.of("element 1", "element 2")));
+		}
+	}
 
 	@DisplayName("Calling validateUUID with")
 	@Nested

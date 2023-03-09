@@ -16,17 +16,15 @@
 package ch.post.it.evoting.cryptoprimitives.domain.returncodes;
 
 import static ch.post.it.evoting.cryptoprimitives.domain.ControlComponentConstants.NODE_IDS;
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.hasNoDuplicates;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
 import static ch.post.it.evoting.cryptoprimitives.utils.Validations.allEqual;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigInteger;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -123,15 +121,10 @@ public class ControlComponentCodeSharesPayload implements SignedPayload {
 						.map(ElGamalMultiRecipientCiphertext::getGroup)
 						.allMatch(group -> group.equals(encryptionGroup)),
 				"The groups of the ControlComponentCodeShares must correspond to the encryption group.");
-		checkArgument(this.controlComponentCodeShares.stream()
-				.map(ControlComponentCodeShare::verificationCardId)
-				.distinct().toList().size() == this.controlComponentCodeShares.size(), "The verification card IDs must all be distinct.");
 
-		final Set<String> duplicatedVerificationCardIds = new HashSet<>();
-		checkArgument(this.controlComponentCodeShares.stream()
+		checkArgument(hasNoDuplicates(this.controlComponentCodeShares.stream()
 				.map(ControlComponentCodeShare::verificationCardId)
-				.filter(verificationCardId -> !duplicatedVerificationCardIds.add(verificationCardId))
-				.collect(Collectors.toSet()).isEmpty(), "All control component shares must have a different verification card id.");
+				.toList()), "The verification card IDs must all be distinct.");
 	}
 
 	public String getElectionEventId() {
