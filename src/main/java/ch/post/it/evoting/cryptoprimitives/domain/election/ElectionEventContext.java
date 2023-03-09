@@ -15,6 +15,7 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.election;
 
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.hasNoDuplicates;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -47,16 +48,13 @@ public record ElectionEventContext(String electionEventId,
 
 		this.verificationCardSetContexts.forEach(Preconditions::checkNotNull);
 
-		final int verificationCardSetContextsSize = this.verificationCardSetContexts.size();
-		checkArgument(verificationCardSetContextsSize > 0, "VerificationCardSetContexts cannot be empty.");
-		checkArgument(this.verificationCardSetContexts.stream()
+		checkArgument(!this.verificationCardSetContexts.isEmpty(), "VerificationCardSetContexts cannot be empty.");
+		checkArgument(hasNoDuplicates(this.verificationCardSetContexts.stream()
 				.map(VerificationCardSetContext::ballotBoxId)
-				.distinct()
-				.count() == verificationCardSetContextsSize, "VerificationCardSetContexts cannot contain duplicate BallotBoxIds.");
-		checkArgument(this.verificationCardSetContexts.stream()
+				.toList()), "VerificationCardSetContexts cannot contain duplicate BallotBoxIds.");
+		checkArgument(hasNoDuplicates(this.verificationCardSetContexts.stream()
 				.map(VerificationCardSetContext::verificationCardSetId)
-				.distinct()
-				.count() == verificationCardSetContextsSize, "VerificationCardSetContexts cannot contain duplicate VerificationCardSetIds.");
+				.toList()), "VerificationCardSetContexts cannot contain duplicate VerificationCardSetIds.");
 		checkArgument(this.verificationCardSetContexts.stream()
 						.map(VerificationCardSetContext::numberOfWriteInFields)
 						.allMatch(n -> n >= 0),
