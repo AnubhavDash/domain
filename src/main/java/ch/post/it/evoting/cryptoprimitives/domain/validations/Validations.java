@@ -20,9 +20,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.regex.Pattern;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 
 public final class Validations {
 
@@ -37,6 +40,20 @@ public final class Validations {
 
 	private Validations() {
 		// Intentionally left blank.
+	}
+
+	/**
+	 * Checks the input has no duplicates.
+	 *
+	 * @param toValidate the collection to validate. Must be non-null.
+	 * @return true if the input does not have duplicates, false otherwise.
+	 * @throws NullPointerException      if the collection is null or contains any null elements.
+	 */
+	public static boolean hasNoDuplicates(final Collection<?> toValidate) {
+		checkNotNull(toValidate);
+		toValidate.forEach(Preconditions::checkNotNull);
+
+		return new HashSet<>(toValidate).size() == toValidate.size();
 	}
 
 	/**

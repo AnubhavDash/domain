@@ -5,14 +5,15 @@
 
 	<groupId>ch.post.it.evoting.cryptoprimitives.domain</groupId>
 	<artifactId>crypto-primitives-domain</artifactId>
-	<version>1.2.1.1</version>
+	<version>1.2.1.2</version>
 	<packaging>jar</packaging>
 	<name>Crypto Primitives Domain</name>
 
 	<properties>
+		<maven-dependency-check.version>8.1.2</maven-dependency-check.version>
 		<maven-enforcer-plugin.requiredJavaVersion>[17.0.5]</maven-enforcer-plugin.requiredJavaVersion>
 		<maven-enforcer-plugin.requiredMavenVersion>3.8.6</maven-enforcer-plugin.requiredMavenVersion>
-		<project.build.outputTimestamp>2023-02-27T09:16:37+02:00</project.build.outputTimestamp>
+		<project.build.outputTimestamp>2023-03-09T09:00:31+02:00</project.build.outputTimestamp>
 
 		<crypto-primitives.version>1.2.1.1</crypto-primitives.version>
 		<bouncycastle.version>1.72</bouncycastle.version>
@@ -178,6 +179,18 @@
 	</dependencies>
 
 	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.owasp</groupId>
+					<artifactId>dependency-check-maven</artifactId>
+					<version>${maven-dependency-check.version}</version>
+					<configuration>
+						<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -296,4 +309,24 @@
 		</plugins>
 	</build>
 
+	<profiles>
+		<profile>
+			<id>dependency-check</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.owasp</groupId>
+						<artifactId>dependency-check-maven</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>aggregate</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

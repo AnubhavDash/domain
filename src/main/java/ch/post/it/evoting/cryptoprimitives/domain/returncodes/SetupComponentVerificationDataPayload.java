@@ -15,6 +15,7 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.returncodes;
 
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.hasNoDuplicates;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
 import static ch.post.it.evoting.cryptoprimitives.utils.Validations.allEqual;
 import static com.google.common.base.Preconditions.checkArgument;
@@ -139,9 +140,9 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 						.map(ElGamalMultiRecipientCiphertext::getPhis), GroupVector::size),
 				"All encrypted hashed squared Partial Choice Return Codes must have the same size.");
 
-		checkArgument(this.setupComponentVerificationData.stream()
+		checkArgument(hasNoDuplicates(this.setupComponentVerificationData.stream()
 				.map(SetupComponentVerificationData::verificationCardId)
-				.distinct().toList().size() == this.setupComponentVerificationData.size(), "The verification card IDs must all be distinct.");
+				.toList()), "The verification card IDs must all be distinct.");
 		checkArgument(this.partialChoiceReturnCodesAllowList.size() ==
 						this.setupComponentVerificationData.size() * this.combinedCorrectnessInformation.getTotalNumberOfVotingOptions(),
 				"The number of elements in the partial Choice Return Codes Allow List must correspond to the size of the SetupComponentVerificationData multiplied with the total number of voting options.");
