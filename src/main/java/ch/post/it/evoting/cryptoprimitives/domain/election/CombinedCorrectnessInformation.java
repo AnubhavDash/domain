@@ -15,7 +15,6 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.election;
 
-import static ch.post.it.evoting.cryptoprimitives.domain.election.BallotValidations.checkContestsNotNullAndNotEmpty;
 import static ch.post.it.evoting.cryptoprimitives.domain.election.BallotValidations.checkNotNullAndNotEmpty;
 import static ch.post.it.evoting.cryptoprimitives.domain.election.BallotValidations.checkQuestionsSizeOfListsAndCandidatesContest;
 import static com.google.common.base.Preconditions.checkArgument;
@@ -178,7 +177,7 @@ public class CombinedCorrectnessInformation implements HashableList {
 
 	private static List<CorrectnessInformation> getCorrectnessInformationListFromBallot(final Ballot ballot) {
 
-		return checkContestsNotNullAndNotEmpty(ballot.contests(), ballot.id()).stream()
+		return ballot.contests().stream()
 				.map(CombinedCorrectnessInformation::getCorrectnessInformationListFromContest)
 				.flatMap(Collection::stream)
 				.toList();
@@ -190,9 +189,9 @@ public class CombinedCorrectnessInformation implements HashableList {
 	 * <p>
 	 * Matching the order of {@link Question}s, two different business logics must be applied:
 	 * <ul>
-	 *   <li>For a contest with template {@value Contest#OPTIONS_TEMPLATE} (containing referendum-style questions), the order
+	 *   <li>For a contest with template {@value Contest#VOTES_TEMPLATE} (containing referendum-style questions), the order
 	 *   of {@link Question}s is determined by the {@link ElectionAttributes} of the {@link Contest}.</li>
-	 *   <li>For a contest with template {@value Contest#LISTS_AND_CANDIDATES_TEMPLATE}, the order of {@link Question}s is
+	 *   <li>For a contest with template {@value Contest#ELECTIONS_TEMPLATE}, the order of {@link Question}s is
 	 *   the same as they appear on the voter portal as long as we ensure that the "lists" question comes before the
 	 *   {@value Contest#CANDIDATES} question.</li>
 	 * </ul>
@@ -201,8 +200,8 @@ public class CombinedCorrectnessInformation implements HashableList {
 	 * @return the correctness information list.
 	 * @throws IllegalArgumentException if the given contest's template is unsupported. Supported templates are
 	 *                                  <ul>
-	 *                                      <li>{@value Contest#LISTS_AND_CANDIDATES_TEMPLATE}</li>
-	 *                                      <li>{@value Contest#OPTIONS_TEMPLATE}</li>
+	 *                                      <li>{@value Contest#ELECTIONS_TEMPLATE}</li>
+	 *                                      <li>{@value Contest#VOTES_TEMPLATE}</li>
 	 *                                  </ul>
 	 */
 	private static List<CorrectnessInformation> getCorrectnessInformationListFromContest(final Contest contest) {
@@ -216,10 +215,10 @@ public class CombinedCorrectnessInformation implements HashableList {
 		checkNotNullAndNotEmpty(attributes, "election attributes", contestId);
 		checkNotNullAndNotEmpty(electionOptions, "election options", contestId);
 
-		if (Contest.OPTIONS_TEMPLATE.equals(template)) {
+		if (Contest.VOTES_TEMPLATE.equals(template)) {
 			return getCorrectnessInformationListFromOptionsTemplateContest(questions, attributes, electionOptions, contestId);
 
-		} else if (Contest.LISTS_AND_CANDIDATES_TEMPLATE.equals(template)) {
+		} else if (Contest.ELECTIONS_TEMPLATE.equals(template)) {
 			return getCorrectnessInformationListFromListsAndCandidatesTemplate(questions, attributes, electionOptions, contestId);
 
 		} else {
@@ -232,8 +231,8 @@ public class CombinedCorrectnessInformation implements HashableList {
 	 * Retrieves the list of {@link CorrectnessInformation} related to the given {@code questions}, {@code attributes}, {@code options}, and
 	 * {@code contestId} of a {@link Contest}.
 	 * <p>
-	 * In the case of a contest's template {@value Contest#OPTIONS_TEMPLATE}, the order of the correctness information list is the same as the order
-	 * in which the attributes appear in the {@link Contest}.
+	 * In the case of a contest's template {@value Contest#VOTES_TEMPLATE}, the order of the correctness information list is the same as the order in
+	 * which the attributes appear in the {@link Contest}.
 	 *
 	 * @param questions  the list of {@link Question}s of the {@link Contest}.
 	 * @param attributes the list of {@link ElectionAttributes} of the {@link Contest}.
@@ -261,8 +260,8 @@ public class CombinedCorrectnessInformation implements HashableList {
 	 * Retrieves the list of {@link CorrectnessInformation} related to the given {@code questions}, {@code attributes}, and {@code electionOptions} of
 	 * a {@link Contest}.
 	 * <p>
-	 * In the case of a contest's template {@value Contest#LISTS_AND_CANDIDATES_TEMPLATE}, the order of the correctness information list must ensure
-	 * that the "lists" question comes before the {@value Contest#CANDIDATES} question.
+	 * In the case of a contest's template {@value Contest#ELECTIONS_TEMPLATE}, the order of the correctness information list must ensure that the
+	 * "lists" question comes before the {@value Contest#CANDIDATES} question.
 	 *
 	 * @param questions       the list of {@link Question}s of the {@link Contest}. Size must be at most
 	 *                        {@value Contest#MAX_LISTS_AND_CANDIDATES_QUESTIONS_SIZE}.
@@ -271,7 +270,7 @@ public class CombinedCorrectnessInformation implements HashableList {
 	 * @param contestId       the id of the contest.
 	 * @return the correctness information list.
 	 * @throws IllegalArgumentException if the questions list size is bigger than the maximal size of questions for contest's template
-	 *                                  {@value Contest#LISTS_AND_CANDIDATES_TEMPLATE} {@value Contest#MAX_LISTS_AND_CANDIDATES_QUESTIONS_SIZE}
+	 *                                  {@value Contest#ELECTIONS_TEMPLATE} {@value Contest#MAX_LISTS_AND_CANDIDATES_QUESTIONS_SIZE}
 	 */
 	private static List<CorrectnessInformation> getCorrectnessInformationListFromListsAndCandidatesTemplate(final List<Question> questions,
 			final List<ElectionAttributes> attributes, final List<ElectionOption> electionOptions, final String contestId) {

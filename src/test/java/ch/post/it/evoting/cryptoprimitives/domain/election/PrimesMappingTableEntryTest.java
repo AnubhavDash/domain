@@ -15,10 +15,10 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.election;
 
-import static ch.post.it.evoting.cryptoprimitives.domain.VotingOptionsConstants.MAXIMUM_ACTUAL_VOTING_OPTION_LENGTH;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +28,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import com.google.common.base.Throwables;
 
+import ch.post.it.evoting.cryptoprimitives.domain.validations.FailedValidationException;
 import ch.post.it.evoting.cryptoprimitives.math.PrimeGqElement;
 import ch.post.it.evoting.cryptoprimitives.test.tools.TestGroupSetup;
 
@@ -35,6 +36,7 @@ import ch.post.it.evoting.cryptoprimitives.test.tools.TestGroupSetup;
 class PrimesMappingTableEntryTest extends TestGroupSetup {
 
 	private static final String actualVotingOption = "b9c57a40-a555-35e1-972c-a1a6b7e03381";
+	private static final String semanticInformation = "semantic";
 	private static PrimeGqElement encodedVotingOption;
 
 	@BeforeAll
@@ -45,77 +47,106 @@ class PrimesMappingTableEntryTest extends TestGroupSetup {
 	@Test
 	@DisplayName("created with a null actual voting option, throws a NullPointerException.")
 	void nullActualVotingOption() {
-		assertThrows(NullPointerException.class, () -> new PrimesMappingTableEntry(null, encodedVotingOption));
+		assertThrows(NullPointerException.class, () -> new PrimesMappingTableEntry(null, encodedVotingOption, semanticInformation));
 	}
 
 	@Test
 	@DisplayName("created with a null encoded voting option, throws a NullPointerException.")
 	void nullEncodedVotingOption() {
-		assertThrows(NullPointerException.class, () -> new PrimesMappingTableEntry(actualVotingOption, null));
+		assertThrows(NullPointerException.class, () -> new PrimesMappingTableEntry(actualVotingOption, null, semanticInformation));
 	}
 
 	@Test
-	@DisplayName("created with an empty actual voting option, throws an IllegalArgumentException.")
+	@DisplayName("created with a null semantic, throws a NullPointerException.")
+	void nullSemantic() {
+		assertThrows(NullPointerException.class, () -> new PrimesMappingTableEntry(actualVotingOption, encodedVotingOption, null));
+	}
+
+	@Test
+	@DisplayName("created with an empty actual voting option, throws a FailedValidationException.")
 	void emptyActualVotingOption() {
-		final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new PrimesMappingTableEntry("", encodedVotingOption));
+		final FailedValidationException failedValidationException = assertThrows(FailedValidationException.class,
+				() -> new PrimesMappingTableEntry("", encodedVotingOption, semanticInformation));
 
-		assertEquals("The actual voting option cannot be blank.", Throwables.getRootCause(illegalArgumentException).getMessage());
+		assertTrue(Throwables.getRootCause(failedValidationException).getMessage()
+				.startsWith("The given string does not comply with the required format."));
 	}
 
 	@Test
-	@DisplayName("created with a blank actual voting option, throws an IllegalArgumentException.")
+	@DisplayName("created with a blank actual voting option, throws a FailedValidationException.")
 	void blankActualVotingOption() {
-		final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new PrimesMappingTableEntry(" ", encodedVotingOption));
+		final FailedValidationException failedValidationException = assertThrows(FailedValidationException.class,
+				() -> new PrimesMappingTableEntry(" ", encodedVotingOption, semanticInformation));
 
-		assertEquals("The actual voting option cannot be blank.", Throwables.getRootCause(illegalArgumentException).getMessage());
+		assertTrue(Throwables.getRootCause(failedValidationException).getMessage()
+				.startsWith("The given string does not comply with the required format."));
 	}
 
 	@Test
-	@DisplayName("created with an actual voting option too large, throws an IllegalArgumentException.")
+	@DisplayName("created with an empty semantic, throws an IllegalArgumentException.")
+	void emptySemantic() {
+		final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+				() -> new PrimesMappingTableEntry(actualVotingOption, encodedVotingOption, ""));
+
+		assertEquals("String to validate must not be blank.", Throwables.getRootCause(illegalArgumentException).getMessage());
+	}
+
+	@Test
+	@DisplayName("created with a blank semantic, throws an IllegalArgumentException.")
+	void blankSemantic() {
+		final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+				() -> new PrimesMappingTableEntry(actualVotingOption, encodedVotingOption, " "));
+
+		assertEquals("String to validate must not be blank.", Throwables.getRootCause(illegalArgumentException).getMessage());
+	}
+
+	@Test
+	@DisplayName("created with an actual voting option too large, throws a FailedValidationException.")
 	void largeActualVotingOption() {
 		final String largeActualVotingOption = "8KU8zJ0OR0ZDgLTDopHrVRAg4c55w8gqdjHPYWx6kh8CIkRQNbF";
 
-		final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new PrimesMappingTableEntry(largeActualVotingOption, encodedVotingOption));
+		final FailedValidationException failedValidationException = assertThrows(FailedValidationException.class,
+				() -> new PrimesMappingTableEntry(largeActualVotingOption, encodedVotingOption, semanticInformation));
 
-		assertEquals(String.format("The actual voting option length must not exceed %s. [length: %s]",
-						MAXIMUM_ACTUAL_VOTING_OPTION_LENGTH, largeActualVotingOption.length()),
-				Throwables.getRootCause(illegalArgumentException).getMessage());
+		assertEquals(
+				"The given string does not comply with the required format. [string: 8KU8zJ0OR0ZDgLTDopHrVRAg4c55w8gqdjHPYWx6kh8CIkRQNbF, format: ^[\\w\\-]{1,50}$].",
+				Throwables.getRootCause(failedValidationException).getMessage());
 	}
 
 	@Test
 	@DisplayName("created with a non-null values does not throw.")
 	void withNonNullValuesDoesNotThrow() {
-		assertDoesNotThrow(() -> new PrimesMappingTableEntry(actualVotingOption, encodedVotingOption));
+		assertDoesNotThrow(() -> new PrimesMappingTableEntry(actualVotingOption, encodedVotingOption, semanticInformation));
 	}
 
 	@ParameterizedTest
-	@DisplayName("Using invalid actualVotingOptions, throws an IllegalArgumentException.")
-	@ValueSource(strings = {" a  b", "abc  ", "apéosidvnbq13458zœ¶@¼←“þ“ ¢@]œ“→”@µ€ĸ@{þ", "<ycx", " sfasdfa", "pk23]", "asdacà!32", " a p2o3m", "<xyz>" })
+	@DisplayName("Using invalid actualVotingOptions, throws a FailedValidationException.")
+	@ValueSource(strings = { " a  b", "abc  ", "apéosidvnbq13458zœ¶@¼←“þ“ ¢@]œ“→”@µ€ĸ@{þ", "<ycx", " sfasdfa", "pk23]", "asdacà!32", " a p2o3m",
+			"<xyz>" })
 	void invalidXMLTokenForActualVotingOptions(String actualVotingOption) {
-		final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new PrimesMappingTableEntry(actualVotingOption, encodedVotingOption));
+		final FailedValidationException failedValidationException = assertThrows(FailedValidationException.class,
+				() -> new PrimesMappingTableEntry(actualVotingOption, encodedVotingOption, semanticInformation));
 
-		assertEquals(String.format("Voting options should match a valid xml xs:token [actualVotingOption: %s] ",
-				actualVotingOption), Throwables.getRootCause(illegalArgumentException).getMessage());
+		assertEquals(String.format("The given string does not comply with the required format. [string: %s, format: ^[\\w\\-]{1,50}$].",
+						actualVotingOption),
+				Throwables.getRootCause(failedValidationException).getMessage());
 	}
 
 	@ParameterizedTest
 	@DisplayName("Using valid actualVotingOptions.")
-	@ValueSource(strings = {"aposidvnbq13458z", "ab" , "vaner82", "xyz", "a_token", "another-token"})
+	@ValueSource(strings = { "aposidvnbq13458z", "ab", "vaner82", "xyz", "a_token", "another-token" })
 	void validXMLTokenForActualVotingOptions(String actualVotingOption) {
-		assertDoesNotThrow(()->new PrimesMappingTableEntry(actualVotingOption, encodedVotingOption));
+		assertDoesNotThrow(() -> new PrimesMappingTableEntry(actualVotingOption, encodedVotingOption, semanticInformation));
 	}
 
 	@Test
 	void invalidXMLTokenLengthForActualVotingOptions() {
 		String fiftyOne = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY";
-		final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new PrimesMappingTableEntry(fiftyOne, encodedVotingOption));
+		final FailedValidationException failedValidationException = assertThrows(FailedValidationException.class,
+				() -> new PrimesMappingTableEntry(fiftyOne, encodedVotingOption, semanticInformation));
 
-		assertEquals(String.format("The actual voting option length must not exceed 50. [length: %d]",
-				fiftyOne.length()), Throwables.getRootCause(illegalArgumentException).getMessage());
+		assertEquals(
+				"The given string does not comply with the required format. [string: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY, format: ^[\\w\\-]{1,50}$].",
+				Throwables.getRootCause(failedValidationException).getMessage());
 	}
 }

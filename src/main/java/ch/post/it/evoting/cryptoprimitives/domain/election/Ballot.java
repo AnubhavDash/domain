@@ -15,9 +15,15 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.election;
 
-import static ch.post.it.evoting.cryptoprimitives.domain.election.BallotValidations.checkContestsNotNullAndNotEmpty;
 import static ch.post.it.evoting.cryptoprimitives.domain.election.BallotValidations.checkNotNullAndNotEmpty;
 import static ch.post.it.evoting.cryptoprimitives.domain.election.BallotValidations.checkQuestionsSizeOfListsAndCandidatesContest;
+import static ch.post.it.evoting.cryptoprimitives.domain.election.ElectionObjectValidations.validateAlias;
+import static ch.post.it.evoting.cryptoprimitives.domain.election.ElectionObjectValidations.validateDefaultDescriptionWithPrefix;
+import static ch.post.it.evoting.cryptoprimitives.domain.election.ElectionObjectValidations.validateDefaultTitleWithPrefix;
+import static ch.post.it.evoting.cryptoprimitives.domain.election.ElectionObjectValidations.validateStatus;
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.hasNoDuplicates;
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigInteger;
@@ -31,6 +37,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.MoreCollectors;
 
 import ch.post.it.evoting.cryptoprimitives.utils.Conversions;
@@ -40,8 +47,39 @@ import ch.post.it.evoting.cryptoprimitives.utils.Conversions;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record Ballot(String id,
-					 ElectionEvent electionEvent,
+					 String defaultTitle,
+					 String defaultDescription,
+					 String alias,
+					 String status,
+					 Identifier electionEvent,
 					 List<Contest> contests) {
+
+	@JsonIgnore
+	public static final String PREFIX = "ballot_";
+	@JsonIgnore
+	public static final int MINIMUM_NUMBER_OF_CONTESTS = 1;
+	@JsonIgnore
+	public static final int MAXIMUM_NUMBER_OF_CONTESTS = 50;
+
+	public Ballot {
+		validateUUID(id);
+		validateDefaultTitleWithPrefix(defaultTitle, PREFIX);
+		validateDefaultDescriptionWithPrefix(defaultDescription, PREFIX);
+		validateAlias(alias);
+		validateStatus(status);
+		checkNotNull(electionEvent);
+		checkNotNull(contests);
+		contests.forEach(Preconditions::checkNotNull);
+
+		checkArgument(!contests.isEmpty(), "The ballot must contain at least one contest. [ballotId: %s]", id);
+		checkArgument(hasNoDuplicates(contests.stream().map(Contest::id).toList()),
+				"The ballot must not contain any duplicate contest id. [ballotId: %s]", id);
+		checkArgument(hasNoDuplicates(contests.stream().map(Contest::alias).toList()),
+				"The ballot must not contain any duplicate contest alias. [ballotId: %s]", id);
+		checkArgument(MINIMUM_NUMBER_OF_CONTESTS <= contests.size() && contests.size() <= MAXIMUM_NUMBER_OF_CONTESTS,
+				"There must be at least %s contests and at most %s contests. [numberOfContests: %s, ballotId: %s]", MINIMUM_NUMBER_OF_CONTESTS,
+				MAXIMUM_NUMBER_OF_CONTESTS, contests.size(), id);
+	}
 
 	/**
 	 * Returns the voting options - encoded as prime numbers - for this ballot. We order the encoded voting options by two levels: First, by how the
@@ -51,8 +89,8 @@ public record Ballot(String id,
 	 * @return the voting options encoded as prime numbers.
 	 * @throws IllegalArgumentException if the ballot contains an unsupported {@link Contest} template. Supported templates are
 	 *                                  <ul>
-	 *                                      <li>{@value Contest#LISTS_AND_CANDIDATES_TEMPLATE}</li>
-	 *                                      <li>{@value Contest#OPTIONS_TEMPLATE}</li>
+	 *                                      <li>{@value Contest#ELECTIONS_TEMPLATE}</li>
+	 *                                      <li>{@value Contest#VOTES_TEMPLATE}</li>
 	 *                                  </ul>
 	 * @throws ArithmeticException      if an encoded voting option is too big to be encoded as an Integer.
 	 */
@@ -72,13 +110,13 @@ public record Ballot(String id,
 	 * @return the actual voting options.
 	 * @throws IllegalArgumentException if the ballot contains an unsupported {@link Contest} template. Supported templates are
 	 *                                  <ul>
-	 *                                      <li>{@value Contest#LISTS_AND_CANDIDATES_TEMPLATE}</li>
-	 *                                      <li>{@value Contest#OPTIONS_TEMPLATE}</li>
+	 *                                      <li>{@value Contest#ELECTIONS_TEMPLATE}</li>
+	 *                                      <li>{@value Contest#VOTES_TEMPLATE}</li>
 	 *                                  </ul>
 	 */
 	@JsonIgnore
 	public List<String> getActualVotingOptions() {
-		final Map<Contest, List<ElectionOption>> contestToOrderedElectionOptions = checkContestsNotNullAndNotEmpty(this.contests, this.id).stream()
+		final Map<Contest, List<ElectionOption>> contestToOrderedElectionOptions = this.contests.stream()
 				.collect(Collectors.toMap(Function.identity(), this::getOrderedElectionOptionsFromContest));
 
 		return contests.stream()
@@ -90,20 +128,38 @@ public record Ballot(String id,
 	}
 
 	/**
+	 * Returns the semanticInformation for this ballot. We order the semanticInformation by two levels: First, by how the corresponding questions are
+	 * displayed on the voter portal and second, by how the voting options appear in the {@link ElectionAttributes} object of each contest.
+	 *
+	 * @return the semanticInformation.
+	 * @throws IllegalArgumentException if the ballot contains an unsupported {@link Contest} template. Supported templates are
+	 *                                  <ul>
+	 *                                      <li>{@value Contest#ELECTIONS_TEMPLATE}</li>
+	 *                                      <li>{@value Contest#VOTES_TEMPLATE}</li>
+	 *                                  </ul>
+	 */
+	@JsonIgnore
+	public List<String> getSemantics() {
+		return getOrderedElectionOptions().stream()
+				.map(ElectionOption::getSemantics)
+				.toList();
+	}
+
+	/**
 	 * Returns the ordered {@link ElectionOption}s for this ballot. We order the election options by two levels: First, by how the corresponding
 	 * questions of each contest are displayed on the voter portal and second, by how the voting options appear in the {@link ElectionAttributes}
 	 * object of each contest.
 	 *
 	 * @throws IllegalArgumentException if the ballot contains an unsupported {@link Contest} template. Supported templates are
 	 *                                  <ul>
-	 *                                      <li>{@value Contest#LISTS_AND_CANDIDATES_TEMPLATE}</li>
-	 *                                      <li>{@value Contest#OPTIONS_TEMPLATE}</li>
+	 *                                      <li>{@value Contest#ELECTIONS_TEMPLATE}</li>
+	 *                                      <li>{@value Contest#VOTES_TEMPLATE}</li>
 	 *                                  </ul>
 	 */
 	@JsonIgnore
 	public List<ElectionOption> getOrderedElectionOptions() {
 
-		return checkContestsNotNullAndNotEmpty(this.contests, this.id).stream()
+		return this.contests.stream()
 				.map(this::getOrderedElectionOptionsFromContest)
 				.flatMap(Collection::stream)
 				.toList();
@@ -121,8 +177,8 @@ public record Ballot(String id,
 		checkNotNullAndNotEmpty(electionOptions, "election options", contestId);
 
 		return switch (template) {
-			case Contest.OPTIONS_TEMPLATE -> getOrderedElectionOptionsFromOptionsTemplateContest(electionAttributes, electionOptions);
-			case Contest.LISTS_AND_CANDIDATES_TEMPLATE ->
+			case Contest.VOTES_TEMPLATE -> getOrderedElectionOptionsFromOptionsTemplateContest(electionAttributes, electionOptions);
+			case Contest.ELECTIONS_TEMPLATE ->
 					getOrderedElectionOptionsFromListsAndCandidatesTemplateContest(questions, electionAttributes, electionOptions, contestId);
 			default -> throw new IllegalArgumentException(
 					String.format("Contests with template \"%s\" are not supported. [contestId: %s]", template, contest.id()));
@@ -200,5 +256,54 @@ public record Ballot(String id,
 						.toList())
 				.flatMap(Collection::stream)
 				.toList();
+	}
+
+	public static final class BallotBuilder {
+		private String id;
+		private String defaultTitle;
+		private String defaultDescription;
+		private String alias;
+		private String status;
+		private Identifier electionEvent;
+		private List<Contest> contests;
+
+		public BallotBuilder setId(final String id) {
+			this.id = id;
+			return this;
+		}
+
+		public BallotBuilder setDefaultTitle(final String defaultTitle) {
+			this.defaultTitle = defaultTitle;
+			return this;
+		}
+
+		public BallotBuilder setDefaultDescription(final String defaultDescription) {
+			this.defaultDescription = defaultDescription;
+			return this;
+		}
+
+		public BallotBuilder setAlias(final String alias) {
+			this.alias = alias;
+			return this;
+		}
+
+		public BallotBuilder setStatus(final String status) {
+			this.status = status;
+			return this;
+		}
+
+		public BallotBuilder setElectionEvent(final Identifier electionEvent) {
+			this.electionEvent = electionEvent;
+			return this;
+		}
+
+		public BallotBuilder setContests(final List<Contest> contests) {
+			this.contests = contests;
+			return this;
+		}
+
+		public Ballot build() {
+			return new Ballot(id, defaultTitle, defaultDescription, alias, status, electionEvent, contests);
+		}
 	}
 }

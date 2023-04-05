@@ -20,6 +20,7 @@ import static ch.post.it.evoting.cryptoprimitives.domain.election.ElectionObject
 import static ch.post.it.evoting.cryptoprimitives.domain.election.ElectionObjectValidations.validateDefaultDescription;
 import static ch.post.it.evoting.cryptoprimitives.domain.election.ElectionObjectValidations.validateDefaultTitle;
 import static ch.post.it.evoting.cryptoprimitives.domain.election.ElectionObjectValidations.validateGracePeriod;
+import static ch.post.it.evoting.cryptoprimitives.domain.election.ElectionObjectValidations.validateStatus;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -29,26 +30,33 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * Encapsulates the information contained within an election event.
+ * Encapsulates the information contained within a ballot box.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record ElectionEvent(String id,
-							String defaultTitle,
-							String defaultDescription,
-							String alias,
-							XMLGregorianCalendar dateFrom,
-							XMLGregorianCalendar dateTo,
-							Integer gracePeriod,
-							Identifier administrationBoard) {
+public record BallotBox(String id,
+						String defaultTitle,
+						String defaultDescription,
+						String alias,
+						XMLGregorianCalendar dateFrom,
+						XMLGregorianCalendar dateTo,
+						boolean test,
+						String status,
+						Integer gracePeriod,
+						Identifier electionEvent,
+						Identifier ballot,
+						Identifier electoralBoard) {
 
-	public ElectionEvent {
+	public BallotBox {
 		validateUUID(id);
 		validateDefaultTitle(defaultTitle);
 		validateDefaultDescription(defaultDescription);
 		validateAlias(alias);
 		validateDateFromDateTo(dateFrom, dateTo);
+		validateStatus(status);
 		validateGracePeriod(gracePeriod);
-		checkNotNull(administrationBoard);
+		checkNotNull(electionEvent);
+		checkNotNull(ballot);
+		checkNotNull(electoralBoard);
 	}
 
 	@JsonGetter("dateFrom")
@@ -61,63 +69,93 @@ public record ElectionEvent(String id,
 		return dateTo.toXMLFormat();
 	}
 
+	@JsonGetter("test")
+	public String getTest() {
+		return String.valueOf(test);
+	}
+
 	@JsonGetter("gracePeriod")
 	public String getGracePeriod() {
 		return String.valueOf(gracePeriod);
 	}
 
-	public static final class ElectionEventBuilder {
+	public static final class BallotBoxBuilder {
 		private String id;
 		private String defaultTitle;
 		private String defaultDescription;
 		private String alias;
 		private XMLGregorianCalendar dateFrom;
 		private XMLGregorianCalendar dateTo;
+		private boolean test;
+		private String status;
 		private Integer gracePeriod;
-		private Identifier administrationBoard;
+		private Identifier electionEvent;
+		private Identifier ballot;
+		private Identifier electoralBoard;
 
-		public ElectionEventBuilder setId(final String id) {
+		public BallotBoxBuilder setId(final String id) {
 			this.id = id;
 			return this;
 		}
 
-		public ElectionEventBuilder setDefaultTitle(final String defaultTitle) {
+		public BallotBoxBuilder setDefaultTitle(final String defaultTitle) {
 			this.defaultTitle = defaultTitle;
 			return this;
 		}
 
-		public ElectionEventBuilder setDefaultDescription(final String defaultDescription) {
+		public BallotBoxBuilder setDefaultDescription(final String defaultDescription) {
 			this.defaultDescription = defaultDescription;
 			return this;
 		}
 
-		public ElectionEventBuilder setAlias(final String alias) {
+		public BallotBoxBuilder setAlias(final String alias) {
 			this.alias = alias;
 			return this;
 		}
 
-		public ElectionEventBuilder setDateFrom(final XMLGregorianCalendar dateFrom) {
+		public BallotBoxBuilder setDateFrom(final XMLGregorianCalendar dateFrom) {
 			this.dateFrom = dateFrom;
 			return this;
 		}
 
-		public ElectionEventBuilder setDateTo(final XMLGregorianCalendar dateTo) {
+		public BallotBoxBuilder setDateTo(final XMLGregorianCalendar dateTo) {
 			this.dateTo = dateTo;
 			return this;
 		}
 
-		public ElectionEventBuilder setGracePeriod(final Integer gracePeriod) {
+		public BallotBoxBuilder setTest(final boolean test) {
+			this.test = test;
+			return this;
+		}
+
+		public BallotBoxBuilder setStatus(final String status) {
+			this.status = status;
+			return this;
+		}
+
+		public BallotBoxBuilder setGracePeriod(final Integer gracePeriod) {
 			this.gracePeriod = gracePeriod;
 			return this;
 		}
 
-		public ElectionEventBuilder setAdministrationBoard(final Identifier administrationBoard) {
-			this.administrationBoard = administrationBoard;
+		public BallotBoxBuilder setElectionEvent(final Identifier electionEvent) {
+			this.electionEvent = electionEvent;
 			return this;
 		}
 
-		public ElectionEvent build() {
-			return new ElectionEvent(id, defaultTitle, defaultDescription, alias, dateFrom, dateTo, gracePeriod, administrationBoard);
+		public BallotBoxBuilder setBallot(final Identifier ballot) {
+			this.ballot = ballot;
+			return this;
+		}
+
+		public BallotBoxBuilder setElectoralBoard(final Identifier electoralBoard) {
+			this.electoralBoard = electoralBoard;
+			return this;
+		}
+
+		public BallotBox build() {
+			return new BallotBox(id, defaultTitle, defaultDescription, alias, dateFrom, dateTo, test, status, gracePeriod, electionEvent, ballot,
+					electoralBoard);
 		}
 	}
 }

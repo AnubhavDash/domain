@@ -155,7 +155,7 @@ class ElectionEventContextPayloadTest {
 		final int numberOfVotingCards = 10;
 		final int gracePeriod = 900;
 		final PrimesMappingTable primesMappingTable = PrimesMappingTable.from(
-				List.of(new PrimesMappingTableEntry("actualVotingOption", smallPrimeGroupMembers.get(0))));
+				List.of(new PrimesMappingTableEntry("actualVotingOption", smallPrimeGroupMembers.get(0), "semantic")));
 
 		return new VerificationCardSetContext(verificationCardSetId, ballotBoxId, testBallotBox, numberOfWriteInFields, numberOfVotingCards,
 				gracePeriod, primesMappingTable);
@@ -170,7 +170,7 @@ class ElectionEventContextPayloadTest {
 		final String ballotBoxId2 = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
 		final String ballotBoxId4 = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
 		final PrimesMappingTable primesMappingTable = PrimesMappingTable.from(
-				List.of(new PrimesMappingTableEntry("actualVotingOption", smallPrimeGroupMembers.get(0))));
+				List.of(new PrimesMappingTableEntry("actualVotingOption", smallPrimeGroupMembers.get(0), "semantic")));
 
 		final VerificationCardSetContext verificationCardSetContextOne = new VerificationCardSetContext(verificationCardSetId1, ballotBoxId1,
 				false, 0, 10, 900, primesMappingTable);

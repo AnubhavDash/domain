@@ -15,12 +15,11 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.election;
 
-import static ch.post.it.evoting.cryptoprimitives.domain.VotingOptionsConstants.MAXIMUM_ACTUAL_VOTING_OPTION_LENGTH;
-import static com.google.common.base.Preconditions.checkArgument;
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateNonBlankUCS;
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateXsToken;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -38,25 +37,15 @@ import ch.post.it.evoting.cryptoprimitives.math.PrimeGqElement;
  * @param actualVotingOption  v<sub>i</sub>, the actual voting option. Must be non-null. It must not be blank and its length must be at most
  *                            {@value ch.post.it.evoting.cryptoprimitives.domain.VotingOptionsConstants#MAXIMUM_ACTUAL_VOTING_OPTION_LENGTH}.
  * @param encodedVotingOption p&#771;<sub>i</sub>, the encoded voting option. Must be non-null.
+ * @param semanticInformation semanticInformation, the semantic information related to the voting option. Must be non-null. It must not be blank.
  */
-public record PrimesMappingTableEntry(String actualVotingOption, PrimeGqElement encodedVotingOption)
+public record PrimesMappingTableEntry(String actualVotingOption, PrimeGqElement encodedVotingOption, String semanticInformation)
 		implements GroupVectorElement<GqGroup>, HashableList {
 
-	public static final Pattern VALID_XML_TOKEN_PATTERN = Pattern.compile("^[\\w\\-]{1,50}$");
-	public static final int XML_TOKEN_PATTERN_MAX_LENGTH = 50;
-
 	public PrimesMappingTableEntry {
-		checkNotNull(actualVotingOption);
+		validateXsToken(actualVotingOption);
 		checkNotNull(encodedVotingOption);
-
-		checkArgument(!actualVotingOption.isBlank(), "The actual voting option cannot be blank.");
-		checkArgument(actualVotingOption.length() <= MAXIMUM_ACTUAL_VOTING_OPTION_LENGTH,
-				"The actual voting option length must not exceed %s. [length: %s]", MAXIMUM_ACTUAL_VOTING_OPTION_LENGTH,
-				actualVotingOption.length());
-
-		checkArgument(actualVotingOption.length() <= XML_TOKEN_PATTERN_MAX_LENGTH ,"Voting options should match a valid xml xs:token [actualVotingOption: %s] ", actualVotingOption);
-		checkArgument(VALID_XML_TOKEN_PATTERN.matcher(actualVotingOption).matches(),"Voting options should match a valid xml xs:token [actualVotingOption: %s] ", actualVotingOption);
-
+		validateNonBlankUCS(semanticInformation);
 	}
 
 	@JsonIgnore
