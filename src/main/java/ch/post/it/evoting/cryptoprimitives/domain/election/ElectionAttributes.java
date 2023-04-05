@@ -15,15 +15,19 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.election;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static ch.post.it.evoting.cryptoprimitives.domain.election.ElectionObjectValidations.validateAlias;
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import ch.post.it.evoting.cryptoprimitives.domain.validations.Validations;
 
 /**
  * Contains a list with the election option attributes.
@@ -46,10 +50,13 @@ public class ElectionAttributes {
 			final List<String> related,
 			@JsonProperty("correctness")
 			final boolean correctness) {
-		this.id = id;
+		this.id = validateUUID(id);
 		this.alias = alias;
-		this.related = related;
+		this.related = checkNotNull(related);
 		this.correctness = correctness;
+
+		validateAlias(alias);
+		related.forEach(Validations::validateUUID);
 	}
 
 	/**
@@ -58,15 +65,19 @@ public class ElectionAttributes {
 	 * @throws IllegalArgumentException if the alias is blank.
 	 */
 	public void setAlias(final String alias) {
-		checkNotNull(alias);
-		checkArgument(!alias.isBlank(), "The alias to be set cannot be blank.");
+		validateAlias(alias);
 
 		this.alias = alias;
 	}
 
-	@JsonGetter("correctness")
+	@JsonIgnore
 	public boolean isCorrectness() {
 		return correctness;
+	}
+
+	@JsonGetter("correctness")
+	public String getCorrectness() {
+		return String.valueOf(correctness);
 	}
 
 	public String getId() {

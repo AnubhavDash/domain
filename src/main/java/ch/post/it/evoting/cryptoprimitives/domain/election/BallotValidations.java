@@ -27,18 +27,8 @@ public final class BallotValidations {
 		if (questions.size() > Contest.MAX_LISTS_AND_CANDIDATES_QUESTIONS_SIZE) {
 			throw new IllegalArgumentException(
 					String.format("A contest with template \"%s\" cannot have more than %s questions. [contestId: %s, questions size of contest: %s]",
-							Contest.LISTS_AND_CANDIDATES_TEMPLATE, Contest.MAX_LISTS_AND_CANDIDATES_QUESTIONS_SIZE, contestId, questions.size()));
+							Contest.ELECTIONS_TEMPLATE, Contest.MAX_LISTS_AND_CANDIDATES_QUESTIONS_SIZE, contestId, questions.size()));
 		}
-	}
-
-	public static List<Contest> checkContestsNotNullAndNotEmpty(final List<Contest> contests, final String ballotId) {
-		if (contests == null) {
-			throw new IllegalArgumentException(String.format("The ballot contains a null contests list. [ballotId: %s]", ballotId));
-		} else if (contests.isEmpty()) {
-			throw new IllegalArgumentException(String.format("The ballot contains an empty contests list. [ballotId: %s]", ballotId));
-		}
-
-		return contests;
 	}
 
 	public static void checkNotNullAndNotEmpty(final List<?> parameterList, final String parameterListContentDescription, final String contestId) {

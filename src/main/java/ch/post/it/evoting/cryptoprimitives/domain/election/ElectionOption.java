@@ -15,6 +15,10 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.election;
 
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateNonBlankUCS;
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateXsToken;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,23 +31,35 @@ public class ElectionOption {
 
 	private final String id;
 	private final String attribute;
+	private final String semantics;
 	private String representation;
 
 	@JsonCreator
 	public ElectionOption(
 			@JsonProperty("id")
 			final String id,
-			@JsonProperty("representation")
-			final String representation,
 			@JsonProperty("attribute")
-			final String attribute) {
-		this.id = id;
-		this.representation = representation;
-		this.attribute = attribute;
+			final String attribute,
+			@JsonProperty("semantics")
+			final String semantics,
+			@JsonProperty("representation")
+			final String representation) {
+		this.id = validateUUID(id);
+		this.attribute = validateUUID(attribute);
+		this.semantics = validateNonBlankUCS(semantics);
+		this.representation = validateXsToken(representation);
 	}
 
 	public String getId() {
 		return this.id;
+	}
+
+	public String getAttribute() {
+		return this.attribute;
+	}
+
+	public String getSemantics() {
+		return this.semantics;
 	}
 
 	public String getRepresentation() {
@@ -56,10 +72,6 @@ public class ElectionOption {
 
 	public boolean hasRepresentation() {
 		return (representation != null) && (representation.length() > 0);
-	}
-
-	public String getAttribute() {
-		return this.attribute;
 	}
 
 }
