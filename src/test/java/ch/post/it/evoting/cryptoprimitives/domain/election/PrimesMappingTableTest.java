@@ -50,9 +50,9 @@ class PrimesMappingTableTest {
 	static void setUpAll() {
 		smallPrimeGroupMembers = PrimeGqElement.PrimeGqElementFactory.getSmallPrimeGroupMembers(gqGroup, desiredNumberOfPrimes + 1);
 		primesMappingTableEntries = List.of(
-				new PrimesMappingTableEntry(actualVotingOption, smallPrimeGroupMembers.get(0)),
-				new PrimesMappingTableEntry(actualVotingOption, smallPrimeGroupMembers.get(1)),
-				new PrimesMappingTableEntry(otherActualVotingOption, smallPrimeGroupMembers.get(2))
+				new PrimesMappingTableEntry(actualVotingOption, smallPrimeGroupMembers.get(0), "semantic"),
+				new PrimesMappingTableEntry(actualVotingOption, smallPrimeGroupMembers.get(1), "semantic"),
+				new PrimesMappingTableEntry(otherActualVotingOption, smallPrimeGroupMembers.get(2), "semantic")
 		);
 	}
 
@@ -114,7 +114,7 @@ class PrimesMappingTableTest {
 	void fromWithTooManyThrows() {
 
 		final GroupVector<PrimesMappingTableEntry, GqGroup> entries = IntStream.range(0, VotingOptionsConstants.MAXIMUM_NUMBER_OF_VOTING_OPTIONS + 1)
-				.mapToObj(i -> new PrimesMappingTableEntry(actualVotingOption, smallPrimeGroupMembers.get(0)))
+				.mapToObj(i -> new PrimesMappingTableEntry(actualVotingOption, smallPrimeGroupMembers.get(0), "semantic"))
 				.collect(GroupVector.toGroupVector());
 
 		final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> new PrimesMappingTable(entries));

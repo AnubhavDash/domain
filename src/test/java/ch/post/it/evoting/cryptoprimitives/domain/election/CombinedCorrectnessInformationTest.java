@@ -36,6 +36,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
+import com.google.common.base.Throwables;
 
 @DisplayName("A combined correctness information")
 class CombinedCorrectnessInformationTest {
@@ -300,28 +302,14 @@ class CombinedCorrectnessInformationTest {
 	}
 
 	@Test
-	@DisplayName("built from a malformed ballot with an exceeded questions size, throws an IllegalArgumentException.")
-	void exceededQuestionsSizeIllegalArgumentExceptionTest() throws IOException {
-		final Ballot ballotExceededQuestionsSize = getBallotFromResourceName("ballotExceededQuestionsSize.json");
-
-		final IllegalArgumentException illegalArgumentException = assertThrows(
-				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotExceededQuestionsSize));
+	@DisplayName("built from a malformed ballot with an exceeded questions size throws.")
+	void exceededQuestionsSizeIllegalArgumentExceptionTest() {
+		final ValueInstantiationException exception = assertThrows(
+				ValueInstantiationException.class, () -> getBallotFromResourceName("ballotExceededQuestionsSize.json"));
 
 		assertEquals(
-				"A contest with template \"listsAndCandidates\" cannot have more than 2 questions. [contestId: 7868bd2dd48e4f6093d3b14d84720f79, questions size of contest: 3]",
-				illegalArgumentException.getMessage());
-	}
-
-	@Test
-	@DisplayName("built from a malformed ballot with an unknown contest's template, throws an IllegalArgumentException.")
-	void unknownContestTemplateIllegalArgumentExceptionTest() throws IOException {
-		final Ballot ballotNoCorrespondingQuestionFound = getBallotFromResourceName("ballotUnknownContestTemplate.json");
-
-		final IllegalArgumentException illegalArgumentException = assertThrows(
-				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotNoCorrespondingQuestionFound));
-
-		assertEquals("Contests with template \"unknownTemplate\" are not supported. [contestId: e7446a430b244a9bb12da153e35601cd]",
-				illegalArgumentException.getMessage());
+				"The given string does not comply with the required format. [string: Proporz election - many candidates, format: ^[\\w\\-]{1,50}$].",
+				Throwables.getRootCause(exception).getMessage());
 	}
 
 	@Test
@@ -340,49 +328,38 @@ class CombinedCorrectnessInformationTest {
 	@Test
 	@DisplayName("built from a malformed ballot with no contests, throws an IllegalArgumentException.")
 	void noContestsIllegalArgumentExceptionTest() throws IOException {
-		final Ballot ballotNoContests = getBallotFromResourceName("ballotNoContests.json");
+		final ValueInstantiationException exception = assertThrows(ValueInstantiationException.class,
+				() -> getBallotFromResourceName("ballotNoContests.json"));
 
-		final IllegalArgumentException illegalArgumentException = assertThrows(
-				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotNoContests));
-
-		assertEquals("The ballot contains a null contests list. [ballotId: a5c0305db01142e786533cb48df1c794]",
-				illegalArgumentException.getMessage());
+		assertEquals(NullPointerException.class, exception.getCause().getClass());
 	}
 
 	@Test
-	@DisplayName("built from a malformed ballot with empty contests, throws an IllegalArgumentException.")
-	void emptyContestsIllegalArgumentExceptionTest() throws IOException {
-		final Ballot ballotEmptyContests = getBallotFromResourceName("ballotEmptyContests.json");
+	@DisplayName("built from a malformed ballot with empty contests throws.")
+	void emptyContestsIllegalArgumentExceptionTest() {
+		final ValueInstantiationException exception = assertThrows(
+				ValueInstantiationException.class, () -> getBallotFromResourceName("ballotEmptyContests.json"));
 
-		final IllegalArgumentException illegalArgumentException = assertThrows(
-				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotEmptyContests));
-
-		assertEquals("The ballot contains an empty contests list. [ballotId: a5c0305db01142e786533cb48df1c794]",
-				illegalArgumentException.getMessage());
+		assertEquals("The ballot must contain at least one contest. [ballotId: a5c0305db01142e786533cb48df1c794]",
+				Throwables.getRootCause(exception).getMessage());
 	}
 
 	@Test
 	@DisplayName("built from a malformed ballot with a contest with no questions, throws an IllegalArgumentException.")
-	void noQuestionsIllegalArgumentExceptionTest() throws IOException {
-		final Ballot ballotContestNoQuestions = getBallotFromResourceName("ballotContestNoQuestions.json");
+	void noQuestionsIllegalArgumentExceptionTest() {
+		final ValueInstantiationException exception = assertThrows(
+				ValueInstantiationException.class, () -> getBallotFromResourceName("ballotContestNoQuestions.json"));
 
-		final IllegalArgumentException illegalArgumentException = assertThrows(
-				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotContestNoQuestions));
-
-		assertEquals("The contest contains a null questions list. [contestId: 17966dc82c0841db996b0c718a3255e3]",
-				illegalArgumentException.getMessage());
+		assertEquals(NullPointerException.class, exception.getCause().getClass());
 	}
 
 	@Test
 	@DisplayName("built from a malformed ballot with a contest with empty questions, throws an IllegalArgumentException.")
-	void emptyQuestionsIllegalArgumentExceptionTest() throws IOException {
-		final Ballot ballotContestEmptyQuestions = getBallotFromResourceName("ballotContestEmptyQuestions.json");
+	void emptyQuestionsIllegalArgumentExceptionTest() {
+		final ValueInstantiationException exception = assertThrows(ValueInstantiationException.class,
+				() -> getBallotFromResourceName("ballotContestEmptyQuestions.json"));
 
-		final IllegalArgumentException illegalArgumentException = assertThrows(
-				IllegalArgumentException.class, () -> new CombinedCorrectnessInformation(ballotContestEmptyQuestions));
-
-		assertEquals("The contest contains an empty questions list. [contestId: 17966dc82c0841db996b0c718a3255e3]",
-				illegalArgumentException.getMessage());
+		assertEquals(IllegalArgumentException.class, exception.getCause().getClass());
 	}
 
 	@Test

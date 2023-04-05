@@ -18,6 +18,10 @@ package ch.post.it.evoting.cryptoprimitives.domain.validations;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collection;
@@ -27,6 +31,8 @@ import java.util.regex.Pattern;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
+import ch.post.it.evoting.cryptoprimitives.domain.VotingOptionsConstants;
+
 public final class Validations {
 
 	@VisibleForTesting
@@ -34,7 +40,6 @@ public final class Validations {
 
 	private static final String BASE16_ALPHABET_WITH_LOWERCASE = "0123456789abcdefABCDEF";
 	private static final String BASE32_LOWERCASE_NO_PAD_ALPHABET = "abcdefghijklmnopqrstuvwxyz234567";
-
 	private static final String UUID_REGEX = String.format("^[%s]{%d}$", BASE16_ALPHABET_WITH_LOWERCASE, UUID_LENGTH);
 	private static final Pattern UUID_PATTERN = Pattern.compile(UUID_REGEX);
 
@@ -47,7 +52,7 @@ public final class Validations {
 	 *
 	 * @param toValidate the collection to validate. Must be non-null.
 	 * @return true if the input does not have duplicates, false otherwise.
-	 * @throws NullPointerException      if the collection is null or contains any null elements.
+	 * @throws NullPointerException if the collection is null or contains any null elements.
 	 */
 	public static boolean hasNoDuplicates(final Collection<?> toValidate) {
 		checkNotNull(toValidate);
@@ -59,7 +64,7 @@ public final class Validations {
 	/**
 	 * Validates that the input string is in Base16 alphabet ({@value BASE16_ALPHABET_WITH_LOWERCASE}) and has length {@value UUID_LENGTH}.
 	 * <p>
-	 *     The validation allows for both lowercase and uppercase input.
+	 * The validation allows for both lowercase and uppercase input.
 	 * </p>
 	 *
 	 * @param toValidate the string to validate. Must be non-null.
@@ -80,7 +85,7 @@ public final class Validations {
 	 * @param expectedLength the expected length of the string to validate. Must be strictly positive.
 	 * @return the validated input string.
 	 * @throws NullPointerException      if the string is null.
-	 * @throws IllegalArgumentException  if the expected length is not strictly positive or if the string is not of expected lentgh.
+	 * @throws IllegalArgumentException  if the expected length is not strictly positive or if the string is not of expected length.
 	 * @throws FailedValidationException if the string validation fails.
 	 */
 	public static String validateBase32NoPadAlphabet(final String toValidate, final int expectedLength) {
@@ -111,6 +116,49 @@ public final class Validations {
 					String.format("The given string is not a valid Base64 encoded string. [string: %s].", toValidate));
 		}
 		return toValidate;
+	}
+
+	/**
+	 * Validates that the input string is a valid non blank UTF8 string.
+	 *
+	 * @param toValidate the string to validate. Must be non-null.
+	 * @return the validated input string.
+	 * @throws NullPointerException      if the string is null.
+	 * @throws IllegalArgumentException  if the string is blank.
+	 * @throws FailedValidationException if the string validation fails.
+	 */
+	public static String validateNonBlankUCS(final String toValidate) {
+		checkNotNull(toValidate);
+		checkArgument(!toValidate.isBlank(), "String to validate must not be blank.");
+
+		final CharsetEncoder encoder = StandardCharsets.UTF_8.newEncoder();
+
+		try {
+			// Check that s is a valid UTF-8 string
+			final ByteBuffer buffer = encoder.encode(CharBuffer.wrap(toValidate));
+
+			final byte[] result = new byte[buffer.remaining()];
+			buffer.get(result);
+
+			return toValidate;
+		} catch (final CharacterCodingException e) {
+			throw new FailedValidationException("The string does not correspond to a valid sequence of UTF-8 encoding.");
+		}
+	}
+
+	/**
+	 * Validates that the input string is a xml xs:token of at most {@value VotingOptionsConstants#MAXIMUM_ACTUAL_VOTING_OPTION_LENGTH} characters.
+	 *
+	 * @param toValidate the string to validate. Must be non-null.
+	 * @throws NullPointerException      if the string is null.
+	 * @throws FailedValidationException if the string validation fails.
+	 */
+	public static String validateXsToken(final String toValidate) {
+		checkNotNull(toValidate);
+		final Pattern validXmlTokenPattern = Pattern.compile(
+				String.format("^[\\w\\-]{1,%s}$", VotingOptionsConstants.MAXIMUM_ACTUAL_VOTING_OPTION_LENGTH));
+
+		return validateInAlphabet(toValidate, validXmlTokenPattern);
 	}
 
 	private static String validateInAlphabet(final String toValidate, final Pattern pattern) {

@@ -15,7 +15,6 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.election;
 
-import static ch.post.it.evoting.cryptoprimitives.utils.Conversions.stringToInteger;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -23,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +36,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
 import com.google.common.base.Throwables;
+
+import ch.post.it.evoting.cryptoprimitives.math.RandomFactory;
 
 @DisplayName("A ballot")
 class BallotTest {
@@ -75,14 +76,13 @@ class BallotTest {
 	}
 
 	@Test
-	@DisplayName("built from a malformed ballot json file, calling getOrderedElectionOptions throws an IllegalArgumentException.")
-	void getOrderedElectionOptionsThrowsIllegalArgumentExceptionTest() throws IOException {
+	@DisplayName("built from a malformed ballot json file, calling getOrderedElectionOptions throws a ValueInstantiationException.")
+	void getOrderedElectionOptionsThrowsIllegalArgumentExceptionTest() {
+		final ValueInstantiationException exception = assertThrows(ValueInstantiationException.class,
+				() -> getBallotFromResourceName(BALLOT4_JSON));
 
-		final Ballot ballot = getBallotFromResourceName(BALLOT4_JSON);
-		final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, ballot::getOrderedElectionOptions);
-
-		assertEquals("Contests with template \"template\" are not supported. [contestId: 690c5dd67c1045a2bdaf1d1104417fb0]",
-				Throwables.getRootCause(illegalArgumentException).getMessage());
+		assertEquals("The template must be either options or listsAndCandidates. [template: template, contestId: 690c5dd67c1045a2bdaf1d1104417fb0]",
+				Throwables.getRootCause(exception).getMessage());
 	}
 
 	@Test
@@ -115,14 +115,15 @@ class BallotTest {
 	@DisplayName("calling getAttributeAlias throws Exception upon missing element and upon multiple matching elements.")
 	void getActualVotingOptionThrows() {
 
-		final String attribute = "attribute";
+		final String attribute = RandomFactory.createRandom().genRandomBase16String(32);
 
 		final List<ElectionAttributes> attributes = List.of(
-						new ElectionAttributes(attribute, "ignored", Collections.emptyList(), true),
-						new ElectionAttributes(attribute, "ignored", Collections.emptyList(), true));
+				new ElectionAttributes(attribute, "ignored", Collections.emptyList(), true),
+				new ElectionAttributes(attribute, "ignored", Collections.emptyList(), true));
 
 		// No matching element.
-		assertThrows(NoSuchElementException.class, () -> Ballot.getAttributeAlias("id", attributes));
+		assertThrows(NoSuchElementException.class,
+				() -> Ballot.getAttributeAlias(RandomFactory.createRandom().genRandomBase16String(32), attributes));
 
 		// Multiple matching elements.
 		assertThrows(IllegalArgumentException.class, () -> Ballot.getAttributeAlias(attribute, attributes));
