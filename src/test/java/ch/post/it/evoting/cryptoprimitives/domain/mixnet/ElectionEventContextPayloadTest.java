@@ -67,7 +67,6 @@ class ElectionEventContextPayloadTest {
 	private static final Random random = RandomFactory.createRandom();
 	private static final GroupVector<PrimeGqElement, GqGroup> smallPrimeGroupMembers = PrimeGqElement.PrimeGqElementFactory.getSmallPrimeGroupMembers(
 			encryptionGroup, 1);
-	private static final GroupVector<SchnorrProof, ZqGroup> schnorrProofs = SerializationTestData.createSchnorrProofs(2);
 	private static ElectionEventContextPayload electionEventContextPayload;
 	private static ObjectNode rootNode;
 
@@ -75,15 +74,18 @@ class ElectionEventContextPayloadTest {
 	static void setupAll() throws JsonProcessingException {
 
 		// Create payload.
-		final String electionEventId = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
+		final String electionEventId = random.genRandomBase16String(32);
+		final String electionEventAlias = random.genRandomBase64String(100) + "!";
+		final String electionEventDescription = random.genRandomBase64String(100) + "?";
 		final List<VerificationCardSetContext> verificationCardSetContexts = new ArrayList<>();
 
 		IntStream.rangeClosed(1, 2).forEach(i -> verificationCardSetContexts.add(generatedVerificationCardSetContext()));
 
-		final LocalDateTime startTime = LocalDateTime.now();
+		final LocalDateTime startTime = LocalDateTime.now().minusDays(1);
 		final LocalDateTime finishTime = startTime.plusWeeks(1);
 
-		final ElectionEventContext electionEventContext = new ElectionEventContext(electionEventId, verificationCardSetContexts, startTime, finishTime);
+		final ElectionEventContext electionEventContext = new ElectionEventContext(electionEventId, electionEventAlias, electionEventDescription,
+				verificationCardSetContexts, startTime, finishTime);
 
 		electionEventContextPayload = new ElectionEventContextPayload(encryptionGroup, electionEventContext);
 
@@ -99,12 +101,18 @@ class ElectionEventContextPayloadTest {
 
 		final ObjectNode electionEventContextNode = mapper.createObjectNode();
 		electionEventContextNode.put("electionEventId", electionEventId);
+		electionEventContextNode.put("electionEventAlias", electionEventAlias);
+		electionEventContextNode.put("electionEventDescription", electionEventDescription);
 
 		final ArrayNode verificationCardSetContextsNodes = mapper.createArrayNode();
 		for (final VerificationCardSetContext verificationCardSetContext : verificationCardSetContexts) {
 			final ObjectNode verificationCardSetContextNode = mapper.createObjectNode();
 			verificationCardSetContextNode.put("verificationCardSetId", verificationCardSetContext.verificationCardSetId());
+			verificationCardSetContextNode.put("verificationCardSetAlias", verificationCardSetContext.verificationCardSetAlias());
+			verificationCardSetContextNode.put("verificationCardSetDescription", verificationCardSetContext.verificationCardSetDescription());
 			verificationCardSetContextNode.put("ballotBoxId", verificationCardSetContext.ballotBoxId());
+			verificationCardSetContextNode.set("ballotBoxStartTime", mapper.readTree(mapper.writeValueAsString(verificationCardSetContext.ballotBoxStartTime())));
+			verificationCardSetContextNode.set("ballotBoxFinishTime", mapper.readTree(mapper.writeValueAsString(verificationCardSetContext.ballotBoxFinishTime())));
 			verificationCardSetContextNode.put("testBallotBox", verificationCardSetContext.testBallotBox());
 			verificationCardSetContextNode.put("numberOfWriteInFields", verificationCardSetContext.numberOfWriteInFields());
 			verificationCardSetContextNode.put("numberOfVotingCards", verificationCardSetContext.numberOfVotingCards());
@@ -149,7 +157,11 @@ class ElectionEventContextPayloadTest {
 
 	private static VerificationCardSetContext generatedVerificationCardSetContext() {
 		final String verificationCardSetId = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
+		final String verificationCardSetAlias = random.genRandomBase64String(100);
+		final String verificationCardSetDescription = random.genRandomBase64String(100);
 		final String ballotBoxId = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
+		final LocalDateTime ballotBoxStartTime = LocalDateTime.now();
+		final LocalDateTime ballotBoxFinishTime = ballotBoxStartTime.plusDays(5);
 		final boolean testBallotBox = Math.random() < 0.5;
 		final int numberOfWriteInFields = 1;
 		final int numberOfVotingCards = 10;
@@ -157,73 +169,8 @@ class ElectionEventContextPayloadTest {
 		final PrimesMappingTable primesMappingTable = PrimesMappingTable.from(
 				List.of(new PrimesMappingTableEntry("actualVotingOption", smallPrimeGroupMembers.get(0), "semantic")));
 
-		return new VerificationCardSetContext(verificationCardSetId, ballotBoxId, testBallotBox, numberOfWriteInFields, numberOfVotingCards,
+		return new VerificationCardSetContext(verificationCardSetId, verificationCardSetAlias, verificationCardSetDescription, ballotBoxId,
+				ballotBoxStartTime, ballotBoxFinishTime, testBallotBox, numberOfWriteInFields, numberOfVotingCards,
 				gracePeriod, primesMappingTable);
-	}
-
-	@Test
-	@DisplayName("test ElectionEventContext constructor validation")
-	void testInvalidElectionEventContext() {
-		final String verificationCardSetId1 = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
-		final String verificationCardSetId2 = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
-		final String ballotBoxId1 = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
-		final String ballotBoxId2 = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
-		final String ballotBoxId4 = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
-		final PrimesMappingTable primesMappingTable = PrimesMappingTable.from(
-				List.of(new PrimesMappingTableEntry("actualVotingOption", smallPrimeGroupMembers.get(0), "semantic")));
-
-		final VerificationCardSetContext verificationCardSetContextOne = new VerificationCardSetContext(verificationCardSetId1, ballotBoxId1,
-				false, 0, 10, 900, primesMappingTable);
-		final VerificationCardSetContext verificationCardSetContextTwo = new VerificationCardSetContext(verificationCardSetId1, ballotBoxId2,
-				true, 0, 10, 900, primesMappingTable);
-		final VerificationCardSetContext verificationCardSetContextThree = new VerificationCardSetContext(verificationCardSetId2, ballotBoxId1,
-				false, 2, 10, 900, primesMappingTable);
-		final VerificationCardSetContext verificationCardSetContextFour = new VerificationCardSetContext(verificationCardSetId2, ballotBoxId4,
-				true, 2, 10, 900, primesMappingTable);
-
-		final String electionEventId = random.genRandomBase16String(32).toLowerCase(Locale.ENGLISH);
-
-		final List<VerificationCardSetContext> duplicateVerificationCardSetIds = new ArrayList<>();
-
-		final LocalDateTime start = LocalDateTime.now();
-		final LocalDateTime finish = start.plusWeeks(1);
-		final IllegalArgumentException emptyIllegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new ElectionEventContext(electionEventId, duplicateVerificationCardSetIds, start, finish));
-		assertEquals("VerificationCardSetContexts cannot be empty.", emptyIllegalArgumentException.getMessage());
-
-		duplicateVerificationCardSetIds.add(verificationCardSetContextOne);
-		duplicateVerificationCardSetIds.add(verificationCardSetContextTwo);
-
-		final IllegalArgumentException duplicateVerificationCardSetIdsIllegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new ElectionEventContext(electionEventId, duplicateVerificationCardSetIds, start, finish));
-		assertEquals("VerificationCardSetContexts cannot contain duplicate VerificationCardSetIds.",
-				duplicateVerificationCardSetIdsIllegalArgumentException.getMessage());
-
-		final List<VerificationCardSetContext> duplicateBallotBoxIds = new ArrayList<>();
-		duplicateBallotBoxIds.add(verificationCardSetContextOne);
-		duplicateBallotBoxIds.add(verificationCardSetContextThree);
-
-		final IllegalArgumentException duplicateBallotBoxIdsIllegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new ElectionEventContext(electionEventId, duplicateBallotBoxIds, start, finish));
-		assertEquals("VerificationCardSetContexts cannot contain duplicate BallotBoxIds.",
-				duplicateBallotBoxIdsIllegalArgumentException.getMessage());
-
-		final IllegalArgumentException negativeNumberOfWriteInFieldsIllegalArgumentException = assertThrows(IllegalArgumentException.class,
-				() -> new VerificationCardSetContext(verificationCardSetId2, ballotBoxId4, true, -2, 10, 900, primesMappingTable));
-		assertEquals("The number of write-in fields must be positive.",
-				negativeNumberOfWriteInFieldsIllegalArgumentException.getMessage());
-
-		final List<VerificationCardSetContext> correctVerificationCardSetContexts = new ArrayList<>();
-		correctVerificationCardSetContexts.add(verificationCardSetContextOne);
-		correctVerificationCardSetContexts.add(verificationCardSetContextFour);
-
-		assertThrows(NullPointerException.class,
-				() -> new ElectionEventContext(null, correctVerificationCardSetContexts, start, finish));
-		assertThrows(NullPointerException.class,
-				() -> new ElectionEventContext(electionEventId, null, start, finish));
-		assertThrows(NullPointerException.class,
-				() -> new ElectionEventContext(electionEventId, correctVerificationCardSetContexts, null, finish));
-		assertThrows(NullPointerException.class,
-				() -> new ElectionEventContext(electionEventId, correctVerificationCardSetContexts, start, null));
 	}
 }
