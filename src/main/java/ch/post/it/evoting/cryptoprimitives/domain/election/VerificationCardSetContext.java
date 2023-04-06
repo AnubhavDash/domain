@@ -15,11 +15,13 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.election;
 
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateNonBlankUCS;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
@@ -28,7 +30,11 @@ import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
 
 public record VerificationCardSetContext(String verificationCardSetId,
+										 String verificationCardSetAlias,
+										 String verificationCardSetDescription,
 										 String ballotBoxId,
+										 LocalDateTime ballotBoxStartTime,
+										 LocalDateTime ballotBoxFinishTime,
 										 boolean testBallotBox,
 										 int numberOfWriteInFields,
 										 int numberOfVotingCards,
@@ -37,9 +43,13 @@ public record VerificationCardSetContext(String verificationCardSetId,
 
 	public VerificationCardSetContext {
 		validateUUID(verificationCardSetId);
+		validateNonBlankUCS(verificationCardSetAlias);
+		validateNonBlankUCS(verificationCardSetDescription);
 		validateUUID(ballotBoxId);
+		checkArgument(ballotBoxStartTime.isBefore(ballotBoxFinishTime) || ballotBoxStartTime.equals(ballotBoxFinishTime),
+				"The ballot box start time must not be after the ballot box finish time.");
 		checkArgument(numberOfWriteInFields >= 0, "The number of write-in fields must be positive.");
-		checkArgument(numberOfVotingCards >= 0, "The number of voting cards must be positive.");
+		checkArgument(numberOfVotingCards > 0, "The number of voting cards must be strictly positive.");
 		checkArgument(gracePeriod >= 0, "The grace period must be positive.");
 		checkNotNull(primesMappingTable);
 	}

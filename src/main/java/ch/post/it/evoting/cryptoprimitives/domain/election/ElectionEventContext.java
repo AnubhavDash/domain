@@ -16,6 +16,7 @@
 package ch.post.it.evoting.cryptoprimitives.domain.election;
 
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.hasNoDuplicates;
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateNonBlankUCS;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -32,16 +33,22 @@ import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
 
 public record ElectionEventContext(String electionEventId,
+								   String electionEventAlias,
+								   String electionEventDescription,
 								   List<VerificationCardSetContext> verificationCardSetContexts,
 								   LocalDateTime startTime,
 								   LocalDateTime finishTime) implements HashableList {
 
 	public ElectionEventContext(final String electionEventId,
+			final String electionEventAlias,
+			final String electionEventDescription,
 			final List<VerificationCardSetContext> verificationCardSetContexts,
 			final LocalDateTime startTime,
 			final LocalDateTime finishTime) {
 
 		this.electionEventId = validateUUID(electionEventId);
+		this.electionEventAlias = validateNonBlankUCS(electionEventAlias);
+		this.electionEventDescription = validateNonBlankUCS(electionEventDescription);
 		this.verificationCardSetContexts = List.copyOf(checkNotNull(verificationCardSetContexts));
 		this.startTime = checkNotNull(startTime);
 		this.finishTime = checkNotNull(finishTime);
@@ -55,10 +62,20 @@ public record ElectionEventContext(String electionEventId,
 		checkArgument(hasNoDuplicates(this.verificationCardSetContexts.stream()
 				.map(VerificationCardSetContext::verificationCardSetId)
 				.toList()), "VerificationCardSetContexts cannot contain duplicate VerificationCardSetIds.");
+		checkArgument(hasNoDuplicates(this.verificationCardSetContexts.stream()
+				.map(VerificationCardSetContext::verificationCardSetAlias)
+				.toList()), "VerificationCardSetContexts cannot contain duplicate VerificationCardSetAliases.");
+		checkArgument(startTime.isBefore(finishTime) || startTime.equals(finishTime), "The start time must not be after the finish time.");
 		checkArgument(this.verificationCardSetContexts.stream()
-						.map(VerificationCardSetContext::numberOfWriteInFields)
-						.allMatch(n -> n >= 0),
-				"VerificationCardSetContexts cannot contain negative numberOfWriteInFields.");
+						.map(VerificationCardSetContext::ballotBoxStartTime)
+						.allMatch(ballotBoxStartTime -> (startTime.isBefore(ballotBoxStartTime) || startTime.equals(ballotBoxStartTime))
+								&& (ballotBoxStartTime.isBefore(finishTime) || ballotBoxStartTime.equals(finishTime))),
+				"The ballot box start times must be between the election event start and finish times.");
+		checkArgument(this.verificationCardSetContexts.stream()
+						.map(VerificationCardSetContext::ballotBoxFinishTime)
+						.allMatch(ballotBoxFinishTime -> (startTime.isBefore(ballotBoxFinishTime) || startTime.equals(ballotBoxFinishTime))
+								&& (ballotBoxFinishTime.isBefore(finishTime) || ballotBoxFinishTime.equals(finishTime))),
+				"The ballot box finish times must be between the election event start and finish times.");
 	}
 
 	/**
