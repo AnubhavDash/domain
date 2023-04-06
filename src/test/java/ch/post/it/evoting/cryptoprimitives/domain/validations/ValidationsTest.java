@@ -19,6 +19,7 @@ import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateBase32NoPadAlphabet;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateBase64Encoded;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.hasNoDuplicates;
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateNonBlankUCS;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -156,6 +156,39 @@ class ValidationsTest {
 		void validStringDoesNotThrow() {
 			final String validString = "KRUGS42JONAUEYLTMUZTELRO".toLowerCase(Locale.ENGLISH);
 			assertDoesNotThrow(() -> validateBase32NoPadAlphabet(validString, LENGTH));
+		}
+	}
+
+	@DisplayName("Calling validateNonBlankUCS with")
+	@Nested
+	class ValidateUCSTest {
+		@DisplayName("a null input string throws a NullPointerException.")
+		@Test
+		void nullStringThrows() {
+			assertThrows(NullPointerException.class, () -> validateNonBlankUCS(null));
+		}
+
+		@DisplayName("a blank string throws a FailedValidationException")
+		@Test
+		void blankStringThrows() {
+			assertThrows(IllegalArgumentException.class, () -> validateNonBlankUCS(""));
+			assertThrows(IllegalArgumentException.class, () -> validateNonBlankUCS(" "));
+			assertThrows(IllegalArgumentException.class, () -> validateNonBlankUCS("\t"));
+		}
+
+		@DisplayName("an invalid input string throws a FailedValidationException.")
+		@Test
+		void invalidStringThrows() {
+			final String invalidString = "invalidString\uDFFF";
+			assertThrows(FailedValidationException.class, () -> validateNonBlankUCS(invalidString));
+		}
+
+		@DisplayName("a valid input string does not throw.")
+		@Test
+		void validStringDoesNotThrow() {
+			final String validString = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@€äöüàéè";
+			final String validatedString = assertDoesNotThrow(() -> validateNonBlankUCS(validString));
+			assertEquals(validString, validatedString);
 		}
 	}
 }
