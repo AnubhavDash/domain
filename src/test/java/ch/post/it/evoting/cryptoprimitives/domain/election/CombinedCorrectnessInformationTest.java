@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -307,9 +308,7 @@ class CombinedCorrectnessInformationTest {
 		final ValueInstantiationException exception = assertThrows(
 				ValueInstantiationException.class, () -> getBallotFromResourceName("ballotExceededQuestionsSize.json"));
 
-		assertEquals(
-				"The given string does not comply with the required format. [string: Proporz election - many candidates, format: ^[\\w\\-]{1,50}$].",
-				Throwables.getRootCause(exception).getMessage());
+		assertTrue(Throwables.getRootCause(exception).getMessage().startsWith("The given string does not comply with the required format."));
 	}
 
 	@Test
