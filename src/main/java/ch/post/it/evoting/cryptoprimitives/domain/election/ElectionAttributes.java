@@ -15,7 +15,7 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.election;
 
-import static ch.post.it.evoting.cryptoprimitives.domain.election.ElectionObjectValidations.validateAlias;
+import static ch.post.it.evoting.cryptoprimitives.domain.election.ElectionObjectValidations.validateActualVotingOption;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -38,7 +38,7 @@ public class ElectionAttributes {
 	private final String id;
 	private final List<String> related;
 	private final boolean correctness;
-	private String alias;
+	private final String alias;
 
 	@JsonCreator
 	public ElectionAttributes(
@@ -51,23 +51,13 @@ public class ElectionAttributes {
 			@JsonProperty("correctness")
 			final boolean correctness) {
 		this.id = validateUUID(id);
-		this.alias = alias;
+		this.alias = checkNotNull(alias);
 		this.related = checkNotNull(related);
 		this.correctness = correctness;
 
-		validateAlias(alias);
+		// the attribute's alias represents the actual voting option.
+		validateActualVotingOption(alias);
 		related.forEach(Validations::validateUUID);
-	}
-
-	/**
-	 * @param alias the alias to set. Must be non-null and non-blank.
-	 * @throws NullPointerException     if the alias is null.
-	 * @throws IllegalArgumentException if the alias is blank.
-	 */
-	public void setAlias(final String alias) {
-		validateAlias(alias);
-
-		this.alias = alias;
 	}
 
 	@JsonIgnore
