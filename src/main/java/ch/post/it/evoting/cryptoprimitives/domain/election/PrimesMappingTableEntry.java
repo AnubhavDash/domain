@@ -15,8 +15,8 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.election;
 
+import static ch.post.it.evoting.cryptoprimitives.domain.election.ElectionObjectValidations.validateActualVotingOption;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateNonBlankUCS;
-import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateXsToken;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public record PrimesMappingTableEntry(String actualVotingOption, PrimeGqElement 
 		implements GroupVectorElement<GqGroup>, HashableList {
 
 	public PrimesMappingTableEntry {
-		validateXsToken(actualVotingOption);
+		validateActualVotingOption(actualVotingOption);
 		checkNotNull(encodedVotingOption);
 		validateNonBlankUCS(semanticInformation);
 	}

@@ -15,18 +15,23 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.election;
 
+import static ch.post.it.evoting.cryptoprimitives.domain.election.ElectionAttributesAliasConstants.ALIAS_JOIN_DELIMITER;
+import static ch.post.it.evoting.cryptoprimitives.domain.election.ElectionAttributesAliasConstants.ALIAS_SPLIT_REGEX;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.hasNoDuplicates;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateNonBlankUCS;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateXsToken;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import com.google.common.base.Preconditions;
+
+import ch.post.it.evoting.cryptoprimitives.domain.validations.Validations;
 
 public final class ElectionObjectValidations {
 
@@ -67,6 +72,15 @@ public final class ElectionObjectValidations {
 
 	public static void validateAlias(final String alias) {
 		validateXsToken(alias);
+	}
+
+	public static void validateActualVotingOption(final String actualVotingOption) {
+		checkNotNull(actualVotingOption);
+
+		final String[] identifications = actualVotingOption.split(ALIAS_SPLIT_REGEX);
+		checkArgument(identifications.length == 1 || identifications.length == 2,
+				"The actual voting option should be either one identification or two identifications concatenated using %s.", ALIAS_JOIN_DELIMITER);
+		Arrays.stream(identifications).forEach(Validations::validateXsToken);
 	}
 
 	public static void validateStatus(final String status) {

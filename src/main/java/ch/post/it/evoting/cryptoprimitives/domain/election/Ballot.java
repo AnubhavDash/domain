@@ -128,10 +128,10 @@ public record Ballot(String id,
 	}
 
 	/**
-	 * Returns the semanticInformation for this ballot. We order the semanticInformation by two levels: First, by how the corresponding questions are
-	 * displayed on the voter portal and second, by how the voting options appear in the {@link ElectionAttributes} object of each contest.
+	 * Returns the semantic information for this ballot. We order the semantic information by two levels: First, by how the corresponding questions
+	 * are displayed on the voter portal and second, by how the voting options appear in the {@link ElectionAttributes} object of each contest.
 	 *
-	 * @return the semanticInformation.
+	 * @return the semantic information.
 	 * @throws IllegalArgumentException if the ballot contains an unsupported {@link Contest} template. Supported templates are
 	 *                                  <ul>
 	 *                                      <li>{@value Contest#ELECTIONS_TEMPLATE}</li>
@@ -139,7 +139,7 @@ public record Ballot(String id,
 	 *                                  </ul>
 	 */
 	@JsonIgnore
-	public List<String> getSemantics() {
+	public List<String> getSemanticInformation() {
 		return getOrderedElectionOptions().stream()
 				.map(ElectionOption::getSemantics)
 				.toList();
