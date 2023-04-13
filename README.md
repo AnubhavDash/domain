@@ -47,4 +47,5 @@ An overview of all major changes within the published releases is available [her
 
 We plan for the following improvements to the crypto-primitives-domain library:
 
-* Encapsulate ids (ballot box IDs, voting card set id, election event id) in objects
+* Encapsulate ids (ballot box IDs, voting card set id, election event id) in objects.
+* Migrate the Crypto-primitives-domain library into the evoting-libraries repository.
