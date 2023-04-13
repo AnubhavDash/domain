@@ -1,5 +1,18 @@
 # Changelog
 
+## Release 1.3.0
+
+The following functionalities and improvements are included in release 1.3.0:
+
+* Added the semantic information to the primes mapping table.
+* Concatenated the election identifier to the actual voting options to distinguish duplicate candidate identifiers.
+* Improved the duplicate checks in the VoterInitialCodesPayload and the VerificationCardSetSecretKeyPayload.
+* Augmented the information in the ElectionEventContext and VerificationCardSetContext.
+* Changed the validateUUID method to accept lower case and upper case Base16.
+* Updated dependencies and third-party libraries.
+
+---
+
 ## Release 1.2.1
 
 The following functionalities and improvements are included in release 1.2.1:
