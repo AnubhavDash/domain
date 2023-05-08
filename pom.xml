@@ -11,7 +11,7 @@
 
 	<properties>
 		<maven-dependency-check.version>8.2.1</maven-dependency-check.version>
-		<maven-enforcer-plugin.requiredJavaVersion>[17.0.5]</maven-enforcer-plugin.requiredJavaVersion>
+		<maven-enforcer-plugin.requiredJavaVersion>[17.0.7]</maven-enforcer-plugin.requiredJavaVersion>
 		<maven-enforcer-plugin.requiredMavenVersion>3.8.6</maven-enforcer-plugin.requiredMavenVersion>
 		<project.build.outputTimestamp>2023-04-13T15:15:03+02:00</project.build.outputTimestamp>
 
