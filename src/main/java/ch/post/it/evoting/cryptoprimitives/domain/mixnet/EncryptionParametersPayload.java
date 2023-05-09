@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import ch.post.it.evoting.cryptoprimitives.domain.VotingOptionsConstants;
 import ch.post.it.evoting.cryptoprimitives.domain.returncodes.SignedPayload;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
@@ -62,13 +63,15 @@ public class EncryptionParametersPayload implements SignedPayload {
 		this.signature = checkNotNull(signature);
 	}
 
-	public EncryptionParametersPayload(final GqGroup encryptionGroup, final String seed,
-			final GroupVector<PrimeGqElement, GqGroup> smallPrimes) {
+	public EncryptionParametersPayload(final GqGroup encryptionGroup, final String seed, final GroupVector<PrimeGqElement, GqGroup> smallPrimes) {
 		this.encryptionGroup = checkNotNull(encryptionGroup);
 		this.seed = checkNotNull(seed);
 		checkArgument(!seed.isEmpty());
 		this.smallPrimes = checkNotNull(smallPrimes);
 		checkArgument(!smallPrimes.isEmpty(), "The smallPrimes must not be empty.");
+		checkArgument(VotingOptionsConstants.MAXIMUM_NUMBER_OF_VOTING_OPTIONS == smallPrimes.size(),
+				"There must be the correct number of smallPrimes. [expected: %s, actual: %s]",
+				VotingOptionsConstants.MAXIMUM_NUMBER_OF_VOTING_OPTIONS, smallPrimes.size());
 		checkArgument(encryptionGroup.equals(smallPrimes.getGroup()),
 				"The groups of the smallPrimes and the encryptionGroup must be equal.");
 

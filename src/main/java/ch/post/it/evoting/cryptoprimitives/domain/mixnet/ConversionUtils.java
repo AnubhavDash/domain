@@ -19,6 +19,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigInteger;
+import java.util.HexFormat;
 import java.util.Locale;
 
 /**
@@ -33,15 +34,19 @@ public class ConversionUtils {
 	}
 
 	/**
-	 * Converts a {@link BigInteger} to its hexadecimal string representation. The string is prefixed with "0x".
+	 * Converts a positive {@link BigInteger} to its hexadecimal string representation. The string is prefixed with "0x".
 	 *
-	 * @param value the BigInteger to convert. Not null.
+	 * @param value the BigInteger to convert. Positive and not null.
 	 * @return the hexadecimal string representation of {@code value}, prefixed with "0x".
 	 */
 	public static String bigIntegerToHex(final BigInteger value) {
 		checkNotNull(value);
+		checkArgument(value.signum() >= 0, "The BigInteger value must be positive. [sign: %s]", value.signum());
 
-		return HEX_PREFIX + value.toString(16).toUpperCase(Locale.ENGLISH);
+		// By convention, we ignore the meaning less leading zero.
+		final String encoded = HexFormat.of().formatHex(value.toByteArray()).replaceFirst("^0+(?!$)(?=.)", "");
+
+		return HEX_PREFIX + encoded.toUpperCase(Locale.ENGLISH);
 	}
 
 	/**
@@ -52,9 +57,16 @@ public class ConversionUtils {
 	 */
 	public static BigInteger hexToBigInteger(final String hexString) {
 		checkNotNull(hexString);
+		checkArgument(hexString.length() > 2, "The provided string length must be at least 3.");
 		checkArgument(HEX_PREFIX.equals(hexString.substring(0, 2)), String.format("The provided string must be prefixed with %s.", HEX_PREFIX));
 
-		return new BigInteger(hexString.substring(2), 16);
+		String encoded = hexString.substring(2);
+		if (encoded.length() % 2 != 0) {
+			encoded = "0" + encoded;
+		}
+		final byte[] intermediate = HexFormat.of().parseHex(encoded);
+
+		return new BigInteger(BigInteger.ONE.signum(), intermediate);
 	}
 
 }
