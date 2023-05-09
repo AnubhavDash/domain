@@ -21,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,7 +50,7 @@ class EncryptionParametersPayloadTest extends TestGroupSetup {
 	private static EncryptionParametersPayload encryptionParametersPayload;
 	private static ObjectNode rootNode;
 
-	private final GqGroup encryptionGroup = GroupTestData.getGroupP59();
+	private final GqGroup encryptionGroup = GroupTestData.getLargeGqGroup();
 
 	private String seed;
 	private GroupVector<PrimeGqElement, GqGroup> smallPrimes;
@@ -56,7 +58,7 @@ class EncryptionParametersPayloadTest extends TestGroupSetup {
 
 	@BeforeEach
 	void setup() throws JsonProcessingException {
-		final int desiredNumberOfPrimes = 7;
+		final int desiredNumberOfPrimes = 3000;
 
 		// Create payload.
 		seed = random.genRandomInteger(BigInteger.valueOf(267)).toString();
@@ -79,18 +81,15 @@ class EncryptionParametersPayloadTest extends TestGroupSetup {
 	void checkSmallprimesOrder() {
 
 		// Create payload with prime not in ascending order.
-		final GroupVector<PrimeGqElement, GqGroup> smallPrimesNonAscending = GroupVector.of(
-				smallPrimes.get(1),
-				smallPrimes.get(0),
-				smallPrimes.get(2),
-				smallPrimes.get(3),
-				smallPrimes.get(4));
+		final List<PrimeGqElement> mutableSmallPrimes = new ArrayList<>(smallPrimes);
+		mutableSmallPrimes.set(0, smallPrimes.get(1));
+		mutableSmallPrimes.set(1, smallPrimes.get(0));
+		final GroupVector<PrimeGqElement, GqGroup> smallPrimesNonAscending = GroupVector.from(mutableSmallPrimes);
 
-		IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+		final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
 				() -> new EncryptionParametersPayload(encryptionGroup, seed, smallPrimesNonAscending, signature));
 
 		assertEquals("The elements of smallPrimes must be in ascending order.", ex.getMessage());
-
 	}
 
 	@Test
