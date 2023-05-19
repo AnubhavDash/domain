@@ -37,6 +37,7 @@ public final class Validations {
 
 	@VisibleForTesting
 	static final int UUID_LENGTH = 32;
+	static final int PARTIAL_UUID_LENGTH = 3;
 
 	private static final String BASE16_ALPHABET_WITH_LOWERCASE = "0123456789abcdefABCDEF";
 	private static final String BASE32_LOWERCASE_NO_PAD_ALPHABET = "abcdefghijklmnopqrstuvwxyz234567";
@@ -171,6 +172,27 @@ public final class Validations {
 							pattern.pattern()));
 		}
 		return toValidate;
+	}
+
+	/**
+	 * Validates that the input string is in Base16 alphabet ({@value BASE16_ALPHABET_WITH_LOWERCASE}).
+	 * <p>
+	 * The validation allows for both lowercase and uppercase input.
+	 * </p>
+	 *
+	 * @param toValidate the string to validate. Must be non-null.
+	 * @param minExpectedLength the expected minimum length of the string to validate. Must be strictly positive.
+	 * @return the validated input string.
+	 * @throws NullPointerException      if the string is null.
+	 * @throws FailedValidationException if the string validation fails.
+	 */
+	public static String validatePartialUUID(final String toValidate, final int minExpectedLength) {
+		checkNotNull(toValidate);
+		checkArgument(minExpectedLength > 0, "The length must be strictly positive. [length: %s]", minExpectedLength);
+
+		final String regex = String.format("^[%s]{%d,%d}$", BASE16_ALPHABET_WITH_LOWERCASE, minExpectedLength, UUID_LENGTH);
+
+		return validateInAlphabet(toValidate, Pattern.compile(regex));
 	}
 
 }
