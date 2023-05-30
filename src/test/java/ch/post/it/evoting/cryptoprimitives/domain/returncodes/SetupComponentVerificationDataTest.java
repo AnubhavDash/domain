@@ -27,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -65,20 +64,22 @@ class SetupComponentVerificationDataTest extends MapperSetUp {
 		rootNode = mapper.createObjectNode();
 		rootNode.put("verificationCardId", VERIFICATION_CARD_ID);
 
-		final ObjectNode confirmationKeyNode = SerializationTestData.createCiphertextNode(encryptedHashedSquaredConfirmationKey);
+		final ObjectNode confirmationKeyNode = SerializationTestData.createCiphertextNodeBase64(encryptedHashedSquaredConfirmationKey);
 		rootNode.set("encryptedHashedSquaredConfirmationKey", confirmationKeyNode);
 
-		final ObjectNode partialChoiceCodesNode = SerializationTestData.createCiphertextNode(encryptedHashedSquaredPartialChoiceReturnCodes);
+		final ObjectNode partialChoiceCodesNode = SerializationTestData.createCiphertextNodeBase64(encryptedHashedSquaredPartialChoiceReturnCodes);
 		rootNode.set("encryptedHashedSquaredPartialChoiceReturnCodes", partialChoiceCodesNode);
 
-		final ArrayNode verificationCardPublicKeyNode = SerializationTestData.createPublicKeyNode(verificationCardPublicKey);
+		final ArrayNode verificationCardPublicKeyNode = SerializationTestData.createPublicKeyNodeBase64(verificationCardPublicKey);
 		rootNode.set("verificationCardPublicKey", verificationCardPublicKeyNode);
 	}
 
 	@Test
 	@DisplayName("serialized gives expected json")
 	void serializeReturnCodeGenerationInput() throws JsonProcessingException {
-		final String serializedInput = mapper.writeValueAsString(setupComponentVerificationData);
+		final String serializedInput = mapper
+				.writer().withAttribute("base64Conversion", true)
+				.writeValueAsString(setupComponentVerificationData);
 
 		assertEquals(rootNode.toString(), serializedInput);
 	}
@@ -86,7 +87,9 @@ class SetupComponentVerificationDataTest extends MapperSetUp {
 	@Test
 	@DisplayName("deserialized gives expected input")
 	void deserializeReturnCodeGenerationInput() throws IOException {
-		final SetupComponentVerificationData deserializedInput = mapper.reader().withAttribute("group", gqGroup)
+		final SetupComponentVerificationData deserializedInput = mapper.reader()
+				.withAttribute("group", gqGroup)
+				.withAttribute("base64Conversion", true)
 				.readValue(rootNode.toString(), SetupComponentVerificationData.class);
 
 		assertEquals(setupComponentVerificationData, deserializedInput);

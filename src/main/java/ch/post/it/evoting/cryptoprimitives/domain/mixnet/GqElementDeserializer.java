@@ -15,9 +15,11 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
-import static ch.post.it.evoting.cryptoprimitives.domain.mixnet.ConversionUtils.hexToBigInteger;
+import static ch.post.it.evoting.cryptoprimitives.domain.ConversionUtils.base64ToBigInteger;
+import static ch.post.it.evoting.cryptoprimitives.domain.ConversionUtils.hexToBigInteger;
 
 import java.io.IOException;
+import java.math.BigInteger;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -35,16 +37,25 @@ class GqElementDeserializer extends JsonDeserializer<GqElement> {
 
 	/**
 	 * The {@code context} must provide the {@link GqGroup} that will be used to reconstruct the various {@link GqElement}s.
-	 *
+	 * <p>
 	 * {@inheritDoc}
 	 */
 	@Override
 	public GqElement deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
 		final GqGroup gqGroup = (GqGroup) context.getAttribute("group");
+		final Boolean base64Conversion = (Boolean) context.getAttribute("base64Conversion");
+
 		final JsonNode node = new ObjectMapper().readTree(parser);
 		final String value = node.asText();
 
-		return GqElement.GqElementFactory.fromValue(hexToBigInteger(value), gqGroup);
+		BigInteger bigIntegerValue;
+		if (base64Conversion != null && base64Conversion) {
+			bigIntegerValue = base64ToBigInteger(value);
+		} else {
+			bigIntegerValue = hexToBigInteger(value);
+		}
+
+		return GqElement.GqElementFactory.fromValue(bigIntegerValue, gqGroup);
 	}
 
 }

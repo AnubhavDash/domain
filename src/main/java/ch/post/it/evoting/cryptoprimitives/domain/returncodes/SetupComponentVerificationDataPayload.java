@@ -22,7 +22,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.math.BigInteger;
-import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,21 +29,25 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import ch.post.it.evoting.cryptoprimitives.domain.election.CombinedCorrectnessInformation;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
+import ch.post.it.evoting.cryptoprimitives.domain.signature.SignedPayload;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableBigInteger;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
+import ch.post.it.evoting.cryptoprimitives.math.BaseEncodingFactory;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 
 @JsonPropertyOrder({ "electionEventId", "verificationCardSetId", "partialChoiceReturnCodesAllowList", "chunkId", "encryptionGroup",
 		"setupComponentVerificationData", "combinedCorrectnessInformation", "signature" })
-@JsonDeserialize(using = SetupComponentVerificationDataDeserializer.class)
+@JsonSerialize(using = SetupComponentVerificationDataPayloadSerializer.class)
+@JsonDeserialize(using = SetupComponentVerificationDataPayloadDeserializer.class)
 public class SetupComponentVerificationDataPayload implements SignedPayload {
 
 	@JsonProperty
@@ -124,7 +127,7 @@ public class SetupComponentVerificationDataPayload implements SignedPayload {
 		checkArgument(this.partialChoiceReturnCodesAllowList.stream().noneMatch(String::isBlank),
 				"The partial Choice Return Codes Allow List must not contain empty or whitespace strings.");
 		// The partial Choice Return Codes Allow List must only contain Base64 strings.
-		this.partialChoiceReturnCodesAllowList.forEach(Base64.getDecoder()::decode);
+		this.partialChoiceReturnCodesAllowList.forEach(BaseEncodingFactory.createBase64()::base64Decode);
 
 		checkArgument(!this.setupComponentVerificationData.isEmpty(), "The setup component verification data must not be empty.");
 		checkArgument(this.setupComponentVerificationData.stream().allMatch(Objects::nonNull),

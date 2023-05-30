@@ -46,6 +46,7 @@ public class ControlComponentCodeSharesPayloadDeserializer extends JsonDeseriali
 
 		final List<ControlComponentCodeShare> returnCodeGenerationInputs = Arrays.asList(mapper.reader()
 				.withAttribute(groupAttribute, encryptionGroup)
+				.withAttribute("base64Conversion", true)
 				.readValue(node.get("controlComponentCodeShares").toString(), ControlComponentCodeShare[].class));
 
 		final int nodeId = mapper.readValue(node.get("nodeId").toString(), Integer.class);
