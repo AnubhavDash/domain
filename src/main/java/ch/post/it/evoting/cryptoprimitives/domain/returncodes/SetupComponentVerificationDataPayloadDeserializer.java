@@ -30,7 +30,7 @@ import ch.post.it.evoting.cryptoprimitives.domain.mapper.EncryptionGroupUtils;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
-public class SetupComponentVerificationDataDeserializer extends JsonDeserializer<SetupComponentVerificationDataPayload> {
+public class SetupComponentVerificationDataPayloadDeserializer extends JsonDeserializer<SetupComponentVerificationDataPayload> {
 
 	@Override
 	public SetupComponentVerificationDataPayload deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
@@ -50,10 +50,12 @@ public class SetupComponentVerificationDataDeserializer extends JsonDeserializer
 
 		final List<SetupComponentVerificationData> setupComponentVerificationData = Arrays.asList(mapper.reader()
 				.withAttribute(groupAttribute, encryptionGroup)
+				.withAttribute("base64Conversion", true)
 				.readValue(node.get("setupComponentVerificationData").toString(), SetupComponentVerificationData[].class));
 
 		final CombinedCorrectnessInformation combinedCorrectnessInformation = mapper.reader()
 				.withAttribute(groupAttribute, encryptionGroup)
+				.withAttribute("base64Conversion", true)
 				.readValue(node.get("combinedCorrectnessInformation").toString(), CombinedCorrectnessInformation.class);
 
 		final CryptoPrimitivesSignature signature = mapper.reader()

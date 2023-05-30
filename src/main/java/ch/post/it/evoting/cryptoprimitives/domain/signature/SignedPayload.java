@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package ch.post.it.evoting.cryptoprimitives.domain.returncodes;
+package ch.post.it.evoting.cryptoprimitives.domain.signature;
 
-import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableList;
 
 public interface SignedPayload extends HashableList {

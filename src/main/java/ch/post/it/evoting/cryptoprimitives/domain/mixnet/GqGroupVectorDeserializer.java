@@ -40,9 +40,12 @@ public class GqGroupVectorDeserializer extends JsonDeserializer<GroupVector<GqEl
 	@Override
 	public GroupVector<GqElement, GqGroup> deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
 		final GqGroup gqGroup = (GqGroup) context.getAttribute("group");
+		final Boolean base64Conversion = (Boolean) context.getAttribute("base64Conversion");
 		final ObjectMapper mapper = new ObjectMapper();
 
-		final GqElement[] elementsArray = mapper.addMixIn(GqElement.class, GqElementMixIn.class).reader().withAttribute("group", gqGroup)
+		final GqElement[] elementsArray = mapper.addMixIn(GqElement.class, GqElementMixIn.class).reader()
+				.withAttribute("group", gqGroup)
+				.withAttribute("base64Conversion", base64Conversion)
 				.readValue(parser, GqElement[].class);
 
 		return GroupVector.from(Arrays.asList(elementsArray));

@@ -27,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -72,30 +71,33 @@ class ControlComponentCodeShareTest extends MapperSetUp {
 		rootNode = mapper.createObjectNode();
 		rootNode.put("verificationCardId", VERIFICATION_CARD_ID);
 
-		final ArrayNode voterChoicePublicKey = SerializationTestData.createPublicKeyNode(voterChoiceReturnCodeGenerationPublicKey);
+		final ArrayNode voterChoicePublicKey = SerializationTestData.createPublicKeyNodeBase64(voterChoiceReturnCodeGenerationPublicKey);
 		rootNode.set("voterChoiceReturnCodeGenerationPublicKey", voterChoicePublicKey);
 
-		final ArrayNode voterVoteCastPublicKey = SerializationTestData.createPublicKeyNode(voterVoteCastReturnCodeGenerationPublicKey);
+		final ArrayNode voterVoteCastPublicKey = SerializationTestData.createPublicKeyNodeBase64(voterVoteCastReturnCodeGenerationPublicKey);
 		rootNode.set("voterVoteCastReturnCodeGenerationPublicKey", voterVoteCastPublicKey);
 
-		final ObjectNode partialChoiceCodeNode = SerializationTestData.createCiphertextNode(exponentiatedEncryptedPartialChoiceReturnCodes);
+		final ObjectNode partialChoiceCodeNode = SerializationTestData.createCiphertextNodeBase64(exponentiatedEncryptedPartialChoiceReturnCodes);
 		rootNode.set("exponentiatedEncryptedPartialChoiceReturnCodes", partialChoiceCodeNode);
 
 		final ObjectNode partialChoiceCodeProofNode = SerializationTestData
-				.createExponentiationProofNode(encryptedPartialChoiceReturnCodeExponentiationProof);
+				.createExponentiationProofNodeBase64(encryptedPartialChoiceReturnCodeExponentiationProof);
 		rootNode.set("encryptedPartialChoiceReturnCodeExponentiationProof", partialChoiceCodeProofNode);
 
-		final ObjectNode confirmationKeyNode = SerializationTestData.createCiphertextNode(exponentiatedEncryptedConfirmationKey);
+		final ObjectNode confirmationKeyNode = SerializationTestData.createCiphertextNodeBase64(exponentiatedEncryptedConfirmationKey);
 		rootNode.set("exponentiatedEncryptedConfirmationKey", confirmationKeyNode);
 
-		final ObjectNode confirmationKeyProofNode = SerializationTestData.createExponentiationProofNode(encryptedConfirmationKeyExponentiationProof);
+		final ObjectNode confirmationKeyProofNode = SerializationTestData.createExponentiationProofNodeBase64(
+				encryptedConfirmationKeyExponentiationProof);
 		rootNode.set("encryptedConfirmationKeyExponentiationProof", confirmationKeyProofNode);
 	}
 
 	@Test
 	@DisplayName("serialized gives expected json")
 	void serializeReturnCodeGenerationOutput() throws JsonProcessingException {
-		final String serializedOutput = mapper.writeValueAsString(controlComponentCodeShare);
+		final String serializedOutput = mapper
+				.writer().withAttribute("base64Conversion", true)
+				.writeValueAsString(controlComponentCodeShare);
 
 		assertEquals(rootNode.toString(), serializedOutput);
 	}
@@ -103,7 +105,9 @@ class ControlComponentCodeShareTest extends MapperSetUp {
 	@Test
 	@DisplayName("deserialized gives expected output")
 	void deserializeReturnCodeGenerationOutput() throws IOException {
-		final ControlComponentCodeShare deserializedOutput = mapper.reader().withAttribute("group", gqGroup)
+		final ControlComponentCodeShare deserializedOutput = mapper.reader()
+				.withAttribute("group", gqGroup)
+				.withAttribute("base64Conversion", true)
 				.readValue(rootNode.toString(), ControlComponentCodeShare.class);
 
 		assertEquals(controlComponentCodeShare, deserializedOutput);
@@ -119,7 +123,7 @@ class ControlComponentCodeShareTest extends MapperSetUp {
 	}
 
 	@Nested
-	@DisplayName("contructed with")
+	@DisplayName("constructed with")
 	class ControlComponentCodeShareConsistencyCheckTest {
 
 		private ElGamalMultiRecipientPublicKey voterChoiceReturnCodeGenerationPublicKey;
@@ -196,7 +200,8 @@ class ControlComponentCodeShareTest extends MapperSetUp {
 		@Test
 		@DisplayName("Encrypted Partial Choice Return Code Exponentiation Proofs having different group order throws IllegalArgumentException")
 		void constructWithEncryptedPartialChoiceReturnCodeExponentiationProofsDifferentGroupOrder() {
-			final ExponentiationProof otherEncryptedPartialChoiceReturnCodeExponentiationProof = spy(encryptedPartialChoiceReturnCodeExponentiationProof);
+			final ExponentiationProof otherEncryptedPartialChoiceReturnCodeExponentiationProof = spy(
+					encryptedPartialChoiceReturnCodeExponentiationProof);
 			final ZqGroup otherGroup = GroupTestData.getDifferentZqGroup(ZqGroup.sameOrderAs(SerializationTestData.getGqGroup()));
 			doReturn(otherGroup).when(otherEncryptedPartialChoiceReturnCodeExponentiationProof).getGroup();
 			final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -204,7 +209,8 @@ class ControlComponentCodeShareTest extends MapperSetUp {
 							voterVoteCastReturnCodeGenerationPublicKey, exponentiatedEncryptedPartialChoiceReturnCodes,
 							otherEncryptedPartialChoiceReturnCodeExponentiationProof, exponentiatedEncryptedConfirmationKey,
 							encryptedConfirmationKeyExponentiationProof));
-			assertEquals("The Encrypted Partial Choice Return Code Exponentiation Proofs must have the same group order as the keys.", Throwables.getRootCause(exception).getMessage());
+			assertEquals("The Encrypted Partial Choice Return Code Exponentiation Proofs must have the same group order as the keys.",
+					Throwables.getRootCause(exception).getMessage());
 		}
 
 		@Test

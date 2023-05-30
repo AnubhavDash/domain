@@ -23,7 +23,6 @@ import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.regex.Pattern;
@@ -32,6 +31,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
 import ch.post.it.evoting.cryptoprimitives.domain.VotingOptionsConstants;
+import ch.post.it.evoting.cryptoprimitives.math.BaseEncodingFactory;
 
 public final class Validations {
 
@@ -109,9 +109,8 @@ public final class Validations {
 	public static String validateBase64Encoded(final String toValidate) {
 		checkNotNull(toValidate);
 
-		final Base64.Decoder decoder = Base64.getDecoder();
 		try {
-			decoder.decode(toValidate.getBytes(StandardCharsets.UTF_8));
+			BaseEncodingFactory.createBase64().base64Decode(toValidate);
 		} catch (final IllegalArgumentException e) {
 			throw new FailedValidationException(
 					String.format("The given string is not a valid Base64 encoded string. [string: %s].", toValidate));
@@ -180,7 +179,7 @@ public final class Validations {
 	 * The validation allows for both lowercase and uppercase input.
 	 * </p>
 	 *
-	 * @param toValidate the string to validate. Must be non-null.
+	 * @param toValidate        the string to validate. Must be non-null.
 	 * @param minExpectedLength the expected minimum length of the string to validate. Must be strictly positive.
 	 * @return the validated input string.
 	 * @throws NullPointerException      if the string is null.
