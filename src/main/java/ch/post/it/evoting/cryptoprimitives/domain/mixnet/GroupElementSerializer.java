@@ -15,7 +15,8 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
 
-import static ch.post.it.evoting.cryptoprimitives.domain.mixnet.ConversionUtils.bigIntegerToHex;
+import static ch.post.it.evoting.cryptoprimitives.domain.ConversionUtils.bigIntegerToBase64;
+import static ch.post.it.evoting.cryptoprimitives.domain.ConversionUtils.bigIntegerToHex;
 
 import java.io.IOException;
 
@@ -33,7 +34,12 @@ class GroupElementSerializer extends JsonSerializer<GroupElement<?>> {
 
 	@Override
 	public void serialize(final GroupElement element, final JsonGenerator gen, final SerializerProvider serializers) throws IOException {
-		gen.writeString(bigIntegerToHex(element.getValue()));
+		final Boolean base64Conversion = (Boolean) serializers.getAttribute("base64Conversion");
+		if (base64Conversion != null && base64Conversion) {
+			gen.writeString(bigIntegerToBase64(element.getValue()));
+		} else {
+			gen.writeString(bigIntegerToHex(element.getValue()));
+		}
 	}
 
 }

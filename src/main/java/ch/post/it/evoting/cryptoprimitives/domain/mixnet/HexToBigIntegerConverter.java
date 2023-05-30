@@ -19,6 +19,8 @@ import java.math.BigInteger;
 
 import com.fasterxml.jackson.databind.util.StdConverter;
 
+import ch.post.it.evoting.cryptoprimitives.domain.ConversionUtils;
+
 /**
  * Converts a hexadecimal string representation of BigInteger to a BigInteger.
  */

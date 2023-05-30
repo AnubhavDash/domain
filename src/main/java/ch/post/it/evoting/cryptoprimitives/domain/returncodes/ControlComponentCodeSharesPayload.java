@@ -30,9 +30,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import ch.post.it.evoting.cryptoprimitives.domain.ControlComponentConstants;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
+import ch.post.it.evoting.cryptoprimitives.domain.signature.SignedPayload;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCiphertext;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
 import ch.post.it.evoting.cryptoprimitives.hashing.HashableBigInteger;
@@ -43,6 +45,7 @@ import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
 
 @JsonPropertyOrder({ "electionEventId", "verificationCardSetId", "chunkId", "encryptionGroup", "controlComponentCodeShares", "nodeId",
 		"signature" })
+@JsonSerialize(using = ControlComponentCodeSharesPayloadSerializer.class)
 @JsonDeserialize(using = ControlComponentCodeSharesPayloadDeserializer.class)
 public class ControlComponentCodeSharesPayload implements SignedPayload {
 
@@ -95,7 +98,7 @@ public class ControlComponentCodeSharesPayload implements SignedPayload {
 		this.signature = checkNotNull(signature);
 	}
 
-	public ControlComponentCodeSharesPayload( final String electionEventId, final String verificationCardSetId,
+	public ControlComponentCodeSharesPayload(final String electionEventId, final String verificationCardSetId,
 			final int chunkId, final GqGroup encryptionGroup, final List<ControlComponentCodeShare> controlComponentCodeShares, final int nodeId) {
 
 		this.electionEventId = validateUUID(electionEventId);

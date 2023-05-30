@@ -1,4 +1,4 @@
-package ch.post.it.evoting.cryptoprimitives.domain.mixnet;
+package ch.post.it.evoting.cryptoprimitives.domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
+import ch.post.it.evoting.cryptoprimitives.domain.validations.FailedValidationException;
 import ch.post.it.evoting.cryptoprimitives.math.Random;
 import ch.post.it.evoting.cryptoprimitives.math.RandomFactory;
 
@@ -52,6 +53,25 @@ class ConversionUtilsTest {
 	}
 
 	@Nested
+	@DisplayName("Integer to Base64")
+	class IntegerToBase64 {
+
+		@Test
+		void negativeValueThrows() {
+			final BigInteger negativeValue = BigInteger.ONE.negate();
+			final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+					() -> ConversionUtils.bigIntegerToBase64(negativeValue));
+			assertEquals("The BigInteger value must be positive. [sign: -1]", illegalArgumentException.getMessage());
+		}
+
+		@Test
+		void nullValueThrows() {
+			assertThrows(NullPointerException.class, () -> ConversionUtils.bigIntegerToBase64(null));
+		}
+
+	}
+
+	@Nested
 	@DisplayName("Hex to Integer")
 	class HexToInteger {
 
@@ -78,13 +98,41 @@ class ConversionUtilsTest {
 
 	}
 
+	@Nested
+	@DisplayName("Base64 to Integer")
+	class Base64ToInteger {
+
+		@Test
+		void nullValueThrows() {
+			assertThrows(NullPointerException.class, () -> ConversionUtils.base64ToBigInteger(null));
+		}
+
+		@Test
+		void tooShortValueThrows() {
+			final String tooShortValue = "Bw=";
+			final FailedValidationException failedValidationException = assertThrows(FailedValidationException.class,
+					() -> ConversionUtils.base64ToBigInteger(tooShortValue));
+			assertEquals("The given string is not a valid Base64 encoded string. [string: Bw=].", failedValidationException.getMessage());
+		}
+
+	}
 
 	@RepeatedTest(100)
-	void cyclicConversion() {
+	void cyclicHexConversion() {
 		final BigInteger asBigInt = random.genRandomInteger(BigInteger.ONE.shiftLeft(3072));
 
 		final String asHex = ConversionUtils.bigIntegerToHex(asBigInt);
 		final BigInteger cyclic = ConversionUtils.hexToBigInteger(asHex);
+
+		assertEquals(asBigInt, cyclic);
+	}
+
+	@RepeatedTest(100)
+	void cyclicBase64Conversion() {
+		final BigInteger asBigInt = random.genRandomInteger(BigInteger.ONE.shiftLeft(3072));
+
+		final String asBase64 = ConversionUtils.bigIntegerToBase64(asBigInt);
+		final BigInteger cyclic = ConversionUtils.base64ToBigInteger(asBase64);
 
 		assertEquals(asBigInt, cyclic);
 	}

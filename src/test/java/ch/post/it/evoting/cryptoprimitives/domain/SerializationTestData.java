@@ -15,14 +15,14 @@
  */
 package ch.post.it.evoting.cryptoprimitives.domain;
 
-import static ch.post.it.evoting.cryptoprimitives.domain.mixnet.ConversionUtils.bigIntegerToHex;
+import static ch.post.it.evoting.cryptoprimitives.domain.ConversionUtils.bigIntegerToBase64;
+import static ch.post.it.evoting.cryptoprimitives.domain.ConversionUtils.bigIntegerToHex;
 import static ch.post.it.evoting.cryptoprimitives.math.GqElement.GqElementFactory;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -46,6 +46,7 @@ import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientCipherte
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientMessage;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPrivateKey;
 import ch.post.it.evoting.cryptoprimitives.elgamal.ElGamalMultiRecipientPublicKey;
+import ch.post.it.evoting.cryptoprimitives.math.BaseEncodingFactory;
 import ch.post.it.evoting.cryptoprimitives.math.GqElement;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 import ch.post.it.evoting.cryptoprimitives.math.GroupVector;
@@ -221,11 +222,24 @@ public class SerializationTestData {
 
 	public static ObjectNode createCiphertextNode(final ElGamalMultiRecipientCiphertext ciphertext) {
 		final GqElement gamma = ciphertext.getGamma();
-		final List<GqElement> phis = ciphertext.stream().skip(1).toList();
+		final List<GqElement> phis = ciphertext.getPhis();
 		final ObjectNode ciphertextNode = mapper.createObjectNode().put("gamma", bigIntegerToHex(gamma.getValue()));
 		final ArrayNode phisArrayNode = ciphertextNode.putArray("phis");
 		for (GqElement phi : phis) {
 			phisArrayNode.add(bigIntegerToHex(phi.getValue()));
+		}
+
+		return ciphertextNode;
+	}
+
+	public static ObjectNode createCiphertextNodeBase64(final ElGamalMultiRecipientCiphertext ciphertext) {
+		final GqElement gamma = ciphertext.getGamma();
+		final List<GqElement> phis = ciphertext.getPhis();
+
+		final ObjectNode ciphertextNode = mapper.createObjectNode().put("gamma", bigIntegerToBase64(gamma.getValue()));
+		final ArrayNode phisArrayNode = ciphertextNode.putArray("phis");
+		for (GqElement phi : phis) {
+			phisArrayNode.add(bigIntegerToBase64(phi.getValue()));
 		}
 
 		return ciphertextNode;
@@ -280,6 +294,15 @@ public class SerializationTestData {
 		final ArrayNode keyArrayNode = mapper.createArrayNode();
 		for (int i = 0; i < publicKey.size(); i++) {
 			keyArrayNode.add(bigIntegerToHex(publicKey.get(i).getValue()));
+		}
+
+		return keyArrayNode;
+	}
+
+	public static ArrayNode createPublicKeyNodeBase64(final ElGamalMultiRecipientPublicKey publicKey) {
+		final ArrayNode keyArrayNode = mapper.createArrayNode();
+		for (int i = 0; i < publicKey.size(); i++) {
+			keyArrayNode.add(bigIntegerToBase64(publicKey.get(i).getValue()));
 		}
 
 		return keyArrayNode;
@@ -431,7 +454,8 @@ public class SerializationTestData {
 		final JsonNode encryptionGroupNode = SerializationTestData.createEncryptionGroupNode(gqGroup);
 		rootNode.set("encryptionGroup", encryptionGroupNode);
 
-		final JsonNode returnCodeGenerationOutputsNode = mapper.readTree(mapper.writeValueAsString(responsePayload.getControlComponentCodeShares()));
+		final JsonNode returnCodeGenerationOutputsNode = mapper.readTree(
+				mapper.writer().withAttribute("base64Conversion", true).writeValueAsString(responsePayload.getControlComponentCodeShares()));
 		rootNode.set("controlComponentCodeShares", returnCodeGenerationOutputsNode);
 
 		rootNode.put("nodeId", 1);
@@ -476,7 +500,7 @@ public class SerializationTestData {
 						setupComponentVerificationData.size() * combinedCorrectnessInformation.getTotalNumberOfVotingOptions())
 				.mapToObj(String::valueOf)
 				.map(value -> value.getBytes(StandardCharsets.UTF_8))
-				.map(Base64.getEncoder()::encodeToString)
+				.map(BaseEncodingFactory.createBase64()::base64Encode)
 				.toList();
 
 		final SetupComponentVerificationDataPayload requestPayload = new SetupComponentVerificationDataPayload(electionEventId,
@@ -507,7 +531,7 @@ public class SerializationTestData {
 		rootNode.set("encryptionGroup", encryptionGroupNode);
 
 		final JsonNode returnCodeGenerationInputsNode = mapper.readTree(
-				mapper.writeValueAsString(requestPayload.getSetupComponentVerificationData()));
+				mapper.writer().withAttribute("base64Conversion", true).writeValueAsString(requestPayload.getSetupComponentVerificationData()));
 		rootNode.set("setupComponentVerificationData", returnCodeGenerationInputsNode);
 
 		final JsonNode combinedCorrectnessInformationNode = mapper
@@ -524,6 +548,14 @@ public class SerializationTestData {
 		final ObjectNode rootNode = mapper.createObjectNode();
 		rootNode.put("e", bigIntegerToHex(exponentiationProof.get_e().getValue()));
 		rootNode.put("z", bigIntegerToHex(exponentiationProof.get_z().getValue()));
+
+		return rootNode;
+	}
+
+	public static ObjectNode createExponentiationProofNodeBase64(final ExponentiationProof exponentiationProof) {
+		final ObjectNode rootNode = mapper.createObjectNode();
+		rootNode.put("e", bigIntegerToBase64(exponentiationProof.get_e().getValue()));
+		rootNode.put("z", bigIntegerToBase64(exponentiationProof.get_z().getValue()));
 
 		return rootNode;
 	}
