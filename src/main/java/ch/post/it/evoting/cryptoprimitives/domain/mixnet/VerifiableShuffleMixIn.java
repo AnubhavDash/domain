@@ -32,7 +32,7 @@ public abstract class VerifiableShuffleMixIn {
 
 	@JsonProperty
 	@JsonDeserialize(using = CiphertextGroupVectorDeserializer.class)
-	GroupVector<ElGamalMultiRecipientCiphertext, GqGroup> shuffledCiphertexts;
+	abstract GroupVector<ElGamalMultiRecipientCiphertext, GqGroup> shuffledCiphertexts();
 
 	@JsonProperty
 	@JsonInclude(JsonInclude.Include.NON_NULL)

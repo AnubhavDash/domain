@@ -33,11 +33,11 @@ public abstract class VerifiableDecryptionsMixIn {
 
 	@JsonProperty
 	@JsonDeserialize(using = CiphertextGroupVectorDeserializer.class)
-	GroupVector<ElGamalMultiRecipientCiphertext, GqGroup> ciphertexts;
+	abstract GroupVector<ElGamalMultiRecipientCiphertext, GqGroup> getCiphertexts();
 
 	@JsonProperty
 	@JsonDeserialize(using = DecryptionProofGroupVectorDeserializer.class)
-	GroupVector<DecryptionProof, ZqGroup> decryptionProofs;
+	abstract GroupVector<DecryptionProof, ZqGroup> getDecryptionProofs();
 
 	@JsonIgnore
 	abstract GqGroup getGroup();
