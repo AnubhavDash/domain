@@ -34,7 +34,7 @@ public abstract class DecryptionProofMixIn {
 
 	@JsonProperty
 	@JsonDeserialize(using = ZqGroupVectorDeserializer.class)
-	GroupVector<ZqElement, ZqGroup> z;
+	abstract GroupVector<ZqElement, ZqGroup> z();
 
 	@JsonCreator
 	DecryptionProofMixIn(
