@@ -24,10 +24,17 @@ public record CryptoPrimitivesSignature(byte[] signatureContents) {
 	/**
 	 * Creates the representation of a crypto-primitives signature.
 	 *
-	 * @param signatureContents the byte stream containing the signature
+	 * @param signatureContents the byte array containing the signature
 	 */
-	public CryptoPrimitivesSignature {
+	public CryptoPrimitivesSignature(final byte[] signatureContents) {
 		checkNotNull(signatureContents);
+
+		this.signatureContents = Arrays.copyOf(signatureContents, signatureContents.length);
+	}
+
+	@Override
+	public byte[] signatureContents() {
+		return Arrays.copyOf(signatureContents, signatureContents.length);
 	}
 
 	@Override
