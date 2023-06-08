@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Post CH Ltd
+ * Copyright 2023 Post CH Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,17 @@ public record CryptoPrimitivesSignature(byte[] signatureContents) {
 	/**
 	 * Creates the representation of a crypto-primitives signature.
 	 *
-	 * @param signatureContents the byte stream containing the signature
+	 * @param signatureContents the byte array containing the signature
 	 */
-	public CryptoPrimitivesSignature {
+	public CryptoPrimitivesSignature(final byte[] signatureContents) {
 		checkNotNull(signatureContents);
+
+		this.signatureContents = Arrays.copyOf(signatureContents, signatureContents.length);
+	}
+
+	@Override
+	public byte[] signatureContents() {
+		return Arrays.copyOf(signatureContents, signatureContents.length);
 	}
 
 	@Override

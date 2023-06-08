@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Post CH Ltd
+ * Copyright 2023 Post CH Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,18 +115,18 @@ class BallotTest {
 	@DisplayName("calling getAttributeAlias throws Exception upon missing element and upon multiple matching elements.")
 	void getActualVotingOptionThrows() {
 
-		final String attribute = RandomFactory.createRandom().genRandomBase16String(32);
+		final String attribute1 = RandomFactory.createRandom().genRandomBase16String(32);
+		final String attribute2 = RandomFactory.createRandom().genRandomBase16String(32);
 
 		final List<ElectionAttributes> attributes = List.of(
-				new ElectionAttributes(attribute, "ignored", Collections.emptyList(), true),
-				new ElectionAttributes(attribute, "ignored", Collections.emptyList(), true));
-
-		// No matching element.
-		assertThrows(NoSuchElementException.class,
-				() -> Ballot.getAttributeAlias(RandomFactory.createRandom().genRandomBase16String(32), attributes));
+				new ElectionAttributes(attribute1, "ignored", Collections.emptyList(), true),
+				new ElectionAttributes(attribute1, "ignored", Collections.emptyList(), true));
 
 		// Multiple matching elements.
-		assertThrows(IllegalArgumentException.class, () -> Ballot.getAttributeAlias(attribute, attributes));
+		assertThrows(IllegalArgumentException.class, () -> Ballot.getAttributeAlias(attribute1, attributes));
+
+		// No matching element.
+		assertThrows(NoSuchElementException.class, () -> Ballot.getAttributeAlias(attribute2, attributes));
 	}
 
 	private static Ballot getBallotFromResourceName(final String resourceName) throws IOException {
