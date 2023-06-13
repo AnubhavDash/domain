@@ -24,7 +24,7 @@ import static ch.post.it.evoting.cryptoprimitives.domain.election.ElectionObject
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -37,8 +37,8 @@ public record BallotBox(String id,
 						String defaultTitle,
 						String defaultDescription,
 						String alias,
-						XMLGregorianCalendar dateFrom,
-						XMLGregorianCalendar dateTo,
+						LocalDateTime dateFrom,
+						LocalDateTime dateTo,
 						boolean test,
 						String status,
 						Integer gracePeriod,
@@ -59,16 +59,6 @@ public record BallotBox(String id,
 		checkNotNull(electoralBoard);
 	}
 
-	@JsonGetter("dateFrom")
-	public String getDateFrom() {
-		return dateFrom.toXMLFormat();
-	}
-
-	@JsonGetter("dateTo")
-	public String getDateTo() {
-		return dateTo.toXMLFormat();
-	}
-
 	@JsonGetter("test")
 	public String getTest() {
 		return String.valueOf(test);
@@ -84,8 +74,8 @@ public record BallotBox(String id,
 		private String defaultTitle;
 		private String defaultDescription;
 		private String alias;
-		private XMLGregorianCalendar dateFrom;
-		private XMLGregorianCalendar dateTo;
+		private LocalDateTime dateFrom;
+		private LocalDateTime dateTo;
 		private boolean test;
 		private String status;
 		private Integer gracePeriod;
@@ -113,12 +103,12 @@ public record BallotBox(String id,
 			return this;
 		}
 
-		public BallotBoxBuilder setDateFrom(final XMLGregorianCalendar dateFrom) {
+		public BallotBoxBuilder setDateFrom(final LocalDateTime dateFrom) {
 			this.dateFrom = dateFrom;
 			return this;
 		}
 
-		public BallotBoxBuilder setDateTo(final XMLGregorianCalendar dateTo) {
+		public BallotBoxBuilder setDateTo(final LocalDateTime dateTo) {
 			this.dateTo = dateTo;
 			return this;
 		}

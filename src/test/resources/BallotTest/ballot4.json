@@ -136,6 +136,9 @@
 					"blankAttribute": "5559d28970674b80864aafab5a175088",
 					"writeInAttribute": "27ff29c5a71e4143b15e8c22669b9a93",
 					"attribute": "235c5ea9ff57489aa193608dcc802328",
+					"questionNumber": "-",
+					"variantBallot": false,
+					"ballotIdentification": "-",
 					"fusions": []
 				},
 				{
@@ -147,6 +150,9 @@
 					"blankAttribute": "0ae820e726c54ec9a15ee5bac16030a4",
 					"writeInAttribute": "c013166c45a746ddb1bb3bc5680ed69d",
 					"attribute": "65ee9ef89a9d413fa4efd6cfc4e69011",
+					"questionNumber": "-",
+					"variantBallot": false,
+					"ballotIdentification": "-",
 					"fusions": []
 				}
 			]

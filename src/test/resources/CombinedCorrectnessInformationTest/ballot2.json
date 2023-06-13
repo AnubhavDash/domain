@@ -146,8 +146,10 @@
                "writeInAttribute": "83843f5415e24900aa5173cc7db7452b",
                "semantics": "semantic information",
                "attribute": "2d22a5bfa0f0406a9812576f925e1cea",
-               "fusions": [
-               ]
+               "questionNumber": "-",
+               "variantBallot": false,
+               "ballotIdentification": "-",
+               "fusions": []
             },
             {
                "id": "cb037bc494914d27b2e743a54c7a683e",
@@ -159,8 +161,10 @@
                "writeInAttribute": "da8d31cd84814efe82933d4fedbdd348",
                "semantics": "semantic information",
                "attribute": "8522fc66faf2452e8062abe247ef5a24",
-               "fusions": [
-               ]
+               "questionNumber": "-",
+               "variantBallot": false,
+               "ballotIdentification": "-",
+               "fusions": []
             }
          ]
       },
@@ -264,20 +268,21 @@
                "min": "1",
                "accumulation": "1",
                "writeIn": "true",
-               "blankAttribute":"7c82f2aaa48d4338b5b619d05890ac44",
-               "writeInAttribute":"b113518471644cfb93b5e1552b5bded7",
+               "blankAttribute": "7c82f2aaa48d4338b5b619d05890ac44",
+               "writeInAttribute": "b113518471644cfb93b5e1552b5bded7",
                "semantics": "semantic information",
-               "attribute":"4c432e954efa4d8dbc5c5a8416d2e054",
-               "fusions":[
-                  
-               ]
+               "attribute": "4c432e954efa4d8dbc5c5a8416d2e054",
+               "questionNumber": "-",
+               "variantBallot": false,
+               "ballotIdentification": "-",
+               "fusions": []
             }
          ]
       }
    ],
-   "status":"SIGNED",
-   "details":"Synchronized",
-   "synchronized":"true",
-   "ballotBoxes":"XY-CT-1|XY-MU-111 + XY-BZ-1111|XY-MU-1111",
-   "signedObject":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+   "status": "SIGNED",
+   "details": "Synchronized",
+   "synchronized": "true",
+   "ballotBoxes": "XY-CT-1|XY-MU-111 + XY-BZ-1111|XY-MU-1111",
+   "signedObject": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
 }

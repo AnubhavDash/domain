@@ -16,6 +16,7 @@
 package ch.post.it.evoting.cryptoprimitives.domain.election;
 
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateXsToken;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -24,6 +25,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.google.common.base.Preconditions;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record Question(
@@ -35,7 +37,10 @@ public record Question(
 		String blankAttribute,
 		String writeInAttribute,
 		String attribute,
-		List<List<String>> fusions) {
+		List<List<String>> fusions,
+		String questionNumber,
+		boolean variantBallot,
+		String ballotIdentification) {
 
 	@JsonIgnore
 	public static final String WRITE_IN_ATTRIBUTE_NO_WRITE_IN = String.valueOf(false);
@@ -43,16 +48,24 @@ public record Question(
 	public static final int QUESTION_MAX_VALUE_LOWER_BOUND = 1;
 	@JsonIgnore
 	public static final int QUESTION_MAX_VALUE_UPPER_BOUND = 120;
+	@JsonIgnore
+	public static final int QUESTION_NUMBER_MAX_LENGTH = 15;
 
-	public Question {
-		validateUUID(id);
-		checkNotNull(max);
-		checkNotNull(min);
-		checkNotNull(accumulation);
-		validateUUID(blankAttribute);
-		checkNotNull(writeInAttribute);
-		validateUUID(attribute);
-		checkNotNull(fusions);
+	public Question(final String id, final Integer max, final Integer min, final Integer accumulation, final boolean writeIn,
+			final String blankAttribute, final String writeInAttribute, final String attribute, final List<List<String>> fusions,
+			final String questionNumber, final boolean variantBallot, final String ballotIdentification) {
+		this.id = validateUUID(id);
+		this.max = checkNotNull(max);
+		this.min = checkNotNull(min);
+		this.accumulation = checkNotNull(accumulation);
+		this.writeIn = writeIn;
+		this.blankAttribute = validateUUID(blankAttribute);
+		this.writeInAttribute = checkNotNull(writeInAttribute);
+		this.attribute = validateUUID(attribute);
+		this.fusions = checkNotNull(fusions).stream().map(Preconditions::checkNotNull).map(List::copyOf).toList();
+		this.questionNumber = validateXsToken(questionNumber);
+		this.variantBallot = variantBallot;
+		this.ballotIdentification = validateXsToken(ballotIdentification);
 
 		if (!writeInAttribute.equals(WRITE_IN_ATTRIBUTE_NO_WRITE_IN)) {
 			validateUUID(writeInAttribute);
@@ -67,6 +80,9 @@ public record Question(
 
 		checkArgument(accumulation.compareTo(0) > 0 && accumulation.compareTo(4) < 0,
 				"The accumulation must be either 1, 2 or 3. [accumulation: %s, questionId: %s]", accumulation, id);
+
+		checkArgument(questionNumber.length() <= QUESTION_NUMBER_MAX_LENGTH,
+				"The question number must contain at most %s characters. [questionId: %s]", QUESTION_NUMBER_MAX_LENGTH, id);
 	}
 
 	@JsonGetter("max")
@@ -87,6 +103,11 @@ public record Question(
 	@JsonGetter("writeIn")
 	public String getWriteIn() {
 		return String.valueOf(writeIn);
+	}
+
+	@Override
+	public List<List<String>> fusions() {
+		return fusions.stream().map(List::copyOf).toList();
 	}
 
 	@JsonIgnore
