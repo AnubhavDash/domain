@@ -23,7 +23,7 @@ import static ch.post.it.evoting.cryptoprimitives.domain.election.ElectionObject
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -36,8 +36,8 @@ public record ElectionEvent(String id,
 							String defaultTitle,
 							String defaultDescription,
 							String alias,
-							XMLGregorianCalendar dateFrom,
-							XMLGregorianCalendar dateTo,
+							LocalDateTime dateFrom,
+							LocalDateTime dateTo,
 							Integer gracePeriod,
 							Identifier administrationBoard) {
 
@@ -51,16 +51,6 @@ public record ElectionEvent(String id,
 		checkNotNull(administrationBoard);
 	}
 
-	@JsonGetter("dateFrom")
-	public String getDateFrom() {
-		return dateFrom.toXMLFormat();
-	}
-
-	@JsonGetter("dateTo")
-	public String getDateTo() {
-		return dateTo.toXMLFormat();
-	}
-
 	@JsonGetter("gracePeriod")
 	public String getGracePeriod() {
 		return String.valueOf(gracePeriod);
@@ -71,8 +61,8 @@ public record ElectionEvent(String id,
 		private String defaultTitle;
 		private String defaultDescription;
 		private String alias;
-		private XMLGregorianCalendar dateFrom;
-		private XMLGregorianCalendar dateTo;
+		private LocalDateTime dateFrom;
+		private LocalDateTime dateTo;
 		private Integer gracePeriod;
 		private Identifier administrationBoard;
 
@@ -96,12 +86,12 @@ public record ElectionEvent(String id,
 			return this;
 		}
 
-		public ElectionEventBuilder setDateFrom(final XMLGregorianCalendar dateFrom) {
+		public ElectionEventBuilder setDateFrom(final LocalDateTime dateFrom) {
 			this.dateFrom = dateFrom;
 			return this;
 		}
 
-		public ElectionEventBuilder setDateTo(final XMLGregorianCalendar dateTo) {
+		public ElectionEventBuilder setDateTo(final LocalDateTime dateTo) {
 			this.dateTo = dateTo;
 			return this;
 		}
