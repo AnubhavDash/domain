@@ -23,11 +23,9 @@ import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import com.google.common.base.Preconditions;
 
@@ -87,11 +85,11 @@ public final class ElectionObjectValidations {
 		validateXsToken(status);
 	}
 
-	public static void validateDateFromDateTo(final XMLGregorianCalendar dateFrom, final XMLGregorianCalendar dateTo) {
+	public static void validateDateFromDateTo(final LocalDateTime dateFrom, final LocalDateTime dateTo) {
 		checkNotNull(dateFrom);
 		checkNotNull(dateTo);
-		checkArgument(dateFrom.compare(dateTo) == DatatypeConstants.LESSER,
-				"The start date must be before the end date. [dateFrom: %s, dateTo:%s]", dateFrom.toXMLFormat(), dateTo.toXMLFormat());
+		checkArgument(dateFrom.isBefore(dateTo),
+				"The start date must be before the end date. [dateFrom: %s, dateTo:%s]", dateFrom, dateTo);
 	}
 
 	public static int validateGracePeriod(final int gracePeriod) {
