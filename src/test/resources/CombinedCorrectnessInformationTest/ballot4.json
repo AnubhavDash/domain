@@ -136,6 +136,9 @@
 					"blankAttribute": "e7682e5d23a6415181fff4ca92c21acb",
 					"writeInAttribute": "fa8026b4fe7c48e0b92521d139a7a835",
 					"attribute": "7340e7a7697c4223a7aade1a37b1575b",
+					"questionNumber": "-",
+					"variantBallot": false,
+					"ballotIdentification": "-",
 					"fusions": []
 				},
 				{
@@ -147,6 +150,9 @@
 					"blankAttribute": "abbc6605a58e402cbb4b4fae12caeeec",
 					"writeInAttribute": "207525f041c44c80bb08c6da9ff2352a",
 					"attribute": "b3053227e0b144b0ae4126f7ce24f4ab",
+					"questionNumber": "-",
+					"variantBallot": false,
+					"ballotIdentification": "-",
 					"fusions": []
 				}
 			]
@@ -287,6 +293,9 @@
 					"blankAttribute": "5559d28970674b80864aafab5a175088",
 					"writeInAttribute": "27ff29c5a71e4143b15e8c22669b9a93",
 					"attribute": "235c5ea9ff57489aa193608dcc802328",
+					"questionNumber": "-",
+					"variantBallot": false,
+					"ballotIdentification": "-",
 					"fusions": []
 				},
 				{
@@ -298,6 +307,9 @@
 					"blankAttribute": "0ae820e726c54ec9a15ee5bac16030a4",
 					"writeInAttribute": "c013166c45a746ddb1bb3bc5680ed69d",
 					"attribute": "65ee9ef89a9d413fa4efd6cfc4e69011",
+					"questionNumber": "-",
+					"variantBallot": false,
+					"ballotIdentification": "-",
 					"fusions": []
 				}
 			]
@@ -561,6 +573,9 @@
 					"blankAttribute": "a5b3cd12ff7b4beb9eb8c85666fb71b8",
 					"writeInAttribute": "240b44433ab84bfa9026befd52d7f869",
 					"attribute": "54013b5029d84b0cbb31349d4f68a27a",
+					"questionNumber": "-",
+					"variantBallot": false,
+					"ballotIdentification": "-",
 					"fusions": []
 				}
 			]
