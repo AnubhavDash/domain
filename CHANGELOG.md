@@ -1,5 +1,19 @@
 # Changelog
 
+## Release 1.3.1
+
+The following functionalities and improvements are included in release 1.3.1:
+
+* Improved the performance when converting Hexadecimals to BigIntegers.
+* Reduced the size of some payloads by switching the encoding from Base16 to Base64.
+* Enforced the number of small primes in the encryption parameters payload.
+* Moved the partialUUID validator into crypto-primitives domain.
+* Added the questionNumber, variantBallot and ballot identification field to the question object.
+* Changed the date format to local date time.
+* Updated dependencies and third-party libraries.
+
+---
+
 ## Release 1.3.0
 
 The following functionalities and improvements are included in release 1.3.0:

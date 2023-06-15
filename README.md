@@ -22,11 +22,9 @@ We strive for excellent code quality to minimize the risk of bugs and vulnerabil
 ### SonarQube Analysis
 
 We parametrize SonarQube with the built-in Sonar way quality profile. The SonarQube analysis of the crypto-primitives-domain code reveals 0 bugs, 0
-vulnerabilities, 0 security hotspots, and 3 code smells.
+vulnerabilities, 0 security hotspots, and 1 code smell.
 
 ![SonarQube](SonarQube.jpg)
-
-The 2 code smells concern a deprecated duplicated blocks rule. We left the code blocks as is since removing them reduces the code's readability.
 
 ### Fortify Analysis
 
