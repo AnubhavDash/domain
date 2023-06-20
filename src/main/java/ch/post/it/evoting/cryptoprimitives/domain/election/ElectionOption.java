@@ -19,6 +19,8 @@ import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateUUID;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateXsToken;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -74,4 +76,21 @@ public class ElectionOption {
 		return (representation != null) && (representation.length() > 0);
 	}
 
+	@Override
+	public boolean equals(final Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		final ElectionOption that = (ElectionOption) o;
+		return Objects.equals(id, that.id) && Objects.equals(attribute, that.attribute) && Objects.equals(semantics,
+				that.semantics) && Objects.equals(representation, that.representation);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, attribute, semantics, representation);
+	}
 }
