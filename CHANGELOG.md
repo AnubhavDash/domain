@@ -1,5 +1,12 @@
 # Changelog
 
+## Release 1.3.2
+
+Release 1.3.2 is a minor maintenance patch containing the following changes:
+
+* Added the electionEventId instance field to the hashable form method in SetupComponentPublicKeysPayload (resolves issue [#YWH-PGM2323-171 / #35](https://gitlab.com/swisspost-evoting/e-voting/e-voting-documentation/-/issues/48) on GitLab
+* Updated dependencies and third-party libraries.
+
 ## Release 1.3.1
 
 The following functionalities and improvements are included in release 1.3.1:
