@@ -26,10 +26,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import ch.post.it.evoting.cryptoprimitives.domain.election.SetupComponentPublicKeys;
-import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.domain.signature.SignedPayload;
+import ch.post.it.evoting.cryptoprimitives.domain.signature.CryptoPrimitivesSignature;
 import ch.post.it.evoting.cryptoprimitives.hashing.Hashable;
-import ch.post.it.evoting.cryptoprimitives.hashing.HashableString;
 import ch.post.it.evoting.cryptoprimitives.math.GqGroup;
 
 @JsonDeserialize(using = SetupComponentPublicKeysPayloadDeserializer.class)
@@ -85,6 +84,23 @@ public class SetupComponentPublicKeysPayload implements SignedPayload {
 	}
 
 	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		SetupComponentPublicKeysPayload that = (SetupComponentPublicKeysPayload) o;
+		return encryptionGroup.equals(that.encryptionGroup) && setupComponentPublicKeys.equals(that.setupComponentPublicKeys);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(encryptionGroup, setupComponentPublicKeys);
+	}
+
+	@Override
 	public CryptoPrimitivesSignature getSignature() {
 		return this.signature;
 	}
@@ -95,25 +111,7 @@ public class SetupComponentPublicKeysPayload implements SignedPayload {
 	}
 
 	@Override
-	public boolean equals(final Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		final SetupComponentPublicKeysPayload that = (SetupComponentPublicKeysPayload) o;
-		return encryptionGroup.equals(that.encryptionGroup) && electionEventId.equals(that.electionEventId) && setupComponentPublicKeys.equals(
-				that.setupComponentPublicKeys) && Objects.equals(signature, that.signature);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(encryptionGroup, electionEventId, setupComponentPublicKeys, signature);
-	}
-
-	@Override
 	public List<? extends Hashable> toHashableForm() {
-		return List.of(encryptionGroup, HashableString.from(electionEventId), setupComponentPublicKeys);
+		return List.of(encryptionGroup, setupComponentPublicKeys);
 	}
 }
