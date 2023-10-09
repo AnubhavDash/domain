@@ -20,7 +20,6 @@ import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
-import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
@@ -81,23 +80,5 @@ public class ElectionAttributes {
 
 	public List<String> getRelated() {
 		return related;
-	}
-
-	@Override
-	public boolean equals(final Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		final ElectionAttributes that = (ElectionAttributes) o;
-		return correctness == that.correctness && Objects.equals(id, that.id) && Objects.equals(related, that.related)
-				&& Objects.equals(alias, that.alias);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id, related, correctness, alias);
 	}
 }
