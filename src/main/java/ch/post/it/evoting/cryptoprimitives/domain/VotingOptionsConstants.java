@@ -17,7 +17,7 @@ package ch.post.it.evoting.cryptoprimitives.domain;
 
 public class VotingOptionsConstants {
 
-	public static final int MAXIMUM_NUMBER_OF_VOTING_OPTIONS = 3000;
+	public static final int MAXIMUM_NUMBER_OF_VOTING_OPTIONS = 5000;
 	public static final int MAXIMUM_NUMBER_OF_SELECTABLE_VOTING_OPTIONS = 120;
 	public static final int MAXIMUM_NUMBER_OF_WRITE_IN_OPTIONS = 15;
 	public static final int MAXIMUM_WRITE_IN_OPTION_LENGTH = 500;

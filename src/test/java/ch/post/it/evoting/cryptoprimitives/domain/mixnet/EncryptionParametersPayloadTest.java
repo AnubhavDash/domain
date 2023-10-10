@@ -58,7 +58,7 @@ class EncryptionParametersPayloadTest extends TestGroupSetup {
 
 	@BeforeEach
 	void setup() throws JsonProcessingException {
-		final int desiredNumberOfPrimes = 3000;
+		final int desiredNumberOfPrimes = 5000;
 
 		// Create payload.
 		seed = random.genRandomInteger(BigInteger.valueOf(267)).toString();
