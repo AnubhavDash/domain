@@ -38,11 +38,14 @@ public final class Validations {
 	@VisibleForTesting
 	static final int UUID_LENGTH = 32;
 	static final int PARTIAL_UUID_LENGTH = 3;
+	private static final int SVK_LENGTH = 24;
 
 	private static final String BASE16_ALPHABET_WITH_LOWERCASE = "0123456789abcdefABCDEF";
-	private static final String BASE32_LOWERCASE_NO_PAD_ALPHABET = "abcdefghijklmnopqrstuvwxyz234567";
 	private static final String UUID_REGEX = String.format("^[%s]{%d}$", BASE16_ALPHABET_WITH_LOWERCASE, UUID_LENGTH);
 	private static final Pattern UUID_PATTERN = Pattern.compile(UUID_REGEX);
+	private static final String SVK_ALPHABET = "a-km-np-z2-9";
+	private static final String SVK_REGEX = String.format("^[%s]{%d}$", SVK_ALPHABET, SVK_LENGTH);
+	private static final Pattern SVK_PATTERN = Pattern.compile(SVK_REGEX);
 
 	private Validations() {
 		// Intentionally left blank.
@@ -79,23 +82,19 @@ public final class Validations {
 	}
 
 	/**
-	 * Validates that the input string is in Base32 lowercase alphabet with no pad ({@value BASE32_LOWERCASE_NO_PAD_ALPHABET}) and has the given
-	 * expected length.
+	 * Validates that the input string is in SVK alphabet ({@value SVK_ALPHABET}) and has length {@value SVK_LENGTH}. The alphabet corresponds to the
+	 * Base32 lowercase version excluding padding "=" of "Table 3: The Base 32 Alphabet" from RFC3548. Moreover, the letters "l" and "o" are replaced
+	 * by "8" and "9".
 	 *
-	 * @param toValidate     the string to validate. Must be non-null.
-	 * @param expectedLength the expected length of the string to validate. Must be strictly positive.
+	 * @param toValidate the string to validate. Must be non-null.
 	 * @return the validated input string.
 	 * @throws NullPointerException      if the string is null.
-	 * @throws IllegalArgumentException  if the expected length is not strictly positive or if the string is not of expected length.
 	 * @throws FailedValidationException if the string validation fails.
 	 */
-	public static String validateBase32NoPadAlphabet(final String toValidate, final int expectedLength) {
+	public static String validateSVK(final String toValidate) {
 		checkNotNull(toValidate);
-		checkArgument(expectedLength > 0, "The length must be strictly positive. [length: %s]", expectedLength);
-		checkArgument(toValidate.length() == expectedLength, "The given string is not of expected length. [string: %s, expected length: %s]",
-				toValidate, expectedLength);
-		final String regex = String.format("^[%s]{%d}$", BASE32_LOWERCASE_NO_PAD_ALPHABET, expectedLength);
-		return validateInAlphabet(toValidate, Pattern.compile(regex));
+
+		return validateInAlphabet(toValidate, SVK_PATTERN);
 	}
 
 	/**

@@ -16,7 +16,7 @@
 package ch.post.it.evoting.cryptoprimitives.domain.validations;
 
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.UUID_LENGTH;
-import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateBase32NoPadAlphabet;
+import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateSVK;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateBase64Encoded;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.hasNoDuplicates;
 import static ch.post.it.evoting.cryptoprimitives.domain.validations.Validations.validateNonBlankUCS;
@@ -117,45 +117,28 @@ class ValidationsTest {
 		}
 	}
 
-	@DisplayName("Calling validateBase32NoPadAlphabet with")
+	@DisplayName("Calling validateSVK with")
 	@Nested
 	class ValidateBase32WithNoPad {
-		private final int LENGTH = 24;
-		private final String validString = "";
 
 		@DisplayName("a null input string throws a NullPointerException.")
 		@Test
 		void nullStringThrows() {
-			assertThrows(NullPointerException.class, () -> validateBase32NoPadAlphabet(null, LENGTH));
-		}
-
-		@DisplayName("a non strictly positive length throws an IllegalArgumentException.")
-		@Test
-		void invalidLengthThrows() {
-			assertThrows(IllegalArgumentException.class, () -> validateBase32NoPadAlphabet(validString, -1));
-			assertThrows(IllegalArgumentException.class, () -> validateBase32NoPadAlphabet(validString, 0));
-		}
-
-		@DisplayName("an input string without the expected length throws an IllegalArgumentException.")
-		@Test
-		void invalidLengthStringThrows() {
-			final String invalidString = "invalidString";
-			assertThrows(IllegalArgumentException.class, () -> validateBase32NoPadAlphabet(invalidString, LENGTH));
+			assertThrows(NullPointerException.class, () -> validateSVK(null));
 		}
 
 		@DisplayName("an invalid input string throws a FailedValidationException.")
 		@Test
 		void invalidStringThrows() {
 			final String invalidString = "invalidString";
-			final int expectedLength = invalidString.length();
-			assertThrows(FailedValidationException.class, () -> validateBase32NoPadAlphabet(invalidString, expectedLength));
+			assertThrows(FailedValidationException.class, () -> validateSVK(invalidString));
 		}
 
 		@DisplayName("a valid input string does not throw.")
 		@Test
 		void validStringDoesNotThrow() {
-			final String validString = "KRUGS42JONAUEYLTMUZTELRO".toLowerCase(Locale.ENGLISH);
-			assertDoesNotThrow(() -> validateBase32NoPadAlphabet(validString, LENGTH));
+			final String validString = "KRUGS42J8NAUEYGTMUZTEKR3".toLowerCase(Locale.ENGLISH);
+			assertDoesNotThrow(() -> validateSVK(validString));
 		}
 	}
 
