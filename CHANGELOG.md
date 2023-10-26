@@ -1,5 +1,13 @@
 # Changelog
 
+## Release 1.3.3
+
+Release 1.3.3 is a minor maintenance patch containing the following changes:
+
+* Increased the maximum number of supported voting options from 3,000 to 5,000.
+* Adapted the validation to the new Start Voting Key alphabet.
+* Updated dependencies and third-party libraries.
+
 ## Release 1.3.2
 
 Release 1.3.2 is a minor maintenance patch containing the following changes:
