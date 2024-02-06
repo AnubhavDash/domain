@@ -1,5 +1,11 @@
 # Changelog
 
+## Release 1.3.4
+
+Release 1.3.4 is a minor maintenance patch containing the following changes:
+
+* Updated dependencies and third-party libraries.
+
 ## Release 1.3.3
 
 Release 1.3.3 is a minor maintenance patch containing the following changes:
