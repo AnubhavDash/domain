@@ -1,5 +1,8 @@
 # Crypto Primitives Domain
 
+> **<span style="color: red">DISCLAIMER:</span> Crypto Primitives Domain achieved end of life and is no longer maintained. The content of this repository is still available and provided as-is. No further updates are planned. One should use [e-voting-libraries](https://gitlab.com/swisspost-evoting/e-voting/e-voting-libraries) instead.**
+
+
 ## What is the content of this repository?
 
 The Crypto-primitives-domain library encapsulates the data objects that are produced by the e-voting system and consumed by a verifier. It acts as a
